@@ -26,14 +26,13 @@
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
 		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -48,5 +47,38 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Roboto-Black.ttf</string>
+		<string>Roboto-BlackItalic.ttf</string>
+		<string>Roboto-Bold.ttf</string>
+		<string>Roboto-BoldItalic.ttf</string>
+		<string>Roboto-Italic.ttf</string>
+		<string>Roboto-Light.ttf</string>
+		<string>Roboto-LightItalic.ttf</string>
+		<string>Roboto-Medium.ttf</string>
+		<string>Roboto-MediumItalic.ttf</string>
+		<string>Roboto-Regular.ttf</string>
+		<string>Roboto-Thin.ttf</string>
+		<string>Roboto-ThinItalic.ttf</string>
+		<string>PoppinsBlack.ttf</string>
+		<string>PoppinsBlackItalic.ttf</string>
+		<string>PoppinsBold.ttf</string>
+		<string>PoppinsBoldItalic.ttf</string>
+		<string>PoppinsExtraBold.ttf</string>
+		<string>PoppinsExtraBoldItalic.ttf</string>
+		<string>PoppinsExtraLight.ttf</string>
+		<string>PoppinsExtraLightItalic.ttf</string>
+		<string>PoppinsItalic.ttf</string>
+		<string>PoppinsLight.ttf</string>
+		<string>PoppinsLightItalic.ttf</string>
+		<string>PoppinsMedium.ttf</string>
+		<string>PoppinsMediumItalic.ttf</string>
+		<string>PoppinsRegular.ttf</string>
+		<string>PoppinsSemiBold.ttf</string>
+		<string>PoppinsSemiBoldItalic.ttf</string>
+		<string>PoppinsThin.ttf</string>
+		<string>PoppinsThinItalic.ttf</string>
+	</array>
 </dict>
 </plist>
