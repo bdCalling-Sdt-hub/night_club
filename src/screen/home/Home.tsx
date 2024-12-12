@@ -1,12 +1,13 @@
-import Background from '../components/Background';
 import React from 'react';
-import {Text} from 'react-native';
+import BackWithHeader from '../../components/backHeader/BackWithHeader';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
-const Home = () => {
+const Home = ({navigation}: NavigProps<null>) => {
   return (
     <Background style={tw`flex-1 bg-base`}>
-      <Text style={tw`text-white`}>Home</Text>
+      <BackWithHeader navigation={navigation} offBack title="Your Venues" />
     </Background>
   );
 };

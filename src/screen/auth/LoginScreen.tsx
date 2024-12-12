@@ -1,15 +1,15 @@
-import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 
-import Background from '../components/Background';
-import {Checkbox} from 'react-native-ui-lib';
 import {Formik} from 'formik';
+import React from 'react';
+import {Checkbox} from 'react-native-ui-lib';
+import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
-import React from 'react';
-import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 interface ISingInForm {
   email: string;
@@ -135,7 +135,10 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   </Text>
                 </TouchableOpacity>
                 <TButton
-                  onPress={handleSubmit}
+                  onPress={() => {
+                    // handleSubmit()
+                    navigation?.navigate('Home');
+                  }}
                   title="Log in"
                   containerStyle={tw`w-full  h-12 items-center py-0 mt-3 rounded-lg bg-primary text-lg `}
                   titleStyle={tw`text-white font-RobotoMedium`}
@@ -161,7 +164,9 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               Don’t have an account?
             </Text>
             <Text
-              onPress={() => navigation?.navigate('SignUp')}
+              onPress={() => {
+                navigation?.navigate('SignUp');
+              }}
               style={tw`text-primary font-NunitoSansLight`}>
               Sign Up
             </Text>

@@ -9,6 +9,7 @@ interface BackWithTitleProps {
   title: string;
   titleStyle?: any;
   containerStyle?: any;
+  backOff?: boolean;
 }
 
 const BackWithTitle = ({
@@ -16,6 +17,7 @@ const BackWithTitle = ({
   title,
   containerStyle,
   titleStyle,
+  backOff,
 }: BackWithTitleProps) => {
   return (
     <TouchableOpacity
