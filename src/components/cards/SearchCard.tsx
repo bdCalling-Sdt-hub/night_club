@@ -1,88 +1,33 @@
-import {Text, TouchableOpacity, View} from 'react-native';
-
-import FastImage from 'react-native-fast-image';
 import React from 'react';
+import {View} from 'react-native';
+import {IconSearchGray} from '../../icons/icons';
 import tw from '../../lib/tailwind';
+import InputText from '../inputs/InputText';
 
 interface SearchCardProps {
-  item: any;
-  offPeople?: boolean;
-  offPost?: boolean;
-  offProduct?: boolean;
+  setSearch?: React.Dispatch<React.SetStateAction<string>>;
+  search?: string;
+  placeholder?: string;
+  containerStyle?: any;
+  fieldStyle?: any;
+  focusSTyle?: any;
+  Component?: React.ReactNode;
+  ref?: any;
+  label?: string;
+  onPress?: () => void;
 }
 
-const SearchCard = ({
-  item: SingItem,
-  offPeople,
-  offPost,
-  offProduct,
-}: SearchCardProps) => {
-  const Card = ({item}: any) => {
-    return (
-      <TouchableOpacity
-        onPress={() => {
-          if (item.type === 'user') {
-            // navigation?.navigate('SingleMessage');
-          }
-        }}
-        activeOpacity={0.5}
-        style={tw`flex-row items-center gap-3 py-2`}>
-        <FastImage
-          source={{
-            uri:
-              item.type === 'product'
-                ? item.image
-                : item.type === 'post'
-                ? item.image
-                : item.type === 'user'
-                ? item.profilePicture
-                : item.image,
-          }}
-          style={tw`w-12 h-12 rounded-2xl`}
-          resizeMode={FastImage.resizeMode.contain}
-        />
-        {item.type === 'product' ? (
-          <View>
-            <Text style={tw`text-black500 font-RobotoMedium text-sm`}>
-              {item.title})
-            </Text>
-            <Text style={tw`text-black500 font-RobotoBlack text-[12px]`}>
-              $ {item.price}
-            </Text>
-          </View>
-        ) : item.type === 'post' ? (
-          <View>
-            <Text style={tw`text-black500 font-RobotoMedium text-lg`}>
-              {item.author}
-            </Text>
-            <Text style={tw`text-black500 font-NunitoSansRegular text-[12px]`}>
-              {item.title}
-            </Text>
-          </View>
-        ) : (
-          <View>
-            <Text style={tw`text-black500 font-RobotoMedium text-sm`}>
-              {item.name}
-            </Text>
-            <Text style={tw`text-black500 font-RobotoMedium text-[12px]`}>
-              {item.bio}
-            </Text>
-          </View>
-        )}
-      </TouchableOpacity>
-    );
-  };
-
+const SearchCard = ({search, setSearch}: SearchCardProps) => {
   return (
-    <>
-      {SingItem.type === 'product' && !offProduct ? (
-        <Card item={SingItem} />
-      ) : SingItem.type === 'post' && !offPost ? (
-        <Card item={SingItem} />
-      ) : (
-        SingItem.type === 'user' && !offPeople && <Card item={SingItem} />
-      )}
-    </>
+    <View style={tw`h-10  `}>
+      <InputText
+        svgFirstIcon={IconSearchGray}
+        value={search}
+        onChangeText={text => setSearch && setSearch(text)}
+        placeholder="Search"
+        containerStyle={tw` bg-secondary border-2 border-secondary rounded-lg`}
+      />
+    </View>
   );
 };
 

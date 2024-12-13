@@ -1,5 +1,5 @@
-import {TextField, TextFieldProps} from 'react-native-ui-lib'; // Import the type for TextField props
 import {TouchableOpacity, View} from 'react-native';
+import {TextField, TextFieldProps} from 'react-native-ui-lib'; // Import the type for TextField props
 
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -23,7 +23,7 @@ const InputText = ({
   svgSecondIcon,
   containerStyle,
   fieldStyle,
-  focusSTyle,
+  focusSTyle = tw`border-[1px] border-primary`,
   Component,
   ref,
   ...inputProps // Spread remaining props to pass to TextField

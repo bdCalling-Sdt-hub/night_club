@@ -1,7 +1,8 @@
 import {StatusBar, View} from 'react-native';
 
-import {BaseColor} from '../../utils/utils';
 import React from 'react';
+import tw from '../../lib/tailwind';
+import {BaseColor} from '../../utils/utils';
 
 const Background = ({
   children,
@@ -11,7 +12,7 @@ const Background = ({
   style?: any;
 }) => {
   return (
-    <View style={style}>
+    <View style={[tw`bg-base`, style]}>
       {children}
       <StatusBar
         barStyle={'light-content'}

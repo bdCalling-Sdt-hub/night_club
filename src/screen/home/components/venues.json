@@ -1,0 +1,212 @@
+[
+  {
+    "id": 1,
+    "title": "The Brooklyn Mirage",
+    "location": {
+      "address": "2 Wyckoff Ave, Brooklyn"
+    },
+    "time": {
+      "start": "09:00 PM",
+      "end": "05:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/426/278"
+    }
+  },
+  {
+    "id": 2,
+    "title": "Electric Daisy",
+    "location": {
+      "address": "Las Vegas, NV"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "06:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/493/205"
+    }
+  },
+  {
+    "id": 3,
+    "title": "Space Ibiza",
+    "location": {
+      "address": "Ibiza, Spain"
+    },
+    "time": {
+      "start": "11:00 PM",
+      "end": "07:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/562/219"
+    }
+  },
+  {
+    "id": 4,
+    "title": "Marquee Nightclub",
+    "location": {
+      "address": "The Cosmopolitan, Las Vegas"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "04:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/536/202"
+    }
+  },
+  {
+    "id": 5,
+    "title": "Berghain",
+    "location": {
+      "address": "Berlin, Germany"
+    },
+    "time": {
+      "start": "12:00 AM",
+      "end": "10:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/507/189"
+    }
+  },
+  {
+    "id": 6,
+    "title": "Zouk",
+    "location": {
+      "address": "Singapore"
+    },
+    "time": {
+      "start": "08:00 PM",
+      "end": "03:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/453/235"
+    }
+  },
+  {
+    "id": 7,
+    "title": "Club Space",
+    "location": {
+      "address": "Miami, FL"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "06:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/512/259"
+    }
+  },
+  {
+    "id": 8,
+    "title": "Fabric",
+    "location": {
+      "address": "London, UK"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "05:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/476/210"
+    }
+  },
+  {
+    "id": 9,
+    "title": "XS Nightclub",
+    "location": {
+      "address": "Las Vegas, NV"
+    },
+    "time": {
+      "start": "09:30 PM",
+      "end": "04:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/492/266"
+    }
+  },
+  {
+    "id": 10,
+    "title": "Pacha",
+    "location": {
+      "address": "Ibiza, Spain"
+    },
+    "time": {
+      "start": "11:00 PM",
+      "end": "08:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/518/244"
+    }
+  },
+  {
+    "id": 11,
+    "title": "Output",
+    "location": {
+      "address": "New York, NY"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "04:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/545/258"
+    }
+  },
+  {
+    "id": 12,
+    "title": "Hakkasan",
+    "location": {
+      "address": "Las Vegas, NV"
+    },
+    "time": {
+      "start": "09:00 PM",
+      "end": "04:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/481/275"
+    }
+  },
+  {
+    "id": 13,
+    "title": "DC10",
+    "location": {
+      "address": "Ibiza, Spain"
+    },
+    "time": {
+      "start": "11:00 PM",
+      "end": "08:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/529/292"
+    }
+  },
+  {
+    "id": 14,
+    "title": "Privilege",
+    "location": {
+      "address": "Ibiza, Spain"
+    },
+    "time": {
+      "start": "10:00 PM",
+      "end": "06:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/491/286"
+    }
+  },
+  {
+    "id": 15,
+    "title": "The Warehouse Project",
+    "location": {
+      "address": "Manchester, UK"
+    },
+    "time": {
+      "start": "08:00 PM",
+      "end": "03:00 AM"
+    },
+    "image": {
+      "uri": "https://random.imagecdn.app/537/223"
+    }
+  }
+]

@@ -1,10 +1,13 @@
 import {NavigationContainer} from '@react-navigation/native';
+
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import CreateNewPassword from '../screen/auth/CreateNewPassword';
 import ForgetPassword from '../screen/auth/ForgetPassword';
 import LoginScreen from '../screen/auth/LoginScreen';
 import SignUpScreen from '../screen/auth/SignUpScreen';
 import VerifyEmail from '../screen/auth/VerifyEmail';
+import VenueEvent from '../screen/Event/VenueEvent';
+import VenuesDetails from '../screen/home/VenuesDetails';
 import {BaseColor} from '../utils/utils';
 import BottomRoutes from './BottomRoutes';
 
@@ -30,6 +33,9 @@ function Routes() {
         <Stack.Screen name="VerifySuccess" component={BottomRoutes} />
         <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
         <Stack.Screen name="CreatePassword" component={CreateNewPassword} />
+        {/* // Venues All Routes */}
+        <Stack.Screen name="VenuesDetails" component={VenuesDetails} />
+        <Stack.Screen name="VenueEvent" component={VenueEvent} />
       </Stack.Navigator>
     </NavigationContainer>
   );

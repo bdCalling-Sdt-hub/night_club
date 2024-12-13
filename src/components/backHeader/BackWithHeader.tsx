@@ -23,7 +23,10 @@ const BackWithHeader = ({
 }: IBackWithHeader) => {
   return (
     <View
-      style={[tw`px-[4%] py-8 flex-row gap-3 items-center`, containerStyle]}>
+      style={[
+        tw`px-[4%] pt-8 pb-4 flex-row gap-3 items-center`,
+        containerStyle,
+      ]}>
       {!offBack && (
         <TouchableOpacity onPress={() => navigation?.goBack()}>
           <SvgXml xml={svgIcon || IconRightArrayGray} />
