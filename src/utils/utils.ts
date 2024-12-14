@@ -1,7 +1,6 @@
 // devices screen size
 
 import {Dimensions, PixelRatio, Platform} from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 export const PrimaryColor = '#55AACA';
 export const BaseColor = '#071115';
@@ -24,44 +23,6 @@ export const isTablet = () => {
 
 export const isMobile = () => {
   return width < 768;
-};
-
-export const useImagePicker = async ({
-  option,
-  selectionLimit,
-}: {
-  option: 'camera' | 'library';
-  selectionLimit?: number;
-}) => {
-  try {
-    if (option === 'camera') {
-      const result = await launchCamera({
-        mediaType: 'photo',
-        maxWidth: 500,
-        maxHeight: 500,
-        quality: 0.5,
-      });
-
-      if (!result.didCancel) {
-        return result.assets;
-      }
-    }
-    if (option === 'library') {
-      const result = await launchImageLibrary({
-        mediaType: 'photo',
-        maxWidth: 500,
-        maxHeight: 500,
-        quality: 0.5,
-        selectionLimit: selectionLimit || 1, // Set to 0 for unlimited image selection
-      });
-
-      if (!result.didCancel) {
-        return result.assets;
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
 };
 
 function getRandomHashColor() {

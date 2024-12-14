@@ -1,30 +1,33 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
 import {
-  IconBuildingCyan,
-  IconClockCyan,
-  IconLocationV2Cyan,
+  IconMultiUserCyan,
+  IconSmallCalendarCyan,
+  IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
 
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
-import data from './venues.json';
+import data from './events.json';
 
-const EHistory = () => {
+const EHistory = ({navigation}: NavigProps<null>) => {
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      ListEmptyComponent={
-        <EmptyCard hight={height * 0.6} title="No Venues History" />
-      }
-      data={data.slice(0, 0)}
+      data={data?.slice(0, 0)}
+      ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
       renderItem={({item, index}) => (
         <Card
           containerStyle={tw` flex-row gap-3 items-center`}
           component={
-            <TouchableOpacity style={tw`px-2 `}>
+            <TouchableOpacity
+              onPress={() => {
+                navigation?.navigate('EventDetails');
+              }}
+              style={tw`px-2 `}>
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
             </TouchableOpacity>
           }>
@@ -33,17 +36,17 @@ const EHistory = () => {
             data={[
               {
                 title: item.title,
-                icons: IconBuildingCyan,
+                icons: IconSmallCalendarCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: item.location.address,
-                icons: IconLocationV2Cyan,
+                title: item.people.toString(),
+                icons: IconMultiUserCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
               {
-                title: item.time.start + ' - ' + item.time.end,
-                icons: IconClockCyan,
+                title: item.date,
+                icons: IconSmallCalendarV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
             ]}

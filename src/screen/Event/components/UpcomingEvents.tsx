@@ -1,8 +1,8 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
 import {
-  IconBuildingCyan,
-  IconClockCyan,
-  IconLocationV2Cyan,
+  IconMultiUserCyan,
+  IconSmallCalendarCyan,
+  IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
 
 import React from 'react';
@@ -11,7 +11,7 @@ import EmptyCard from '../../../components/Empty/EmptyCard';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
-import data from './venues.json';
+import data from './events.json';
 
 const UpcomingEvents = ({navigation}: NavigProps<null>) => {
   return (
@@ -25,7 +25,7 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
           component={
             <TouchableOpacity
               onPress={() => {
-                navigation?.navigate('VenuesDetails');
+                navigation?.navigate('EventDetails');
               }}
               style={tw`px-2 `}>
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
@@ -36,17 +36,17 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
             data={[
               {
                 title: item.title,
-                icons: IconBuildingCyan,
+                icons: IconSmallCalendarCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: item.location.address,
-                icons: IconLocationV2Cyan,
+                title: item.people.toString(),
+                icons: IconMultiUserCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
               {
-                title: item.time.start + ' - ' + item.time.end,
-                icons: IconClockCyan,
+                title: item.date,
+                icons: IconSmallCalendarV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
             ]}

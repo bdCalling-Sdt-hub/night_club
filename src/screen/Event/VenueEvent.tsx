@@ -1,7 +1,7 @@
 import {Text, View} from 'react-native';
 
 import React from 'react';
-import BackWithHeader from '../../components/backHeader/BackWithHeader';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -15,7 +15,12 @@ const VenueEvent = ({navigation}: NavigProps<null>) => {
   const [search, setSearch] = React.useState('');
   return (
     <Background style={tw`flex-1 bg-base`}>
-      <BackWithHeader navigation={navigation} title="Your Venues" />
+      <BackWithTitle
+        onPress={() => {
+          navigation.goBack();
+        }}
+        title="Venue Events"
+      />
 
       <View style={tw`px-4 mb-6 mt-2`}>
         <Text style={tw`text-white50 text-sm font-RobotoBold`}>
@@ -40,7 +45,7 @@ const VenueEvent = ({navigation}: NavigProps<null>) => {
       </View>
 
       {selectOption === 'History' ? (
-        <EHistory />
+        <EHistory navigation={navigation} />
       ) : (
         <UpcomingEvents navigation={navigation} />
       )}

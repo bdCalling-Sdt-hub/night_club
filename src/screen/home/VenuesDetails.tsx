@@ -153,6 +153,9 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
             containerStyle={tw`bg-primary p-0 h-12 rounded-lg items-center w-full `}
           />
           <TButton
+            onPress={() => {
+              navigation?.navigate('VenueEdit');
+            }}
             title="Edit"
             titleStyle={tw`text-base text-primary font-RobotoBold`}
             containerStyle={tw`bg-transparent border-primary border-2 p-0 h-12 rounded-lg items-center w-full `}

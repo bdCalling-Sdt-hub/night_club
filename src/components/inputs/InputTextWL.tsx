@@ -16,6 +16,9 @@ interface InputTextProps
   focusSTyle?: any;
   ref?: any;
   label?: string;
+  required?: boolean;
+  errorText?: string;
+  touched?: boolean;
 }
 
 const InputTextWL = ({
@@ -28,13 +31,20 @@ const InputTextWL = ({
   Component,
   ref,
   label,
+  errorText,
+  required,
+  touched,
+
   ...inputProps // Spread remaining props to pass to TextField
 }: InputTextProps) => {
   const [focus, setFocus] = React.useState(false);
+
+  // console.log(touched);
+
   return (
     <View style={tw`gap-2`}>
       <Text style={tw`text-white text-base font-RobotoMedium px-[2%]`}>
-        {label}
+        {label} {required && <Text style={tw`text-red-500`}>*</Text>}
       </Text>
       <View
         style={[
@@ -56,6 +66,9 @@ const InputTextWL = ({
           ]}
           {...inputProps} // Spread props here
         />
+        {touched && errorText && (
+          <Text style={tw`text-red-500 text-xs`}>{errorText}</Text>
+        )}
         {Component && Component}
         {svgSecondIcon && (
           <TouchableOpacity onPress={onPress}>
