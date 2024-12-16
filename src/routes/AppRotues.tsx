@@ -3,11 +3,14 @@
 import * as React from 'react';
 
 import Routes from './Routes';
+import {ToastProvider} from '../components/modals/Toaster';
 
 export default function AppRoutes() {
   return (
     <>
-      <Routes />
+      <ToastProvider>
+        <Routes />
+      </ToastProvider>
     </>
   );
 }

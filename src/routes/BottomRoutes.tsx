@@ -1,5 +1,3 @@
-import {useLinkBuilder, useTheme} from '@react-navigation/native';
-import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCalendarCyan,
   IconCalendarGay,
@@ -10,16 +8,18 @@ import {
   IconUserHomeCyan,
   IconUserHomeGray,
 } from '../icons/icons';
+import {Text, TouchableOpacity, View} from 'react-native';
+import {useLinkBuilder, useTheme} from '@react-navigation/native';
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {SvgXml} from 'react-native-svg';
-import {IconBottomPlusButton} from '../icons/Special.icon';
-import tw from '../lib/tailwind';
 import Background from '../screen/components/Background';
 import EventScreen from '../screen/Event/EventScreen';
-import GuestListScreen from '../screen/Guestlist/GuestListScreen';
+import GuestList from '../screen/Guestlist/GuestList';
 import Home from '../screen/home/Home';
+import {IconBottomPlusButton} from '../icons/Special.icon';
 import ProfileScreen from '../screen/Profile/ProfileScreen';
+import {SvgXml} from 'react-native-svg';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import tw from '../lib/tailwind';
 
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
@@ -146,7 +146,7 @@ function BottomRoutes() {
       <Tab.Screen name="Venue" component={Home} />
       <Tab.Screen name="Event" component={EventScreen} />
       <Tab.Screen name="Button" component={Button} />
-      <Tab.Screen name="GuestList" component={GuestListScreen} />
+      <Tab.Screen name="GuestList" component={GuestList} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );

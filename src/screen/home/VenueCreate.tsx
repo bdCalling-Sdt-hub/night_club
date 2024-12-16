@@ -1,15 +1,15 @@
 import {ScrollView, Text, View} from 'react-native';
 
-import {Formik} from 'formik';
-import React from 'react';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {IconPlusGray} from '../../icons/icons';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import {Formik} from 'formik';
+import {IconPlusGray} from '../../icons/icons';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
 
 interface createProps {
   name: string;
@@ -25,7 +25,7 @@ interface createProps {
   residentDj: string;
 }
 
-const VenueUpdate = ({navigation}: NavigProps<null>) => {
+const VenueCreate = ({navigation}: NavigProps<null>) => {
   const handleValidate = (values: any) => {
     const errors: any = {
       name: '',
@@ -290,4 +290,4 @@ const VenueUpdate = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default VenueUpdate;
+export default VenueCreate;

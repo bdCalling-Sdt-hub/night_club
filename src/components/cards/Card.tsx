@@ -1,8 +1,8 @@
-import {ActivityIndicator, Text, View} from 'react-native';
+import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 
+import {AnimatedImage} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {AnimatedImage} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
 export interface ICardProps {
@@ -10,18 +10,28 @@ export interface ICardProps {
   containerStyle?: any;
   cardStyle?: any;
   component?: React.ReactNode;
+  onPress?: () => void;
 }
 
-const Card = ({children, cardStyle, component, containerStyle}: ICardProps) => {
+const Card = ({
+  children,
+  cardStyle,
+  component,
+  containerStyle,
+  onPress,
+}: ICardProps) => {
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.6}
+      disabled={!onPress}
+      onPress={onPress}
       style={[
         tw`bg-primary600 p-2 rounded-md flex-row justify-between items-center`,
         cardStyle,
       ]}>
       <View style={[tw``, containerStyle]}>{children}</View>
       <View>{component}</View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -69,7 +79,7 @@ export interface ICardDetailsProps {
   textStyle?: any;
   data?: Array<{
     title: string;
-    icons: React.ReactNode;
+    icons?: React.ReactNode;
     titleStyle?: any;
   }>;
 }
@@ -96,7 +106,8 @@ Card.Details = ({
                   tw`flex-row items-center gap-1.5`,
                   detailsContainerStyle,
                 ]}>
-                <SvgXml xml={item.icons} {...svgStyle} />
+                {item.icons && <SvgXml xml={item.icons} {...svgStyle} />}
+
                 <Text
                   numberOfLines={1}
                   style={[
@@ -110,6 +121,35 @@ Card.Details = ({
           })}
         </View>
       )}
+    </>
+  );
+};
+
+interface CardButtonProps {
+  total: number;
+  checkedIn: number;
+}
+
+Card.Button = ({checkedIn, total}: CardButtonProps) => {
+  const [checked, setChecked] = React.useState(checkedIn);
+  return (
+    <>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        disabled={checked === total}
+        onPress={() => {
+          setChecked(checked + 1);
+        }}
+        style={tw`px-2  ${
+          checked === total ? 'bg-green-900' : 'bg-green-600'
+        } rounded-lg h-10 items-center justify-center`}>
+        <Text
+          style={tw` ${
+            checked === total ? 'text-white400' : 'text-white50'
+          }  font-RobotoBlack`}>
+          Checked in {checked}/{total}
+        </Text>
+      </TouchableOpacity>
     </>
   );
 };

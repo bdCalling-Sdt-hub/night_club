@@ -16,6 +16,7 @@ interface InputTextProps
   focusSTyle?: any;
   ref?: any;
   label?: string;
+  labelStyle?: any;
   required?: boolean;
   errorText?: string;
   touched?: boolean;
@@ -34,7 +35,7 @@ const InputTextWL = ({
   errorText,
   required,
   touched,
-
+  labelStyle,
   ...inputProps // Spread remaining props to pass to TextField
 }: InputTextProps) => {
   const [focus, setFocus] = React.useState(false);
@@ -43,7 +44,11 @@ const InputTextWL = ({
 
   return (
     <View style={tw`gap-2`}>
-      <Text style={tw`text-white text-base font-RobotoMedium px-[2%]`}>
+      <Text
+        style={[
+          tw`text-white text-base font-RobotoMedium px-[2%]`,
+          labelStyle,
+        ]}>
         {label} {required && <Text style={tw`text-red-500`}>*</Text>}
       </Text>
       <View

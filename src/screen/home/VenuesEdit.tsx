@@ -1,25 +1,25 @@
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import {BaseColor} from '../../utils/utils';
 import {Formik} from 'formik';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import Video from 'react-native-video';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
+import Video from 'react-native-video';
 import tw from '../../lib/tailwind';
-import {BaseColor} from '../../utils/utils';
-import Background from '../components/Background';
+import {useMediaPicker} from '../../hook/useMediaPicker';
 
 interface createProps {
   name: string;
@@ -126,7 +126,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit Venues" onPress={() => navigation?.goBack()} />
+      <BackWithTitle title="Edit" onPress={() => navigation?.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -213,10 +213,10 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                   style={tw`border border-white60 h-20 rounded-lg border-dashed justify-center items-center my-3`}>
                   {values?.image ? (
                     <View
-                      style={tw`flex-row justify-between items-center w-full`}>
+                      style={tw`flex-row justify-center items-center w-full`}>
                       <Image
                         resizeMode="cover"
-                        style={tw`w-[96%] h-16 self-center rounded-lg overflow-hidden`}
+                        style={tw`w-[96%] h-16 self-center  rounded-lg overflow-hidden`}
                         source={{uri: values.image}}
                       />
                       <IButton
@@ -243,9 +243,9 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                     />
                   )}
                 </View>
-                {errors.video && touched.video && (
+                {errors.image && touched.image && (
                   <Text style={tw`text-red-500 text-xs pb-2 self-end`}>
-                    {errors.video}
+                    {errors.image}
                   </Text>
                 )}
               </View>

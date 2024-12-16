@@ -1,17 +1,17 @@
-import React, {useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 
-import {SvgXml} from 'react-native-svg';
-import {PageControl} from 'react-native-ui-lib';
-import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import TButton from '../../components/buttons/TButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {PageControl} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import Video from 'react-native-video';
+import tw from '../../lib/tailwind';
 import venuesD from './vanues_d.json';
 
 const VenuesDetails = ({navigation}: NavigProps<null>) => {
@@ -44,6 +44,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
             <Video
               muted={false}
               // controls
+              repeat
               style={tw`aspect-video h-[${
                 height * 0.058
               }] self-center rounded-lg overflow-hidden`}
