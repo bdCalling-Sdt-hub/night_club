@@ -1,5 +1,5 @@
-import {TouchableOpacity, View} from 'react-native';
 import {TextField, TextFieldProps} from 'react-native-ui-lib'; // Import the type for TextField props
+import {TouchableOpacity, View} from 'react-native';
 
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -15,17 +15,26 @@ interface InputTextProps
   Component?: React.ReactNode;
   focusSTyle?: any;
   ref?: any;
+  label?: string;
+  labelStyle?: any;
+  required?: boolean;
+  errorText?: string;
+  touched?: boolean;
 }
-
 const InputText = ({
   onPress,
   svgFirstIcon,
   svgSecondIcon,
   containerStyle,
   fieldStyle,
-  focusSTyle = tw`border-[1px] border-primary`,
+  focusSTyle,
   Component,
   ref,
+  label,
+  errorText,
+  required,
+  touched,
+  labelStyle,
   ...inputProps // Spread remaining props to pass to TextField
 }: InputTextProps) => {
   const [focus, setFocus] = React.useState(false);

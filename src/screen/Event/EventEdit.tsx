@@ -1,3 +1,4 @@
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -7,7 +8,6 @@ import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import Background from '../components/Background';
-import {BaseColor} from '../../utils/utils';
 import {Formik} from 'formik';
 import IButton from '../../components/buttons/IButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
@@ -136,7 +136,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
           }) => (
             <View style={tw`gap-4 `}>
               <View style={tw` bg-secondary rounded-lg px-3`}>
-                <Text style={tw`text-white font-RobotoBold text-base py-2`}>
+                <Text style={tw`text-white font-RobotoBold text-sm py-2`}>
                   Add venue image
                 </Text>
                 <View
@@ -168,7 +168,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                       }}
                       containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
-                      titleStyle={tw`text-white font-RobotoBold text-base`}
+                      titleStyle={tw`text-white font-RobotoBold text-sm`}
                       title="Upload image"
                     />
                   )}
@@ -186,6 +186,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                   onBlur={handleBlur('venue')}
                   renderInput={() => (
                     <InputTextWL
+                      cursorColor={PrimaryColor}
                       editable={false}
                       value={values.venue}
                       label="Venue"
@@ -238,6 +239,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
 
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Event name"
                   placeholder="Enter Event full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -250,6 +252,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Event description"
                   placeholder="Describe Event information"
                   multiline
@@ -265,6 +268,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Event date"
                   placeholder="Enter Event date name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -277,6 +281,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Opening time"
                   placeholder="Enter opening time"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -289,6 +294,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Closing time"
                   placeholder="Enter closing time"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -301,6 +307,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Capacity"
                   placeholder="Enter capacity"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -314,6 +321,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Entry fee"
                   placeholder="Enter entry fee"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -327,6 +335,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Free Entry"
                   placeholder="Enter free entry"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -340,6 +349,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Resident dj"
                   placeholder="Enter dance floors count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}

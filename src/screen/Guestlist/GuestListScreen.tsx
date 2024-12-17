@@ -1,9 +1,9 @@
 import * as XLSX from 'xlsx';
 
-import {BaseColor, height} from '../../utils/utils';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {Checkbox, Picker} from 'react-native-ui-lib';
 import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {
-  IconBigPlusCyan,
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
@@ -13,11 +13,9 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import Background from '../components/Background';
 import Card from '../../components/cards/Card';
 import EmptyCard from '../../components/Empty/EmptyCard';
-import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import {NavigProps} from '../../interfaces/NaviProps';
 import Papa from 'papaparse';
-import {Picker} from 'react-native-ui-lib';
 import RNFS from 'react-native-fs';
 import React from 'react';
 import SearchCard from '../../components/cards/SearchCard';
@@ -27,16 +25,15 @@ import data from './guest.json';
 import tw from '../../lib/tailwind';
 import {useToast} from '../../components/modals/Toaster';
 
-const GuestList = ({navigation}: NavigProps<null>) => {
+const GuestListScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
+
+  const [selectGuest, setSelectGuest] = React.useState(null);
+
   const [addedBy, setAddedBy] = React.useState('Added by');
   const [tags, setTags] = React.useState('Tags');
-  const [selectOption, setSelectOption] = React.useState('Upcoming Events');
-  const [search, setSearch] = React.useState('');
 
-  const handleAddGuest = () => {
-    navigation.navigate('AddGuest');
-  };
+  const [search, setSearch] = React.useState('');
 
   const jsonData = [
     {name: 'John', age: 30, city: 'New York'},
@@ -187,6 +184,8 @@ const GuestList = ({navigation}: NavigProps<null>) => {
     });
   };
 
+  console.log(selectGuest);
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithComponent
@@ -205,11 +204,11 @@ const GuestList = ({navigation}: NavigProps<null>) => {
         }
       />
 
-      <View style={tw`px-4 mb-4 `}>
+      {/* <View style={tw`px-4 mb-4 `}>
         <Text style={tw`text-white60 text-xs font-RobotoMedium`}>
           The Avalon Hollywood {'>'} Ultra Music Festival {'>'} 11/12/2024
         </Text>
-      </View>
+      </View> */}
 
       <View style={tw`px-[4%]`}>
         <SearchCard search={search} setSearch={setSearch} />
@@ -223,74 +222,7 @@ const GuestList = ({navigation}: NavigProps<null>) => {
           containerStyle={tw`p-0 bg-transparent items-center shadow-none  w-20`}
         />
 
-        <View style={tw`px-4 flex-row items-center gap-2`}>
-          <Picker
-            value={addedBy}
-            onChange={text => setAddedBy(text)}
-            renderInput={preps => {
-              return (
-                <TouchableOpacity
-                  onPress={preps.onPress}
-                  style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
-                  <Text
-                    numberOfLines={1}
-                    style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                    {addedBy}
-                  </Text>
-                  <SvgXml xml={IconDownArrayGray} height={10} width={10} />
-                </TouchableOpacity>
-              );
-            }}
-            renderItem={(value, items) => {
-              return (
-                <View
-                  style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
-                  <Text
-                    style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                    {value}
-                  </Text>
-                </View>
-              );
-            }}
-            renderCustomDialogHeader={preps => {
-              return (
-                <View style={tw`flex-row justify-between items-center mr-2`}>
-                  <TouchableOpacity
-                    onPress={preps.onCancel}
-                    style={tw`self-start py-3 px-4`}>
-                    <SvgXml xml={IconCloseGray} height={20} width={20} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setAddedBy('Added by');
-                      preps.onCancel();
-                    }}
-                    style={tw` py-1 px-4 border border-primary rounded-lg `}>
-                    <Text style={tw`text-primary font-RobotoMedium text-sm`}>
-                      Clear
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-            fieldType={Picker.fieldTypes.filter}
-            paddingH
-            items={[
-              {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
-              {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
-              {label: 'Oceanview Club', value: 'Oceanview Club'},
-              {label: 'The Pulse Arena', value: 'The Pulse Arena'},
-              {label: 'Neon District', value: 'Neon District'},
-              {label: 'Electric Gardens', value: 'Electric Gardens'},
-              {label: 'The Vibe Room', value: 'The Vibe Room'},
-              {label: 'Sunset Terrace', value: 'Sunset Terrace'},
-              {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
-              {label: 'Majestic Hall', value: 'Majestic Hall'},
-            ]}
-            pickerModalProps={{
-              overlayBackgroundColor: BaseColor,
-            }}
-          />
+        <View style={tw`px-1 flex-row items-center gap-2`}>
           <Picker
             value={tags}
             onChange={text => setTags(text)}
@@ -360,27 +292,45 @@ const GuestList = ({navigation}: NavigProps<null>) => {
           />
         </View>
       </View>
-      <View style={tw`flex-row justify-between items-center px-4 mb-4`}>
+      {/* <View style={tw`flex-row justify-between items-center px-4 mb-4`}>
         <Text style={tw`text-white50 font-RobotoBold text-base`}>
           Checked in
         </Text>
         <Text style={tw`text-white50 font-RobotoBold text-base`}>
           {data.checkin}/{data.total}
         </Text>
-      </View>
+      </View> */}
 
       <FlatList
-        contentContainerStyle={tw`px-4 pb-14 gap-3`}
+        contentContainerStyle={tw`px-4 pt-2 pb-4 gap-3`}
         data={data.guest}
         ListEmptyComponent={
           <EmptyCard hight={height * 0.6} title="No Venues" />
         }
         renderItem={({item, index}) => (
           <Card
-            onPress={() => navigation.navigate('GuestDetails')}
+            onPress={() => {
+              if (selectGuest?.length > 0) {
+                if (selectGuest?.includes(item?.guest)) {
+                  setSelectGuest(selectGuest?.filter(i => i !== item?.guest));
+                } else {
+                  setSelectGuest([...selectGuest, item?.guest]);
+                }
+              } else {
+                setSelectGuest([item?.guest]);
+              }
+            }}
             containerStyle={tw` flex-row gap-3 items-center`}
-            component={<Card.Button checkedIn={50} total={60} />}>
+            component={
+              <Checkbox
+                value={true}
+                onValueChange={() => {}}
+                style={tw``}
+                color={PrimaryColor}
+              />
+            }>
             <Card.Details
+              containerStyle={tw``}
               data={[
                 {
                   title: item.title,
@@ -388,11 +338,7 @@ const GuestList = ({navigation}: NavigProps<null>) => {
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: item.type === 'free' ? 'Free all night' : 'Paid',
-                  titleStyle: tw`text-yellow-400 font-RobotoBold text-xs`,
-                },
-                {
-                  title: `Guests ${item.guest.checkin} out of ${item.guest.total} `,
+                  title: 'VIP',
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}
@@ -400,14 +346,8 @@ const GuestList = ({navigation}: NavigProps<null>) => {
           </Card>
         )}
       />
-
-      <IButton
-        onPress={() => navigation.navigate('AddNewGuest')}
-        svg={IconBigPlusCyan}
-        containerStyle={tw`absolute bottom-5 bg-opacity-65 right-6 w-14 h-14 rounded-full  bg-base `}
-      />
     </Background>
   );
 };
 
-export default GuestList;
+export default GuestListScreen;

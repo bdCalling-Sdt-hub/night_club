@@ -118,6 +118,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 {/*======================= email ======================== */}
 
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Email"
                   value={values.email}
                   onChangeText={handleChange('email')}
@@ -132,6 +133,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 )}
 
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Full Name"
                   value={values.fullname}
                   onChangeText={handleChange('fullname')}
@@ -146,6 +148,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 )}
 
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Company Name"
                   value={values.company}
                   onChangeText={handleChange('company')}
@@ -159,6 +162,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 )}
 
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Phone"
                   value={values.phone}
                   onChangeText={handleChange('phone')}
@@ -175,6 +179,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
 
                 {/*================== password =================== */}
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Password"
                   value={values.password}
                   onChangeText={handleChange('password')}
@@ -198,6 +203,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   }}
                   renderInput={() => (
                     <InputTextWL
+                      cursorColor={PrimaryColor}
                       editable={false}
                       value={value}
                       onPress={() => {

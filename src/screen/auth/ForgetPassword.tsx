@@ -30,6 +30,7 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
             <View style={tw` gap-3 my-2 justify-center`}>
               <View style={tw` w-full`}>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Email"
                   value={'arif@gmail.com'}
                   placeholder="Enter new Password"

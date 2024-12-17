@@ -157,6 +157,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
 
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Venue name"
                   placeholder="Enter venue full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -169,6 +170,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Venue description"
                   placeholder="Describe venue information"
                   multiline
@@ -184,6 +186,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Venue location"
                   placeholder="Enter venue location name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -196,6 +199,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Opening time"
                   placeholder="Enter opening time"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -208,6 +212,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Closing time"
                   placeholder="Enter closing time"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -220,6 +225,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Capacity"
                   placeholder="Enter capacity"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -232,6 +238,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Bars"
                   placeholder="Enter bars count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -244,6 +251,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Dance floors"
                   placeholder="Enter dance floors count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -256,6 +264,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Resident dj"
                   placeholder="Enter dance floors count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}

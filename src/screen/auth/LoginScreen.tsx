@@ -1,15 +1,15 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {Formik} from 'formik';
-import React from 'react';
+import Background from '../components/Background';
 import {Checkbox} from 'react-native-ui-lib';
-import TButton from '../../components/buttons/TButton';
+import {Formik} from 'formik';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import {PrimaryColor} from '../../utils/utils';
-import Background from '../components/Background';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
 
 interface ISingInForm {
   email: string;
@@ -83,6 +83,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               <View style={tw`px-[4%]  gap-1`}>
                 {/*======================= email ======================== */}
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Email"
                   value={values.email}
                   onChangeText={handleChange('email')}
@@ -99,6 +100,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
 
                 {/*================== password =================== */}
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Password"
                   onPress={() => setShowPass(!showPass)}
                   value={values.password}

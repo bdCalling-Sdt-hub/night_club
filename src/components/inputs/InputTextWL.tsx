@@ -8,11 +8,13 @@ import tw from '../../lib/tailwind';
 interface InputTextProps
   extends Omit<TextFieldProps, 'containerStyle' | 'fieldStyle'> {
   onPress?: () => void;
+  onSvgPress?: () => void;
   svgFirstIcon?: string;
-  svgSecondIcon?: string;
+  svgSecondIcon?: string | any;
   containerStyle?: any;
   fieldStyle?: any;
   Component?: React.ReactNode;
+  Component2?: React.ReactNode;
   focusSTyle?: any;
   ref?: any;
   label?: string;
@@ -24,6 +26,7 @@ interface InputTextProps
 
 const InputTextWL = ({
   onPress,
+  onSvgPress,
   svgFirstIcon,
   svgSecondIcon,
   containerStyle,
@@ -35,6 +38,7 @@ const InputTextWL = ({
   errorText,
   required,
   touched,
+  Component2,
   labelStyle,
   ...inputProps // Spread remaining props to pass to TextField
 }: InputTextProps) => {
@@ -45,13 +49,12 @@ const InputTextWL = ({
   return (
     <View style={tw`gap-2`}>
       <Text
-        style={[
-          tw`text-white text-base font-RobotoMedium px-[2%]`,
-          labelStyle,
-        ]}>
+        style={[tw`text-white text-sm font-RobotoMedium px-[2%]`, labelStyle]}>
         {label} {required && <Text style={tw`text-red-500`}>*</Text>}
       </Text>
-      <View
+      <TouchableOpacity
+        onPress={onPress}
+        disabled={!onPress}
         style={[
           tw`flex-1 rounded-2xl px-4 bg-secondary flex-row items-center gap-3 border border-[#D1D1D1]  h-14 `,
           containerStyle,
@@ -76,11 +79,12 @@ const InputTextWL = ({
         )}
         {Component && Component}
         {svgSecondIcon && (
-          <TouchableOpacity onPress={onPress}>
+          <TouchableOpacity onPress={onSvgPress}>
             <SvgXml xml={svgSecondIcon} />
           </TouchableOpacity>
         )}
-      </View>
+        {Component2 && Component2}
+      </TouchableOpacity>
     </View>
   );
 };

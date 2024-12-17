@@ -34,6 +34,7 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
             <View style={tw` gap-3 my-2 justify-center`}>
               <View style={tw` w-full`}>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="New Password"
                   onPress={() =>
                     setShowPass({...showPass, password: !showPass?.password})
@@ -49,6 +50,7 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw` w-full`}>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Confirm Password"
                   onPress={() =>
                     setShowPass({...showPass, password: !showPass?.password})

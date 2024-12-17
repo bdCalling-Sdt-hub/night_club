@@ -13,7 +13,7 @@ import {useLinkBuilder, useTheme} from '@react-navigation/native';
 
 import Background from '../screen/components/Background';
 import EventScreen from '../screen/Event/EventScreen';
-import GuestList from '../screen/Guestlist/GuestList';
+import GuestListScreen from '../screen/Guestlist/GuestListScreen';
 import Home from '../screen/home/Home';
 import {IconBottomPlusButton} from '../icons/Special.icon';
 import ProfileScreen from '../screen/Profile/ProfileScreen';
@@ -146,7 +146,7 @@ function BottomRoutes() {
       <Tab.Screen name="Venue" component={Home} />
       <Tab.Screen name="Event" component={EventScreen} />
       <Tab.Screen name="Button" component={Button} />
-      <Tab.Screen name="GuestList" component={GuestList} />
+      <Tab.Screen name="GuestList" component={GuestListScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
   );
