@@ -14,6 +14,7 @@ import React, {
   useState,
 } from 'react';
 
+import {BlurView} from '@react-native-community/blur';
 import {Modal} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
@@ -80,10 +81,16 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
         enableModalBlur
         overlayBackgroundColor="rgba(0, 0, 0, 0.5)" // Semi-transparent background
         visible={visible}
+        useKeyboardAvoidingView
+        statusBarTranslucent
         onDismiss={() => setVisible(false)}
         onBackgroundPress={() => setVisible(false)} // Close modal on background press
       >
-        {/* <BlurView style={tw`flex-1`} blurAmount={5}> */}
+        <BlurView
+          style={tw`absolute top-10 left-0 right-0 bottom-0`}
+          blurType="dark"
+          blurAmount={5}
+        />
         <Pressable
           onPress={() => {
             setVisible(false);

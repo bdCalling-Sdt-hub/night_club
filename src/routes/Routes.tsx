@@ -1,6 +1,7 @@
 import AddNewGuest from '../screen/Guestlist/AddNewGuest';
 import AddNewGuestList from '../screen/Guestlist/AddNewGuestList';
 import AddNewTag from '../screen/Guestlist/AddNewTag';
+import AllGuestInGuestList from '../screen/Guestlist/AllGuestInGuestList';
 import {BaseColor} from '../utils/utils';
 import BottomRoutes from './BottomRoutes';
 import CreateNewPassword from '../screen/auth/CreateNewPassword';
@@ -55,6 +56,10 @@ function Routes() {
         <Stack.Screen name="GuestDetails" component={GuestDetails} />
         <Stack.Screen name="AddNewGuestList" component={AddNewGuestList} />
         <Stack.Screen name="AddNewTag" component={AddNewTag} />
+        <Stack.Screen
+          name="AllGuestInGuestList"
+          component={AllGuestInGuestList}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

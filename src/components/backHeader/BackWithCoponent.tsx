@@ -45,7 +45,7 @@ const BackWithComponent = ({
         <View style={tw`flex-row items-center gap-2`}>
           <Text
             numberOfLines={1}
-            style={[tw`text-black900 font-RobotoBold text-lg`, titleStyle]}>
+            style={[tw`text-white50 font-RobotoBold text-base`, titleStyle]}>
             {title ? title : 'Back'}
           </Text>
         </View>
