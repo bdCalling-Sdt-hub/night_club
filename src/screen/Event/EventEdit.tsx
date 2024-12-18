@@ -49,20 +49,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
   };
 
   const handleValidate = (values: any) => {
-    const errors: any = {
-      name: '',
-      description: '',
-      image: '',
-      venue: '',
-      date: '',
-      nightclub_manager: '',
-      start_time: '',
-      end_time: '',
-      capacity: '',
-      entry_fee: '',
-      free_entry: '',
-      resident_dj: '',
-    };
+    const errors: any = {};
 
     if (!values.name) {
       errors.name = 'Required';

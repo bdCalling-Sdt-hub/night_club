@@ -56,12 +56,12 @@ Card.Image = ({
         <>
           <AnimatedImage
             containerStyle={[
-              tw`aspect-square h-16  items-center rounded-md`,
+              tw`aspect-square   items-center rounded-md`,
               containerStyle,
             ]}
             errorSource={source}
             animationDuration={500}
-            style={[tw`aspect-square h-16 rounded-md`, imageStyle]}
+            style={[tw`aspect-square  rounded-md`, imageStyle]}
             loader={<ActivityIndicator color="white" size={'small'} />}
             source={source}
           />

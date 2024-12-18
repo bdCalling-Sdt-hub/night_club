@@ -27,19 +27,7 @@ interface createProps {
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
   const handleValidate = (values: any) => {
-    const errors: any = {
-      name: '',
-      location: '',
-      description: '',
-      image: '',
-      video: '',
-      openingTime: '',
-      closingTime: '',
-      capacity: '',
-      bars: '',
-      danceFloor: '',
-      residentDj: '',
-    };
+    const errors: any = {};
 
     if (!values.name) {
       errors.name = 'Required';

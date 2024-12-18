@@ -113,7 +113,7 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
         </TouchableOpacity> */}
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('CreatePassword')}
+            onPress={() => navigation?.replace('VerifySuccess')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}

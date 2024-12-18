@@ -1,6 +1,6 @@
+import {IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, View} from 'react-native';
 
-import {IconEmailGay} from '../../icons/icons';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
 import {PrimaryColor} from '../../utils/utils';
@@ -8,7 +8,11 @@ import React from 'react';
 import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
 
-const ForgetPassword = ({navigation}: NavigProps<null>) => {
+const ResetPassword = ({navigation}: NavigProps<null>) => {
+  const [showPass, setShowPass] = React.useState({
+    password: false,
+    confirmPassword: false,
+  });
   return (
     <View style={tw`bg-base flex-1`}>
       {/* <BackWithHeader navigation={navigation} title="OTP Verification" /> */}
@@ -18,10 +22,10 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
         <View>
           <View style={tw`gap-2`}>
             <Text style={tw`text-2xl text-white200 font-RobotoBold`}>
-              Forget password
+              Reset a new password
             </Text>
             <Text style={tw`text-sm text-white400 font-RobotoBold`}>
-              Enter your email, which was use to create nite account.
+              You have to create a new password after reset your password.
             </Text>
           </View>
           <View style={tw`gap-2 pt-8 `}>
@@ -32,12 +36,36 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
               <View style={tw` w-full`}>
                 <InputTextWL
                   cursorColor={PrimaryColor}
-                  label="Email"
-                  value={'arif@gmail.com'}
+                  label="New Password"
+                  onPress={() =>
+                    setShowPass({...showPass, password: !showPass?.password})
+                  }
+                  //   value={showPass.password}
                   placeholder="Enter new Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
-                  svgFirstIcon={IconEmailGay}
+                  secureTextEntry={!showPass.password}
+                  svgFirstIcon={IconLockGray}
+                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
+                />
+              </View>
+              <View style={tw` w-full`}>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
+                  label="Confirm Password"
+                  onPress={() =>
+                    setShowPass({
+                      ...showPass,
+                      confirmPassword: !showPass?.confirmPassword,
+                    })
+                  }
+                  //   value={showPass.password}
+                  placeholder="Enter confirm Password"
+                  containerStyle={tw`h-12`}
+                  focusSTyle={tw`border-primary`}
+                  secureTextEntry={!showPass.confirmPassword}
+                  svgFirstIcon={IconLockGray}
+                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
                 />
               </View>
             </View>
@@ -46,7 +74,7 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
 
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('ResetPassword')}
+            onPress={() => navigation?.replace('Home')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}
@@ -57,4 +85,4 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default ForgetPassword;
+export default ResetPassword;

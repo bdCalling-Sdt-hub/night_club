@@ -3,6 +3,7 @@ import {ScrollView, Text, View} from 'react-native';
 
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
+import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
 import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
@@ -11,6 +12,7 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
   const [showPass, setShowPass] = React.useState({
     password: false,
     confirmPassword: false,
+    currentPassword: false,
   });
   return (
     <View style={tw`bg-base flex-1`}>
@@ -35,15 +37,34 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
               <View style={tw` w-full`}>
                 <InputTextWL
                   cursorColor={PrimaryColor}
+                  label="Current Password"
+                  onSvgPress={() =>
+                    setShowPass({
+                      ...showPass,
+                      currentPassword: !showPass?.currentPassword,
+                    })
+                  }
+                  // value={showPass.currentPassword}
+                  placeholder="Enter current Password"
+                  containerStyle={tw`h-12`}
+                  focusSTyle={tw`border-primary`}
+                  secureTextEntry={!showPass.currentPassword}
+                  svgFirstIcon={IconLockGray}
+                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
+                />
+              </View>
+              <View style={tw` w-full`}>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="New Password"
-                  onPress={() =>
+                  onSvgPress={() =>
                     setShowPass({...showPass, password: !showPass?.password})
                   }
-                  value={showPass.password}
+                  // value={showPass.password}
                   placeholder="Enter new Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
-                  secureTextEntry={!showPass}
+                  secureTextEntry={!showPass.password}
                   svgFirstIcon={IconLockGray}
                   svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
                 />
@@ -52,14 +73,17 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Confirm Password"
-                  onPress={() =>
-                    setShowPass({...showPass, password: !showPass?.password})
+                  onSvgPress={() =>
+                    setShowPass({
+                      ...showPass,
+                      confirmPassword: !showPass?.confirmPassword,
+                    })
                   }
-                  value={showPass.password}
+                  // value={showPass.password}
                   placeholder="Enter confirm Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
-                  secureTextEntry={!showPass}
+                  secureTextEntry={!showPass.confirmPassword}
                   svgFirstIcon={IconLockGray}
                   svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
                 />

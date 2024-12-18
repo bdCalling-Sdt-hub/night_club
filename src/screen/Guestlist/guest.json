@@ -3,7 +3,7 @@
   "checkin": 15,
   "guest": [
     {
-      "title": "Random Title 1",
+      "name": "John Doe",
       "type": "free",
       "guest": {
         "checkin": 4,
@@ -11,7 +11,7 @@
       }
     },
     {
-      "title": "Paid Event 1",
+      "name": "Jane Smith",
       "type": "paid",
       "guest": {
         "checkin": 1,
@@ -19,7 +19,7 @@
       }
     },
     {
-      "title": "Random Title 2",
+      "name": "Michael Johnson",
       "type": "free",
       "guest": {
         "checkin": 3,
@@ -27,7 +27,7 @@
       }
     },
     {
-      "title": "Paid Event 2",
+      "name": "Emily Davis",
       "type": "paid",
       "guest": {
         "checkin": 2,
@@ -35,7 +35,7 @@
       }
     },
     {
-      "title": "Random Title 3",
+      "name": "William Brown",
       "type": "free",
       "guest": {
         "checkin": 2,
@@ -43,7 +43,7 @@
       }
     },
     {
-      "title": "Paid Event 3",
+      "name": "Sophia Wilson",
       "type": "paid",
       "guest": {
         "checkin": 1,
@@ -51,7 +51,7 @@
       }
     },
     {
-      "title": "Random Title 4",
+      "name": "James Taylor",
       "type": "free",
       "guest": {
         "checkin": 0,
@@ -59,7 +59,7 @@
       }
     },
     {
-      "title": "Paid Event 4",
+      "name": "Charlotte Moore",
       "type": "paid",
       "guest": {
         "checkin": 2,
@@ -67,7 +67,7 @@
       }
     },
     {
-      "title": "Random Title 5",
+      "name": "Benjamin White",
       "type": "free",
       "guest": {
         "checkin": 1,
@@ -75,7 +75,7 @@
       }
     },
     {
-      "title": "Paid Event 5",
+      "name": "Amelia Hall",
       "type": "paid",
       "guest": {
         "checkin": 0,
@@ -83,7 +83,7 @@
       }
     },
     {
-      "title": "Random Title 6",
+      "name": "Lucas Allen",
       "type": "free",
       "guest": {
         "checkin": 2,
@@ -91,7 +91,7 @@
       }
     },
     {
-      "title": "Paid Event 6",
+      "name": "Harper Scott",
       "type": "paid",
       "guest": {
         "checkin": 0,
@@ -99,7 +99,7 @@
       }
     },
     {
-      "title": "Random Title 7",
+      "name": "Henry Lewis",
       "type": "free",
       "guest": {
         "checkin": 0,
@@ -107,7 +107,7 @@
       }
     },
     {
-      "title": "Paid Event 7",
+      "name": "Isabella Young",
       "type": "paid",
       "guest": {
         "checkin": 1,
@@ -115,7 +115,7 @@
       }
     },
     {
-      "title": "Random Title 8",
+      "name": "Daniel Walker",
       "type": "free",
       "guest": {
         "checkin": 1,
@@ -123,7 +123,7 @@
       }
     },
     {
-      "title": "Paid Event 8",
+      "name": "Olivia King",
       "type": "paid",
       "guest": {
         "checkin": 0,
@@ -131,7 +131,7 @@
       }
     },
     {
-      "title": "Random Title 9",
+      "name": "Alexander Wright",
       "type": "free",
       "guest": {
         "checkin": 0,
@@ -139,7 +139,7 @@
       }
     },
     {
-      "title": "Paid Event 9",
+      "name": "Evelyn Lopez",
       "type": "paid",
       "guest": {
         "checkin": 0,
@@ -147,7 +147,7 @@
       }
     },
     {
-      "title": "Random Title 10",
+      "name": "Mason Hill",
       "type": "free",
       "guest": {
         "checkin": 1,

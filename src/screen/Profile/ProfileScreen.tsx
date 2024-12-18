@@ -1,13 +1,287 @@
-import {Text} from 'react-native';
+import {
+  IconCloseGray,
+  IconDownArrayGray,
+  IconFilterGray,
+  IconLeftArrayGray,
+  IconSmallSettingCyan,
+} from '../../icons/icons';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import React from 'react';
-import tw from '../../lib/tailwind';
+import AniImage from '../../components/animate/AniImage';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import Background from '../components/Background';
+import {BaseColor} from '../../utils/utils';
+import {DrawerActions} from '@react-navigation/native';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import tw from '../../lib/tailwind';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({navigation}: NavigProps<null>) => {
+  const [selectVenue, setSelectVenue] = React.useState('Select venue');
+  const [selectEvent, setSelectEvent] = React.useState('Select event');
+  const [selectOption, setSelectOption] = React.useState('Upcoming Events');
+  const [search, setSearch] = React.useState('');
   return (
     <Background style={tw`flex-1 bg-base`}>
-      <Text>ProfileScreen</Text>
+      <BackWithComponent
+        offBack
+        title={'Profile'}
+        containerStyle={tw`justify-between`}
+        ComponentBtn={
+          <TouchableOpacity
+            onPress={() => navigation?.dispatch(DrawerActions.openDrawer())}>
+            <SvgXml xml={IconSmallSettingCyan} />
+          </TouchableOpacity>
+        }
+      />
+      <ScrollView>
+        {/* //profile sections */}
+        <View style={tw`gap-4 justify-center items-center`}>
+          <AniImage
+            imageStyle={tw`w-32 h-32 rounded-full`}
+            source={{
+              uri: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg',
+            }}
+          />
+          <View style={tw`gap-1 justify-center items-center`}>
+            <Text style={tw`text-2xl text-white200 font-RobotoBold`}>
+              Endrick Joseph
+            </Text>
+            <Text style={tw`text-sm text-white400 font-RobotoRegular`}>
+              Owner
+            </Text>
+          </View>
+        </View>
+
+        {/*============= dashboard part to some accounts =============== */}
+        <View
+          style={tw`p-3 bg-primary900   mx-4 rounded-lg mt-3 bg-opacity-10 gap-3`}>
+          <View
+            style={tw` flex-row bg-secondary60 h-10  rounded-lg items-center justify-between gap-1`}>
+            <IwtButton
+              title="Filter"
+              svg={IconFilterGray}
+              containerStyle={tw`p-0 bg-transparent items-center shadow-none  w-20`}
+            />
+
+            <View style={tw`px-4 flex-row items-center gap-2`}>
+              <Picker
+                value={selectVenue}
+                onChange={text => setSelectVenue(text)}
+                renderInput={preps => {
+                  return (
+                    <TouchableOpacity
+                      onPress={preps.onPress}
+                      style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
+                      <Text
+                        numberOfLines={1}
+                        style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                        {selectVenue}
+                      </Text>
+                      <SvgXml xml={IconDownArrayGray} height={10} width={10} />
+                    </TouchableOpacity>
+                  );
+                }}
+                renderItem={(value, items) => {
+                  return (
+                    <View
+                      style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                      <Text
+                        style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
+                        {value}
+                      </Text>
+                    </View>
+                  );
+                }}
+                renderCustomDialogHeader={preps => {
+                  return (
+                    <View
+                      style={tw`flex-row justify-between items-center mr-2`}>
+                      <TouchableOpacity
+                        onPress={preps.onCancel}
+                        style={tw`self-start py-3 px-4`}>
+                        <SvgXml xml={IconCloseGray} height={20} width={20} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectVenue('Select venue');
+                          preps.onCancel();
+                        }}
+                        style={tw` py-1 px-4 border border-primary rounded-lg `}>
+                        <Text
+                          style={tw`text-primary font-RobotoMedium text-sm`}>
+                          Clear
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }}
+                fieldType={Picker.fieldTypes.filter}
+                paddingH
+                items={[
+                  {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
+                  {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
+                  {label: 'Oceanview Club', value: 'Oceanview Club'},
+                  {label: 'The Pulse Arena', value: 'The Pulse Arena'},
+                  {label: 'Neon District', value: 'Neon District'},
+                  {label: 'Electric Gardens', value: 'Electric Gardens'},
+                  {label: 'The Vibe Room', value: 'The Vibe Room'},
+                  {label: 'Sunset Terrace', value: 'Sunset Terrace'},
+                  {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
+                  {label: 'Majestic Hall', value: 'Majestic Hall'},
+                ]}
+                pickerModalProps={{
+                  overlayBackgroundColor: BaseColor,
+                }}
+              />
+              <Picker
+                value={selectEvent}
+                onChange={text => setSelectEvent(text)}
+                renderInput={preps => {
+                  return (
+                    <TouchableOpacity
+                      onPress={preps.onPress}
+                      style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
+                      <Text
+                        numberOfLines={1}
+                        style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                        {selectEvent}
+                      </Text>
+                      <SvgXml xml={IconDownArrayGray} height={10} width={10} />
+                    </TouchableOpacity>
+                  );
+                }}
+                renderItem={(value, items) => {
+                  return (
+                    <View
+                      style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                      <Text
+                        style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
+                        {value}
+                      </Text>
+                    </View>
+                  );
+                }}
+                renderCustomDialogHeader={preps => {
+                  return (
+                    <View
+                      style={tw`flex-row justify-between items-center mr-2`}>
+                      <TouchableOpacity
+                        onPress={preps.onCancel}
+                        style={tw`self-start py-3 px-4`}>
+                        <SvgXml xml={IconCloseGray} height={20} width={20} />
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => {
+                          setSelectEvent('Select event');
+                          preps.onCancel();
+                        }}
+                        style={tw` py-1 px-4 border border-primary rounded-lg `}>
+                        <Text
+                          style={tw`text-primary font-RobotoMedium text-sm`}>
+                          Clear
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                }}
+                fieldType={Picker.fieldTypes.filter}
+                paddingH
+                items={[
+                  {label: 'Lounge', value: 'Lounge'},
+                  {label: 'Rooftop', value: 'Rooftop'},
+                  {label: 'Skyline Views', value: 'Skyline Views'},
+                  {label: 'Relaxation', value: 'Relaxation'},
+                  {label: 'Cocktails', value: 'Cocktails'},
+                  {label: 'Chill Vibes', value: 'Chill Vibes'},
+                  {label: 'Nightlife', value: 'Nightlife'},
+                  {label: 'Exclusive', value: 'Exclusive'},
+                  {label: 'Urban', value: 'Urban'},
+                  {label: 'Event Venue', value: 'Event Venue'},
+                ]}
+                pickerModalProps={{
+                  overlayBackgroundColor: BaseColor,
+                }}
+              />
+            </View>
+          </View>
+          <View style={tw`flex-row justify-between gap-2`}>
+            <View
+              style={tw`bg-secondary bg-opacity-20 h-20 flex-1 rounded-lg p-3 gap-1`}>
+              <Text style={tw`text-white50  font-RobotoMedium text-base`}>
+                Total Guest
+              </Text>
+              <Text style={tw`text-white60  font-RobotoMedium text-base`}>
+                5210
+              </Text>
+            </View>
+            <View
+              style={tw`bg-secondary bg-opacity-20 h-20 flex-1 rounded-lg p-3 gap-1`}>
+              <Text style={tw`text-white50  font-RobotoMedium text-base`}>
+                Free Guest
+              </Text>
+              <Text style={tw`text-white60  font-RobotoMedium text-base`}>
+                210
+              </Text>
+            </View>
+          </View>
+          <View style={tw`flex-row justify-between gap-2`}>
+            <View
+              style={tw`bg-secondary bg-opacity-20 h-20 flex-1 rounded-lg p-3 gap-1`}>
+              <Text style={tw`text-white50  font-RobotoMedium text-base`}>
+                Checked In
+              </Text>
+              <Text style={tw`text-white60  font-RobotoMedium text-base`}>
+                5000
+              </Text>
+            </View>
+            <View
+              style={tw`bg-secondary bg-opacity-20 h-20 flex-1 rounded-lg p-3 gap-1`}>
+              <Text style={tw`text-white50  font-RobotoMedium text-base`}>
+                Paid Guest
+              </Text>
+              <Text style={tw`text-white60  font-RobotoMedium text-base`}>
+                210
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={tw`px-4 my-3 gap-3`}>
+          <IwtButton
+            title="Edit Profile"
+            svg={IconLeftArrayGray}
+            containerStyle={tw`flex-row-reverse justify-between p-0 items-center px-4 w-full h-12 rounded-lg bg-primary800`}
+            titleStyle={tw`text-white font-RobotoBold text-base`}
+            onPress={() => navigation.navigate('EditProfile')}
+          />
+          <IwtButton
+            title="Manage Users"
+            svg={IconLeftArrayGray}
+            containerStyle={tw`flex-row-reverse justify-between p-0 items-center px-4 w-full h-12 rounded-lg bg-primary800`}
+            titleStyle={tw`text-white font-RobotoBold text-base`}
+            onPress={() => navigation.navigate('ManageUsers')}
+          />
+        </View>
+        {/*================= note section ==================  */}
+        <View style={tw`px-4 mb-5`}>
+          <InputTextWL
+            label="Note"
+            multiline
+            verticalAlign="top"
+            // textAlign="center"
+            textAlignVertical="top"
+            numberOfLines={10}
+            containerStyle={tw` h-40 pt-2 rounded-lg border-[1px] border-transparent`}
+            focusSTyle={tw`border-primary`}
+            placeholder="Enter your note"
+          />
+        </View>
+      </ScrollView>
     </Background>
   );
 };

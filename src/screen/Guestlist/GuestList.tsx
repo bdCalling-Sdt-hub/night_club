@@ -383,7 +383,7 @@ const GuestList = ({navigation}: NavigProps<null>) => {
             <Card.Details
               data={[
                 {
-                  title: item.title,
+                  title: item.name,
 
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },

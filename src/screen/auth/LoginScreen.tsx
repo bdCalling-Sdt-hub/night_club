@@ -163,7 +163,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         <View style={tw`flex-row justify-center mt-12 `}>
           <TouchableOpacity style={tw`flex-row items-center`}>
             <Text style={tw`text-black60 font-NunitoSansLight`}>
-              Don’t have an account?
+              Don’t have an account?{' '}
             </Text>
             <Text
               onPress={() => {

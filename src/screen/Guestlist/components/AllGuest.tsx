@@ -80,7 +80,7 @@ const AllGuest = ({navigation}: Props) => {
               containerStyle={tw``}
               data={[
                 {
-                  title: item.title,
+                  title: item.name,
 
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },

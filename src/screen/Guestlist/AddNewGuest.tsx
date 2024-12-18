@@ -68,17 +68,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
   ]);
 
   const handleValidate = (values: createProps) => {
-    const errors: createProps = {
-      name: '',
-      people: '',
-      entry_fee: '',
-      free_entry: '',
-      free_entry_time: '',
-      // free_entry_end_time: '',
-      added_by: '',
-      guest_list: '',
-      tag: '',
-    };
+    const errors: any = {};
 
     if (!values.name) {
       errors.name = 'Name is required';
@@ -109,21 +99,6 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
     }
 
     return errors;
-  };
-
-  const handleNewTag = () => {
-    if (!newTag) return;
-    setTags([...tags, {label: newTag, value: newTag}]);
-    setNewTag('');
-  };
-
-  const handleGuestList = () => {
-    if (!guestList) return;
-    setGuestListAvailable([
-      ...guestListAvailable,
-      {label: guestList, value: guestList},
-    ]);
-    setGuestList('');
   };
 
   return (
@@ -208,7 +183,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       <View>
                         <TouchableOpacity
                           onPress={preps.onCancel}
-                          style={tw`self-start py-3 px-4`}>
+                          style={tw`self-start pt-3 px-4`}>
                           <SvgXml xml={IconCloseGray} height={20} width={20} />
                         </TouchableOpacity>
                       </View>
@@ -226,7 +201,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   onPress={() => {
                     navigation.navigate('AddNewTag');
                   }}>
-                  <Text style={tw`text-primary py-2 text-xs text-right`}>
+                  <Text style={tw`text-primary pt-2 text-xs text-right`}>
                     Add new Tag
                   </Text>
                 </TouchableOpacity>
@@ -243,7 +218,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
-                  containerStyle={tw`h-12 rounded-lg bg-primary`}
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="+"
                   onPress={() => {
                     if (!values.people) {
@@ -272,7 +247,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       handleChange('people')(`${parseInt(values.people) - 1}`);
                     }
                   }}
-                  containerStyle={tw`h-12 rounded-lg bg-primary`}
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="-"
                 />
               </View>
@@ -521,8 +496,8 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       <IwtButton
                         svg={IconSmallPlusCyan}
                         title="Add new text field"
-                        titleStyle={tw`font-RobotoRegular text-primary text-xs`}
-                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent`}
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs shadow-none border-0`}
+                        containerStyle={tw`mt-5  p-0 rounded-lg w-full h-8 items-center bg-transparent`}
                         onPress={() => {
                           // handleSubmit();
                         }}

@@ -56,7 +56,7 @@ const InputTextWL = ({
         onPress={onPress}
         disabled={!onPress}
         style={[
-          tw`flex-1 rounded-2xl px-4 bg-secondary flex-row items-center gap-3 border border-[#D1D1D1]  h-14 `,
+          tw` rounded-lg px-4 bg-secondary flex-row items-center gap-3 border border-[#D1D1D1]  h-14 `,
           containerStyle,
           focus && focusSTyle,
         ]}>
@@ -66,7 +66,7 @@ const InputTextWL = ({
           placeholderTextColor={'#B0B0B0'}
           onFocus={() => setFocus(true)}
           onBlur={() => setFocus(false)}
-          containerStyle={[tw`flex-1`]}
+          containerStyle={[tw`flex-1 h-full justify-center items-center`]}
           white
           fieldStyle={[
             tw`${inputProps?.floatingPlaceholder ? 'pb-4' : 'p-0'}`,

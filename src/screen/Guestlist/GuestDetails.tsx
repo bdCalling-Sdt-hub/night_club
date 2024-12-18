@@ -3,6 +3,7 @@ import {
   IconCleanGray,
   IconCloseGray,
   IconDownArrayGray,
+  IconSmallPlusCyan,
   IconTimeGray,
 } from '../../icons/icons';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
@@ -14,6 +15,7 @@ import {Formik} from 'formik';
 import IButton from '../../components/buttons/IButton';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
 import {NavigProps} from '../../interfaces/NaviProps';
 import {Picker} from 'react-native-ui-lib';
 import React from 'react';
@@ -36,6 +38,10 @@ interface createProps {
 }
 
 const GuestDetails = ({navigation}: NavigProps<null>) => {
+  const [extraFields, setExtraFields] = React.useState({
+    note: '',
+    email: '',
+  });
   const [newTag, setNewTag] = React.useState('');
   const [guestList, setGuestList] = React.useState('');
   const [date, setDate] = React.useState(new Date());
@@ -63,17 +69,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
   ]);
 
   const handleValidate = (values: createProps) => {
-    const errors: createProps = {
-      name: '',
-      total: '',
-      entry_fee: '',
-      free_entry: '',
-      free_entry_time: '',
-      // free_entry_end_time: '',
-      added_by: '',
-      guest_list: '',
-      tag: '',
-    };
+    const errors: any = {};
 
     if (!values.name) {
       errors.name = 'Name is required';
@@ -202,22 +198,9 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                       <View>
                         <TouchableOpacity
                           onPress={preps.onCancel}
-                          style={tw`self-start py-3 px-4`}>
+                          style={tw`self-start pt-3 px-4`}>
                           <SvgXml xml={IconCloseGray} height={20} width={20} />
                         </TouchableOpacity>
-                        <View style={tw` px-4 flex-row items-center pb-4`}>
-                          <InputText
-                            value={newTag}
-                            placeholder="Added New Tag"
-                            onChangeText={text => setNewTag(text)}
-                            containerStyle={tw`border border-secondary h-12 rounded-r-none rounded-l-lg flex-1`}
-                          />
-                          <TButton
-                            onPress={handleNewTag}
-                            title="Add"
-                            containerStyle={tw`rounded-r-lg rounded-l-none bg-primary800 w-20 h-12`}
-                          />
-                        </View>
                       </View>
                     );
                   }}
@@ -228,6 +211,15 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
+                <TouchableOpacity
+                  style={tw`self-end`}
+                  onPress={() => {
+                    navigation.navigate('AddNewTag');
+                  }}>
+                  <Text style={tw`text-primary pt-2 text-xs text-right`}>
+                    Add new Tag
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
@@ -241,7 +233,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
-                  containerStyle={tw`h-12 rounded-lg bg-primary`}
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="+"
                   onPress={() => {
                     if (!values.total) {
@@ -276,7 +268,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                       handleChange('total')(`${parseInt(values.total) - 1}`);
                     }
                   }}
-                  containerStyle={tw`h-12 rounded-lg bg-primary`}
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="-"
                 />
               </View>
@@ -435,6 +427,20 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                   touched={touched.added_by}
                 />
               </View>
+              <View>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
+                  label="Added By"
+                  placeholder="Enter your name"
+                  containerStyle={tw`border-0 h-12 rounded-lg`}
+                  value={'Alexzander'}
+                  editable={false}
+                  onChangeText={handleChange('added_by')}
+                  onBlur={handleBlur('added_by')}
+                  errorText={errors.added_by}
+                  touched={touched.added_by}
+                />
+              </View>
               <View style={tw`bg-base `}>
                 <Picker
                   value={values.guest_list}
@@ -472,19 +478,6 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                           style={tw`self-start py-3 px-4`}>
                           <SvgXml xml={IconCloseGray} height={20} width={20} />
                         </TouchableOpacity>
-                        <View style={tw` px-4 flex-row items-center pb-4`}>
-                          <InputText
-                            value={guestList}
-                            placeholder="Added New Tag"
-                            onChangeText={text => setGuestList(text)}
-                            containerStyle={tw`border border-secondary h-12 rounded-r-none rounded-l-lg flex-1`}
-                          />
-                          <TButton
-                            onPress={handleGuestList}
-                            title="Add"
-                            containerStyle={tw`rounded-r-lg rounded-l-none bg-primary800 w-20 h-12`}
-                          />
-                        </View>
                       </View>
                     );
                   }}
@@ -495,9 +488,113 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
+                <TouchableOpacity
+                  style={tw`self-end`}
+                  onPress={() => {
+                    navigation.navigate('AddNewGuestList');
+                  }}>
+                  <Text style={tw`text-primary py-2 text-xs text-right`}>
+                    Add new guest list
+                  </Text>
+                </TouchableOpacity>
               </View>
 
+              {extraFields?.email && (
+                <View>
+                  <InputTextWL
+                    cursorColor={PrimaryColor}
+                    label="Email (optional)"
+                    placeholder="Enter your email"
+                    containerStyle={tw`border-0 h-12 rounded-lg`}
+                    value={values.email}
+                    onChangeText={handleChange('email')}
+                    onBlur={handleBlur('email')}
+                  />
+                </View>
+              )}
+              {extraFields?.note && (
+                <View>
+                  <InputTextWL
+                    cursorColor={PrimaryColor}
+                    label="Note (optional)"
+                    textAlignVertical="top"
+                    multiline
+                    verticalAlign="top"
+                    numberOfLines={8}
+                    placeholder="Enter your note"
+                    containerStyle={tw`border-0 py-2 h-30 rounded-lg`}
+                    value={values.note}
+                    onChangeText={handleChange('note')}
+                    onBlur={handleBlur('note')}
+                  />
+                </View>
+              )}
+
               <View>
+                <View style={tw`bg-base `}>
+                  <Picker
+                    onChange={(value: string) => {
+                      setExtraFields({
+                        ...extraFields,
+                        [value]: !extraFields[value],
+                      });
+                      // console.log(value);
+                    }}
+                    renderInput={() => (
+                      <IwtButton
+                        svg={IconSmallPlusCyan}
+                        title="Add new text field"
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs h-8`}
+                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent`}
+                        onPress={() => {
+                          // handleSubmit();
+                        }}
+                      />
+                    )}
+                    renderItem={(value, items) => {
+                      return (
+                        <View
+                          style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items.label}
+                          </Text>
+                        </View>
+                      );
+                    }}
+                    renderCustomDialogHeader={preps => {
+                      return (
+                        <View>
+                          <TouchableOpacity
+                            onPress={preps.onCancel}
+                            style={tw`self-start py-3 px-4`}>
+                            <SvgXml
+                              xml={IconCloseGray}
+                              height={20}
+                              width={20}
+                            />
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }}
+                    fieldType={Picker.fieldTypes.filter}
+                    paddingH
+                    items={[
+                      {
+                        label: 'Note',
+                        value: 'note',
+                      },
+                      {
+                        label: 'Email',
+                        value: 'email',
+                      },
+                    ]}
+                    pickerModalProps={{
+                      overlayBackgroundColor: BaseColor,
+                    }}
+                  />
+                </View>
+
                 <TButton
                   title="Save"
                   titleStyle={tw`font-RobotoBold text-base`}

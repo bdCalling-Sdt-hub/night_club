@@ -65,21 +65,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
   };
 
   const handleValidate = (values: any) => {
-    const errors: any = {
-      name: '',
-      location: '',
-      description: '',
-      nightclubManager: '',
-      image: '',
-      video: null,
-      openingTime: '',
-      closingTime: '',
-      capacity: '',
-      bars: '',
-      danceFloor: '',
-      status: '',
-      residentDj: '',
-    };
+    const errors: any = {};
 
     if (!values.name) {
       errors.name = 'Required';

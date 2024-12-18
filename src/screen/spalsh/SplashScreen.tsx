@@ -13,7 +13,7 @@ interface SplashProps extends NavigProps<null> {
 
 const SplashScreen = ({setIsSplash, route, navigation}: SplashProps) => {
   setTimeout(() => {
-    (navigation as any)?.navigate('Home');
+    (navigation as any)?.navigate('Login');
   }, 1000);
   return (
     <Background>

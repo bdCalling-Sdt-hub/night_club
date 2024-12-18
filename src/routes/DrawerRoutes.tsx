@@ -6,40 +6,117 @@ import {
   DrawerItemList,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {IconCloseGray, IconLoginRed} from '../icons/icons';
+import {Text, View} from 'react-native';
 
-import Home from '../screen/home/Home';
+import BottomRoutes from './BottomRoutes';
+import IwtButton from '../components/buttons/IwtButton';
+import TButton from '../components/buttons/TButton';
 import tw from '../lib/tailwind';
+import {useToast} from '../components/modals/Toaster';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // console.log(user);
+  const {closeToast, showToast} = useToast();
+
+  const handleDeleteAccount = () => {
+    showToast({
+      title: 'Delete Account',
+      titleStyle: tw`text-red-500 text-base font-NunitoSansBold`,
+      content: 'Are you sure you want to delete your account?',
+      btnDisplay: true,
+      multipleBTNStyle: tw`flex-col gap-3`,
+      multipleButton: [
+        {
+          buttonText: 'Yes',
+          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
+          onPress: () => {
+            closeToast();
+          },
+        },
+        {
+          buttonText: 'No',
+          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
+          onPress: () => {
+            closeToast();
+          },
+        },
+      ],
+    });
+  };
 
   return (
     <>
       <DrawerContentScrollView showsVerticalScrollIndicator={false} {...props}>
         <DrawerItemList {...props} />
-        <View style={tw`flex-col flex-1 px-6 py-8 gap-10 `}>
-          <TouchableOpacity
+        <View style={tw`flex-col flex-1 px-4 py-8 gap-10 `}>
+          <IwtButton
+            containerStyle={tw`bg-transparent flex-row-reverse justify-between`}
+            title="Settings"
+            titleStyle={tw`text-white50 font-RobotoBold text-xl`}
+            svg={IconCloseGray}
+            onPress={() => props.navigation.closeDrawer()}
+          />
+        </View>
+        <View style={tw`px-4`}>
+          <TButton
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-white60 font-RobotoRegular text-base`}
+            title="News"
+            onPress={() => props.navigation.navigate('News')}
+          />
+          <TButton
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-white60 font-RobotoRegular text-base `}
+            title="Change password"
+            onPress={() => props.navigation.navigate('CreatePassword')}
+          />
+          <TButton
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-white60 font-RobotoRegular text-base`}
+            title="Terms & conditions"
+            onPress={() => props.navigation.navigate('TermsAndCondition')}
+          />
+          <TButton
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-white60 font-RobotoRegular text-base`}
+            title="Privacy Policy"
+            onPress={() => props.navigation.navigate('PrivacyAndPolicy')}
+          />
+          <TButton
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-white60 font-RobotoRegular text-base`}
+            title="Support"
+            onPress={() => props.navigation.navigate('Support')}
+          />
+          <TButton
             onPress={() => {
-              props.navigation.navigate('Wallet');
+              handleDeleteAccount();
             }}
-            style={tw`flex-row gap-3 items-center`}>
-            <Text style={tw`text-white400 font-RobotoBold text-xs md:text-sm`}>
-              My Wallet
-            </Text>
-          </TouchableOpacity>
+            containerStyle={tw`bg-transparent self-start`}
+            titleStyle={tw`text-red-600 font-RobotoRegular text-base`}
+            title="Delete account"
+          />
         </View>
       </DrawerContentScrollView>
-      <View style={tw` py-6 px-6`}>
-        <TouchableOpacity
+      <View style={tw` py-6 px-6 gap-5`}>
+        <IwtButton
+          containerStyle={tw`bg-transparent flex-row-reverse justify-between`}
+          title="Logout"
+          titleStyle={tw`text-white60 font-RobotoBold text-base`}
+          svg={IconLoginRed}
           onPress={() => {
+            (props.navigation as any).replace('Login');
             props.navigation.closeDrawer();
           }}
-          style={tw` flex-row gap-3 items-center`}>
-          <Text style={tw`text-white400 font-RobotoBold text-xs md:text-sm`}>
-            Log Out
+        />
+        <View>
+          <Text style={tw`text-primary font-RobotoBold text-xs text-center`}>
+            Version 2.0.1
           </Text>
-        </TouchableOpacity>
+        </View>
       </View>
     </>
   );
@@ -54,7 +131,8 @@ export default function CustomDrawer() {
         drawerPosition: 'right', // Drawer comes from the right
         drawerType: 'front',
         headerShown: false,
-        drawerStyle: tw`w-[66%] md:w-[65%] tablet:w-[22%] h-full`,
+        overlayColor: 'rgba(0, 0, 0, 0.7)',
+        drawerStyle: tw`w-[66%] md:w-[65%] tablet:w-[22%] h-full bg-base`,
       }}
       drawerContent={props => <CustomDrawerContent {...props} />}>
       <Drawer.Screen
@@ -62,7 +140,7 @@ export default function CustomDrawer() {
           drawerItemStyle: {display: 'none'}, // Hides the drawer item for the screen
         }}
         name="App"
-        component={Home}
+        component={BottomRoutes}
       />
     </Drawer.Navigator>
   );
