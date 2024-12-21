@@ -1,3 +1,5 @@
+import {useLinkBuilder, useTheme} from '@react-navigation/native';
+import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCalendarCyan,
   IconCalendarGay,
@@ -8,18 +10,16 @@ import {
   IconUserHomeCyan,
   IconUserHomeGray,
 } from '../icons/icons';
-import {Text, TouchableOpacity, View} from 'react-native';
-import {useLinkBuilder, useTheme} from '@react-navigation/native';
 
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {SvgXml} from 'react-native-svg';
+import {IconBottomPlusButton} from '../icons/Special.icon';
+import tw from '../lib/tailwind';
 import Background from '../screen/components/Background';
 import EventScreen from '../screen/Event/EventScreen';
 import GuestListScreen from '../screen/Guestlist/GuestListScreen';
 import Home from '../screen/home/Home';
-import {IconBottomPlusButton} from '../icons/Special.icon';
 import ProfileScreen from '../screen/Profile/ProfileScreen';
-import {SvgXml} from 'react-native-svg';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import tw from '../lib/tailwind';
 
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
@@ -28,7 +28,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
 
   return (
     <Background style={tw`bg-base`}>
-      <View style={tw`flex-row justify-between px-4 h-16 items-center `}>
+      <View style={tw`flex-row justify-between px-4 h-16 items-center`}>
         {state.routes.map((route, index) => {
           const {options} = descriptors[route.key];
           const label =
@@ -51,8 +51,6 @@ function CustomTabBar({state, descriptors, navigation}: any) {
               navigation.navigate(route.name, route.params);
             }
           };
-
-          // set SVG Icons throw route name
 
           if (route.name === 'Venue') {
             return (
@@ -92,6 +90,25 @@ function CustomTabBar({state, descriptors, navigation}: any) {
             return (
               <TouchableOpacity
                 key={index}
+                onPress={() => {
+                  // Determine the appropriate route based on the current tab
+                  const currentRoute = state.routes[state.index].name;
+
+                  switch (currentRoute) {
+                    case 'Venue':
+                      navigation.navigate('VenueCreate'); // Navigate to Create Venue
+                      break;
+                    case 'Event':
+                      navigation.navigate('EventCreate'); // Navigate to Create Event
+                      break;
+                    case 'GuestList':
+                      navigation.navigate('AddNewGuestList'); // Navigate to Create Guest List
+                      break;
+                    default:
+                      // console.log('No specific route for the button.');
+                      break;
+                  }
+                }}
                 style={tw`justify-center items-center gap-1 mb-8`}>
                 <SvgXml xml={IconBottomPlusButton} />
               </TouchableOpacity>
@@ -121,7 +138,6 @@ function CustomTabBar({state, descriptors, navigation}: any) {
                 key={index}
                 style={tw`justify-center items-center gap-1`}>
                 <SvgXml xml={isFocused ? IconUserHomeCyan : IconUserHomeGray} />
-
                 <Text
                   style={[
                     tw`text-white font-RobotoMedium text-xs`,

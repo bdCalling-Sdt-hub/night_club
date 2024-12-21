@@ -7,9 +7,8 @@ import {
   View,
 } from 'react-native';
 
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
-import TButton from '../../components/buttons/TButton';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 
 const VerifyEmail = ({navigation}: NavigProps<null>) => {
@@ -31,9 +30,9 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
     if (value && index <= otp.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-    if (value && index) {
-      console.log(value);
-    }
+    // if (value && index) {
+    //   // console.log(value);
+    // }
 
     // Move to the previous input if value is deleted
   };
@@ -58,7 +57,16 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
     }
   };
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  React.useEffect(() => {
+    if (otp[3] !== '') {
+      console.log(otp.join(''));
+      (navigation as any)?.replace('VerifySuccess');
+    }
+  }, [otp]);
 
   return (
     <View style={tw`bg-base flex-1`}>
@@ -72,7 +80,7 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
               Verify email
             </Text>
             <Text style={tw`text-sm text-white400 font-RobotoBold`}>
-              We have sent 4 digits code into your email account.
+              Check your email account for the 4 digit code.
             </Text>
           </View>
           <View style={tw`gap-2 pt-8 `}>
@@ -87,13 +95,18 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
                   <TextInput
                     ref={el => (inputRefs.current[index] = el)}
                     value={digit}
-                    onChangeText={value => handleChange(value, index)}
+                    onChangeText={value => {
+                      // Validate the input to allow only numbers
+                      if (/^\d*$/.test(value)) {
+                        handleChange(value, index);
+                      }
+                    }}
                     onKeyPress={e => handleKeyPress(e, index)}
-                    keyboardType="number-pad"
+                    keyboardType="numeric"
                     maxLength={1}
                     textAlign="center"
                     focusable
-                    style={tw` text-center font-RobotoBlack text-[34px] m-0 p-0 w-full text-white bg-secondary h-full rounded-lg `}
+                    style={tw`text-center font-RobotoBlack text-[34px] m-0 p-0 w-full text-white bg-secondary h-full rounded-lg`}
                   />
                 </View>
               ))}
@@ -105,20 +118,20 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
             Didn’t receive the code?
           </Text>
           <Text
-            onPress={() => navigation?.replace('Login')}
+            onPress={() => (navigation as any)?.replace('Login')}
             style={tw`text-primary font-RobotoBlack`}>
             {' '}
             Send again
           </Text>
         </TouchableOpacity> */}
-        <View style={tw` pt-6`}>
+        {/* <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('VerifySuccess')}
+            onPress={() => (navigation as any)?.replace('VerifySuccess')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

@@ -1,15 +1,16 @@
 import {ScrollView, Text, View} from 'react-native';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
 import {Formik} from 'formik';
-import {IconPlusGray} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {IconPlusGray} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 interface createProps {
   name: string;
@@ -68,7 +69,10 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit Venues" onPress={() => navigation?.goBack()} />
+      <BackWithTitle
+        title="Create Venues"
+        onPress={() => navigation?.goBack()}
+      />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>

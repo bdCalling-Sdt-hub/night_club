@@ -1,9 +1,9 @@
 import {Text, View} from 'react-native';
 
-import {IconRightTik} from '../../icons/Special.icon';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {IconRightTik} from '../../icons/Special.icon';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 
 const VerifySuccess = ({navigation}: NavigProps<null>) => {

@@ -1,17 +1,17 @@
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {PrimaryColor, height} from '../../../utils/utils';
 
-import Card from '../../../components/cards/Card';
+import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import IButton from '../../../components/buttons/IButton';
-import {IconBigPlusCyan} from '../../../icons/icons';
-import NormalModal from '../../../components/modals/NormalModal';
 import Or from '../../../components/buttons/Or';
-import React from 'react';
 import TButton from '../../../components/buttons/TButton';
-import data from '../guest.json';
+import Card from '../../../components/cards/Card';
+import NormalModal from '../../../components/modals/NormalModal';
+import {IconBigPlusCyan} from '../../../icons/icons';
 import tw from '../../../lib/tailwind';
+import data from '../guest.json';
 
 interface Props {
   navigation: any;
@@ -43,15 +43,7 @@ const AllGuest = ({navigation}: Props) => {
         renderItem={({item, index}) => (
           <Card
             onPress={() => {
-              if (selectGuest?.length > 0) {
-                if (selectGuest?.includes(item)) {
-                  setSelectGuest(selectGuest?.filter(i => i !== item));
-                } else {
-                  setSelectGuest([...selectGuest, item]);
-                }
-              } else {
-                setSelectGuest([item]);
-              }
+              navigation?.navigate('GuestEdit');
             }}
             containerStyle={tw` flex-row gap-3 items-center`}
             component={
@@ -70,7 +62,17 @@ const AllGuest = ({navigation}: Props) => {
                   size={15}
                   // iconColor="#000000"
                   value={selectGuest?.includes(item)}
-                  onValueChange={() => {}}
+                  onValueChange={() => {
+                    if (selectGuest?.length > 0) {
+                      if (selectGuest?.includes(item)) {
+                        setSelectGuest(selectGuest?.filter(i => i !== item));
+                      } else {
+                        setSelectGuest([...selectGuest, item]);
+                      }
+                    } else {
+                      setSelectGuest([item]);
+                    }
+                  }}
                   style={tw``}
                   color={PrimaryColor}
                 />
@@ -167,6 +169,16 @@ const AllGuest = ({navigation}: Props) => {
             }}
             containerStyle={tw` w-[90%] self-center h-10 rounded-lg bg-transparent border border-red-500`}
             titleStyle={tw`text-red-500 font-RobotoBold text-sm`}
+            isLoading={false}
+          />
+          <TButton
+            title="Create New Guestlist"
+            onPress={() => {
+              setAddToGuests(false);
+              navigation.navigate('AddNewGuestList');
+            }}
+            containerStyle={tw` w-[90%] self-center h-10 rounded-lg bg-primary`}
+            titleStyle={tw`text-white50 font-RobotoBold text-sm`}
             isLoading={false}
           />
           <TButton

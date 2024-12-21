@@ -1,3 +1,4 @@
+import React, {Component} from 'react';
 import {
   Assets,
   Avatar,
@@ -14,7 +15,6 @@ import {
   Typography,
   View,
 } from 'react-native-ui-lib';
-import React, {Component} from 'react';
 
 import {ScrollView} from 'react-native';
 
@@ -113,7 +113,7 @@ export default class TestScreen extends Component {
         containerStyle={{backgroundColor: Colors.$backgroundDefault}}
         direction={PanningProvider.Directions.DOWN}
         headerProps={{title: 'Custom modal'}}>
-        <ScrollView>{children}</ScrollView>
+        <ScrollView keyboardShouldPersistTaps="always">{children}</ScrollView>
       </Incubator.Dialog>
     );
   };

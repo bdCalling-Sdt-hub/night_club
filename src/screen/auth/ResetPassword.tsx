@@ -1,12 +1,12 @@
-import {IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, View} from 'react-native';
+import {IconEyeGray, IconLockGray} from '../../icons/icons';
 
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
 import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 
 const ResetPassword = ({navigation}: NavigProps<null>) => {
   const [showPass, setShowPass] = React.useState({
@@ -74,7 +74,7 @@ const ResetPassword = ({navigation}: NavigProps<null>) => {
 
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('Home')}
+            onPress={() => (navigation as any)?.replace('Home')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}

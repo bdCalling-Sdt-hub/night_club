@@ -1,10 +1,10 @@
 import React, {SetStateAction} from 'react';
 
-import Background from '../components/Background';
+import {View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import {NavigProps} from '../../interfaces/NaviProps';
-import {View} from 'react-native';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface SplashProps extends NavigProps<null> {
   setIsSplash: React.Dispatch<SetStateAction<boolean>>;
@@ -13,7 +13,7 @@ interface SplashProps extends NavigProps<null> {
 
 const SplashScreen = ({setIsSplash, route, navigation}: SplashProps) => {
   setTimeout(() => {
-    (navigation as any)?.navigate('Login');
+    (navigation as any)?.replace('Login');
   }, 1000);
   return (
     <Background>

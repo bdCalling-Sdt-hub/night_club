@@ -1,17 +1,17 @@
-import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
-import {PrimaryColor, height} from '../../utils/utils';
 import React, {useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
+import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
+import {PrimaryColor, height} from '../../utils/utils';
 
+import {SvgXml} from 'react-native-svg';
+import {PageControl} from 'react-native-ui-lib';
+import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PageControl} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import Video from 'react-native-video';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 import venuesD from './vanues_d.json';
 
 const VenuesDetails = ({navigation}: NavigProps<null>) => {
@@ -39,7 +39,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           horizontal
           onScroll={handleScroll} // Handle scroll to update page
           scrollEventThrottle={16} // Throttle scroll for better performance
-        >
+          keyboardShouldPersistTaps="always">
           <View style={tw`mx-4 my-2`}>
             <Video
               muted={false}
@@ -91,7 +91,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
             <View style={tw`flex-row gap-2 items-center`}>
               <SvgXml xml={IconClockCyan} />
               <Text style={tw`text-white50 text-sm`}>
-                {venuesD.venues_details.time.start} -
+                {venuesD.venues_details.time.start} -{' '}
                 {venuesD.venues_details.time.end}
               </Text>
             </View>
@@ -105,7 +105,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         <View style={tw`px-4 gap-5 mt-5`}>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
-              Nightclub manager :
+              Nightclub Manager :
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
               {venuesD.venues_details.nightclub_manager}
@@ -127,7 +127,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
-              Dance floors:
+              Dancefloors :
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
               {venuesD.venues_details.bars}

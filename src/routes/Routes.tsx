@@ -1,35 +1,37 @@
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import CreateNewPassword from '../screen/auth/CreateNewPassword';
+import ForgetPassword from '../screen/auth/ForgetPassword';
+import LoginScreen from '../screen/auth/LoginScreen';
+import ResetPassword from '../screen/auth/ResetPassword';
+import SignUpScreen from '../screen/auth/SignUpScreen';
+import VerifyEmail from '../screen/auth/VerifyEmail';
+import VerifySuccess from '../screen/auth/VerifySuccess';
+import EventCreate from '../screen/Event/EventCreate';
+import EventDetails from '../screen/Event/EventDetails';
+import EventEdit from '../screen/Event/EventEdit';
+import VenueEvent from '../screen/Event/VenueEvent';
 import AddNewGuest from '../screen/Guestlist/AddNewGuest';
 import AddNewGuestList from '../screen/Guestlist/AddNewGuestList';
 import AddNewTag from '../screen/Guestlist/AddNewTag';
-import AddUser from '../screen/Profile/AddUser';
 import AllGuestInGuestList from '../screen/Guestlist/AllGuestInGuestList';
-import {BaseColor} from '../utils/utils';
-import CreateNewPassword from '../screen/auth/CreateNewPassword';
-import CustomDrawer from './DrawerRoutes';
-import EditProfile from '../screen/Profile/EditProfile';
-import EventDetails from '../screen/Event/EventDetails';
-import EventEdit from '../screen/Event/EventEdit';
-import ForgetPassword from '../screen/auth/ForgetPassword';
 import GuestDetails from '../screen/Guestlist/GuestDetails';
-import GuestList from '../screen/Guestlist/GuestList';
-import LoadingSplash from '../screen/spalsh/LoadingSplash';
-import LoginScreen from '../screen/auth/LoginScreen';
-import ManageUsers from '../screen/Profile/ManageUsers';
-import {NavigationContainer} from '@react-navigation/native';
-import News from '../screen/Settings/News';
-import PrivacyAndPolicy from '../screen/Settings/PrivacyAndPolicy';
-import ResetPassword from '../screen/auth/ResetPassword';
-import SignUpScreen from '../screen/auth/SignUpScreen';
-import Support from '../screen/Settings/Support';
-import TermsAndCondition from '../screen/Settings/TermsAndCondition';
-import UpdateUser from '../screen/Profile/UpdateUser';
+import GuestEdit from '../screen/Guestlist/GuestEdit';
+import VenueGuestList from '../screen/Guestlist/VenueGuestList';
 import VenueCreate from '../screen/home/VenueCreate';
-import VenueEvent from '../screen/Event/VenueEvent';
 import VenuesDetails from '../screen/home/VenuesDetails';
 import VenuesEdit from '../screen/home/VenuesEdit';
-import VerifyEmail from '../screen/auth/VerifyEmail';
-import VerifySuccess from '../screen/auth/VerifySuccess';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import AddUser from '../screen/Profile/AddUser';
+import EditProfile from '../screen/Profile/EditProfile';
+import ManageUsers from '../screen/Profile/ManageUsers';
+import UpdateUser from '../screen/Profile/UpdateUser';
+import News from '../screen/Settings/News';
+import PrivacyAndPolicy from '../screen/Settings/PrivacyAndPolicy';
+import Support from '../screen/Settings/Support';
+import TermsAndCondition from '../screen/Settings/TermsAndCondition';
+import LoadingSplash from '../screen/spalsh/LoadingSplash';
+import {BaseColor} from '../utils/utils';
+import CustomDrawer from './DrawerRoutes';
 
 const Stack = createNativeStackNavigator();
 
@@ -58,16 +60,18 @@ function Routes() {
         <Stack.Screen name="VenuesDetails" component={VenuesDetails} />
         <Stack.Screen name="VenueEvent" component={VenueEvent} />
         <Stack.Screen name="VenueEdit" component={VenuesEdit} />
+        <Stack.Screen name="VenueCreate" component={VenueCreate} />
         {/* Event all Routes  */}
         <Stack.Screen name="EventDetails" component={EventDetails} />
         <Stack.Screen name="EventEdit" component={EventEdit} />
-        <Stack.Screen name="VenueUpdate" component={VenueCreate} />
+        <Stack.Screen name="EventCreate" component={EventCreate} />
         {/* GuestList All Routes  */}
-        <Stack.Screen name="GuestList" component={GuestList} />
+        <Stack.Screen name="VenueGuestList" component={VenueGuestList} />
         <Stack.Screen name="AddNewGuest" component={AddNewGuest} />
         <Stack.Screen name="GuestDetails" component={GuestDetails} />
         <Stack.Screen name="AddNewGuestList" component={AddNewGuestList} />
         <Stack.Screen name="AddNewTag" component={AddNewTag} />
+        <Stack.Screen name="GuestEdit" component={GuestEdit} />
         <Stack.Screen
           name="AllGuestInGuestList"
           component={AllGuestInGuestList}

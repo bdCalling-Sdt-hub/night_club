@@ -1,6 +1,5 @@
 import * as XLSX from 'xlsx';
 
-import {BaseColor, height} from '../../utils/utils';
 import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconBigPlusCyan,
@@ -8,26 +7,27 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
+import {BaseColor, height} from '../../utils/utils';
 
+import Papa from 'papaparse';
+import React from 'react';
+import RNFS from 'react-native-fs';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import Papa from 'papaparse';
-import {Picker} from 'react-native-ui-lib';
-import RNFS from 'react-native-fs';
-import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import data from './guest.json';
-import tw from '../../lib/tailwind';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import data from './guest.json';
 
-const GuestList = ({navigation}: NavigProps<null>) => {
+const VenueGuestList = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const [addedBy, setAddedBy] = React.useState('Added by');
   const [tags, setTags] = React.useState('Tags');
@@ -193,7 +193,7 @@ const GuestList = ({navigation}: NavigProps<null>) => {
         onPress={() => {
           navigation.goBack();
         }}
-        title="View Guests List "
+        title="View Guest List "
         containerStyle={tw`justify-between`}
         ComponentBtn={
           <TButton
@@ -410,4 +410,4 @@ const GuestList = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default GuestList;
+export default VenueGuestList;

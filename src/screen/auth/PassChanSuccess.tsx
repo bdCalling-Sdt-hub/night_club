@@ -1,14 +1,14 @@
 import {Text, View} from 'react-native';
 
-import {IconRightTik} from '../../icons/icons';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {IconRightTik} from '../../icons/Special.icon';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 
 const PassChanSuccess = ({navigation}: NavigProps<null>) => {
   setTimeout(() => {
-    navigation?.navigate('HomeRoutes');
+    (navigation as any)?.replace('HomeRoutes');
   }, 500);
   return (
     <View style={tw`flex-1 bg-base justify-center items-center`}>

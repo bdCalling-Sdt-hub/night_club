@@ -1,24 +1,25 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {Checkbox, Picker} from 'react-native-ui-lib';
 import {
   IconCloseGray,
   IconCompanyGray,
-  IconDownArrayGray,
   IconEmailGay,
   IconEyeGray,
   IconLockGray,
-  IconPhoneGray,
+  IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
 import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
+import InputText from '../../components/inputs/InputText';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import countries from './countries.json';
 
 interface ISingUpForm {
   company: string;
@@ -32,15 +33,15 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState('Yes');
+  const [phoneCode, setPhoneCode] = useState(null);
   const onSubmitHandler = (data: ISingUpForm) => {
+    if (!data.phone.startsWith('+')) {
+      data.phone = phoneCode + data.phone;
+    }
     console.log(data);
-    navigation?.navigate('VerifyEmail');
+    (navigation as any)?.replace('VerifyEmail');
   };
-  const [items, setItems] = useState([
-    {label: 'Yes', value: 'Yes'},
-    {label: 'No', value: 'No'},
-  ]);
+
   return (
     <View style={tw`bg-base h-full`}>
       <ScrollView
@@ -50,13 +51,13 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
         keyboardShouldPersistTaps="always">
         <View style={tw`px-[4%] mt-[15%]`}>
           <Text style={tw`text-3xl text-white font-RobotoBlack `}>
-            Welcome back!
+            Become a member
           </Text>
         </View>
         {/*================= login title and subtitle ================= */}
         <View style={tw`px-[4%] gap-3`}>
           <Text style={tw`text-[24px] text-white100 font-RobotoBlack `}>
-            Sing Up.
+            Sign Up.
           </Text>
         </View>
         {/*================= inputs fields email or password  ================= */}
@@ -87,6 +88,12 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             if (!values.email) {
               errors.email = 'Required';
             }
+            // check or validity of email
+            if (
+              !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)
+            ) {
+              errors.email = 'Invalid email address';
+            }
             if (!values.phone) {
               errors.phone = 'Required';
             }
@@ -96,9 +103,9 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             ) {
               errors.email = 'Invalid email address';
             }
-            // check or validity of password 6 digit
-            if (values.password.length < 6) {
-              errors.password = 'Password must be at least 6 characters';
+            // check or validity of password 8 digit
+            if (values.password.length < 8) {
+              errors.password = 'Password must be at least 8 characters';
             }
             if (!values.password) {
               errors.password = 'Required';
@@ -161,17 +168,91 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   <Text style={tw`text-red-500`}>{errors.company}</Text>
                 )}
 
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Phone"
-                  value={values.phone}
-                  onChangeText={handleChange('phone')}
-                  onBlur={handleBlur('phone')}
-                  placeholder="phone"
-                  keyboardType="decimal-pad"
-                  containerStyle={tw`h-12`}
-                  svgFirstIcon={IconPhoneGray}
-                />
+                <View>
+                  <Text style={tw`text-white100 font-RobotoMedium text-sm`}>
+                    Phone
+                  </Text>
+                  <View style={tw`bg-base w-full my-2 flex-row items-end `}>
+                    <Picker
+                      onChange={value => {
+                        setPhoneCode(value);
+                      }}
+                      renderInput={() => (
+                        <View
+                          style={tw` w-16 h-12 bg-gray-500 bg-opacity-50  border border-[#D1D1D1] rounded-lg border-r-0 rounded-r-none`}>
+                          <View
+                            style={tw`flex-row items-center justify-center h-full gap-1 px-2`}>
+                            <Text
+                              style={tw`text-white100 font-RobotoMedium text-sm text-center`}>
+                              {phoneCode || '+1'}
+                            </Text>
+                          </View>
+                        </View>
+                      )}
+                      renderItem={(value, items, label) => {
+                        return (
+                          <View
+                            // onPress={() => setValue(value)}
+                            style={tw` py-2 mx-[4%] border-b border-b-gray-800 flex-row items-center  gap-3`}>
+                            <Text
+                              style={tw`text-white100 font-RobotoMedium text-lg`}>
+                              {label + ' ' + value}
+                            </Text>
+                          </View>
+                        );
+                      }}
+                      value={phoneCode || '+1'}
+                      searchStyle={tw`bg-secondary h-12 `}
+                      showSearch
+                      onSearchChange={value => {}}
+                      renderCustomSearch={preps => {
+                        return (
+                          <View style={tw`h-12  `}>
+                            <InputText
+                              cursorColor={PrimaryColor}
+                              svgFirstIcon={IconSearchGray}
+                              placeholderTextColor={'#B0B0B0'}
+                              onChangeText={preps.onSearchChange}
+                              placeholder="Search"
+                              containerStyle={tw`h-12 w-full  border-0 rounded-none bg-base border-b border-[#D1D1D1]`}
+                            />
+                          </View>
+                        );
+                      }}
+                      renderCustomDialogHeader={preps => {
+                        return (
+                          <TouchableOpacity
+                            onPress={preps.onCancel}
+                            style={tw`self-start py-3 px-4`}>
+                            <SvgXml
+                              xml={IconCloseGray}
+                              height={20}
+                              width={20}
+                            />
+                          </TouchableOpacity>
+                        );
+                      }}
+                      fieldType={Picker.fieldTypes.filter}
+                      paddingH
+                      items={countries}
+                      pickerModalProps={{
+                        overlayBackgroundColor: BaseColor,
+                      }}
+                    />
+
+                    <InputText
+                      cursorColor={PrimaryColor}
+                      label="Phone"
+                      value={values.phone}
+                      onChangeText={handleChange('phone')}
+                      onBlur={handleBlur('phone')}
+                      placeholder="Enter your phone number"
+                      keyboardType="decimal-pad"
+                      containerStyle={tw`h-12 w-full border-l-0 rounded-l-none px-2 `}
+                      // svgFirstIcon={IconPhoneGray}
+                    />
+                  </View>
+                </View>
 
                 {errors.phone && touched.phone && (
                   <Text style={tw`text-red-500`}>{errors.phone}</Text>
@@ -196,55 +277,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 )}
               </View>
 
-              <View style={tw`bg-base px-[4%]`}>
-                <Picker
-                  onChange={value => {
-                    setValue(value as string);
-                  }}
-                  renderInput={() => (
-                    <InputTextWL
-                      cursorColor={PrimaryColor}
-                      editable={false}
-                      value={value}
-                      onPress={() => {
-                        setOpen(true);
-                      }}
-                      label="Are you interested in a free onboarding call?"
-                      placeholder="Yes"
-                      containerStyle={tw`h-12`}
-                      svgSecondIcon={IconDownArrayGray}
-                    />
-                  )}
-                  renderItem={(value, items) => {
-                    return (
-                      <View
-                        // onPress={() => setValue(value)}
-                        style={tw` py-2 mx-[4%] border-b border-b-gray-800`}>
-                        <Text
-                          style={tw`text-white100 font-RobotoMedium text-lg`}>
-                          {value}
-                        </Text>
-                      </View>
-                    );
-                  }}
-                  renderCustomDialogHeader={preps => {
-                    return (
-                      <TouchableOpacity
-                        onPress={preps.onCancel}
-                        style={tw`self-start py-3 px-4`}>
-                        <SvgXml xml={IconCloseGray} height={20} width={20} />
-                      </TouchableOpacity>
-                    );
-                  }}
-                  fieldType={Picker.fieldTypes.filter}
-                  paddingH
-                  items={items}
-                  pickerModalProps={{
-                    overlayBackgroundColor: BaseColor,
-                  }}
-                />
-              </View>
-
               {/* check box the Keep me logged In */}
               <View style={tw`px-[4%] `}>
                 <TouchableOpacity
@@ -264,13 +296,28 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   </Text>
                 </TouchableOpacity>
                 <TButton
+                  // disabled={
+                  //   !values.email ||
+                  //   !values.password ||
+                  //   !values.company ||
+                  //   !values.fullname ||
+                  //   !values.phone
+                  // }
                   onPress={() => {
-                    // handleSubmit
-                    navigation?.navigate('VerifyEmail');
+                    // handleSubmit();
+                    (navigation as any)?.replace('VerifyEmail');
                   }}
                   title="Sign Up"
-                  containerStyle={tw`w-full h-12 py-0 items-center bg-primary text-lg `}
-                  titleStyle={tw`text-white font-RobotoMedium`}
+                  containerStyle={tw`w-full h-12 py-0 items-center ${
+                    !values.email ||
+                    !values.password ||
+                    !values.company ||
+                    !values.fullname ||
+                    !values.phone
+                      ? 'bg-gray-500'
+                      : 'bg-primary'
+                  } text-lg `}
+                  titleStyle={tw`text-white font-RobotoMedium `}
                 />
               </View>
             </>
@@ -281,24 +328,22 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
         {/* <View style={tw`items-center gap-2 mt-6 px-4`}>
           <TouchableOpacity
             style={tw`self-end`}
-            onPress={() => navigation?.navigate('Forget')}>
+            onPress={() => (navigation as any)?.replace('Forget')}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
               Forgot password?
             </Text>
           </TouchableOpacity>
         </View> */}
         <View style={tw`flex-row justify-center mt-12 `}>
-          <TouchableOpacity style={tw`flex-row items-center`}>
+          <View style={tw`flex-row items-center`}>
             <Text style={tw`text-white400 font-NunitoSansLight`}>
               Already have an account?{' '}
             </Text>
-            <Text
-              onPress={() => navigation?.navigate('Login')}
-              style={tw`text-primary font-NunitoSansLight`}>
-              {' '}
-              Login
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => (navigation as any)?.replace('Login')}>
+              <Text style={tw`text-primary font-NunitoSansLight`}>Login</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>

@@ -1,4 +1,4 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCleanGray,
   IconCloseGray,
@@ -6,23 +6,23 @@ import {
   IconSmallPlusCyan,
   IconTimeGray,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DatePicker from 'react-native-date-picker';
 import {Formik} from 'formik';
+import moment from 'moment';
+import React from 'react';
+import DatePicker from 'react-native-date-picker';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
 import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   name: string;
@@ -233,15 +233,18 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
-                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
-                  title="+"
+                  disabled={
+                    values?.total === '' ||
+                    values?.total === '0' ||
+                    values?.total === values.check_in
+                  }
                   onPress={() => {
-                    if (!values.total) {
-                      handleChange('total')('1');
-                    } else {
-                      handleChange('total')(`${parseInt(values.total) + 1}`);
+                    if (parseInt(values.total) > 0) {
+                      handleChange('total')(`${parseInt(values.total) - 1}`);
                     }
                   }}
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
+                  title="-"
                 />
                 <InputText
                   placeholder="0"
@@ -258,18 +261,15 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                   touched={touched.total}
                 />
                 <TButton
-                  disabled={
-                    values?.total === '' ||
-                    values?.total === '0' ||
-                    values?.total === values.check_in
-                  }
+                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
+                  title="+"
                   onPress={() => {
-                    if (parseInt(values.total) > 0) {
-                      handleChange('total')(`${parseInt(values.total) - 1}`);
+                    if (!values.total) {
+                      handleChange('total')('1');
+                    } else {
+                      handleChange('total')(`${parseInt(values.total) + 1}`);
                     }
                   }}
-                  containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
-                  title="-"
                 />
               </View>
               <View>
@@ -413,20 +413,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                   />
                 </View>
               )} */}
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Added By"
-                  placeholder="Enter your name"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={'Alexzander'}
-                  editable={false}
-                  onChangeText={handleChange('added_by')}
-                  onBlur={handleBlur('added_by')}
-                  errorText={errors.added_by}
-                  touched={touched.added_by}
-                />
-              </View>
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -544,8 +531,8 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                       <IwtButton
                         svg={IconSmallPlusCyan}
                         title="Add new text field"
-                        titleStyle={tw`font-RobotoRegular text-primary text-xs h-8`}
-                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent`}
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs `}
+                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent justify-center h-4`}
                         onPress={() => {
                           // handleSubmit();
                         }}

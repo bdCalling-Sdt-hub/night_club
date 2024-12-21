@@ -1,12 +1,12 @@
 import {ScrollView, Text, View} from 'react-native';
 
-import {IconEmailGay} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
 import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {IconEmailGay} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 
 const ForgetPassword = ({navigation}: NavigProps<null>) => {
   return (
@@ -34,7 +34,7 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
                   cursorColor={PrimaryColor}
                   label="Email"
                   value={'arif@gmail.com'}
-                  placeholder="Enter new Password"
+                  placeholder="Enter New Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   svgFirstIcon={IconEmailGay}
@@ -46,7 +46,7 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
 
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('ResetPassword')}
+            onPress={() => (navigation as any)?.replace('ResetPassword')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}

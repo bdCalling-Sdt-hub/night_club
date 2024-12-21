@@ -1,15 +1,15 @@
 import {StyleSheet, View} from 'react-native';
 
-import Background from '../components/Background';
+import React from 'react';
 import FastImage from 'react-native-fast-image';
 import {NavigProps} from '../../interfaces/NaviProps';
-import React from 'react';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const LoadingSplash = ({navigation}: NavigProps<null>) => {
   // console.log(token);
   setTimeout(() => {
-    (navigation as any)?.navigate('Login');
+    (navigation as any)?.replace('Login');
   }, 1000);
   return (
     <Background style={tw`flex-1 bg-base`}>

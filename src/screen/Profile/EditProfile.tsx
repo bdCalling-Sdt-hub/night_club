@@ -1,18 +1,18 @@
 import {ScrollView, TouchableOpacity, View} from 'react-native';
 
-import AniImage from '../../components/animate/AniImage';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {IconImage} from '../../icons/Special.icon';
-import {IconPenCyan} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import AniImage from '../../components/animate/AniImage';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
-import {useMediaPicker} from '../../hook/useMediaPicker';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useMediaPicker} from '../../hook/useMediaPicker';
+import {IconImage} from '../../icons/Special.icon';
+import {IconPenCyan} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const EditProfile = ({navigation}: NavigProps<null>) => {
   const [image, setImage] = React.useState<any>(null);
@@ -47,7 +47,7 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
   return (
     <Background style={tw`flex-1 `}>
       <BackWithTitle title="Edit Profile" onPress={() => navigation.goBack()} />
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="always">
         <View>
           {/* <AniImage source={} /> */}
           <View
@@ -89,21 +89,28 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={tw`mt-10 h-12 px-4`}>
+
+        <View style={tw` h-12 px-4`}>
           <InputTextWL
             label="Full Name"
             containerStyle={tw`h-12 border-0`}
             placeholder="Enter your Full Name"
           />
         </View>
+
+        <View style={tw`px-4 my-12 gap-3 `}>
+          <TButton
+            title="Update"
+            containerStyle={tw``}
+            onPress={() => navigation?.goBack()}
+          />
+          <TButton
+            title="Cancel"
+            containerStyle={tw`bg-transparent border border-red-800`}
+            onPress={() => navigation?.goBack()}
+          />
+        </View>
       </ScrollView>
-      <View style={tw`px-4 my-2 gap-3 `}>
-        <TButton title="Update" containerStyle={tw``} />
-        <TButton
-          title="Cancel"
-          containerStyle={tw`bg-transparent border border-red-800`}
-        />
-      </View>
     </Background>
   );
 };

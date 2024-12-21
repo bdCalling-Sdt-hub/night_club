@@ -1,19 +1,19 @@
-import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 import React, {useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
+import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 
+import Clipboard from '@react-native-clipboard/clipboard';
+import {SvgXml} from 'react-native-svg';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Clipboard from '@react-native-clipboard/clipboard';
-import EventD from './event_d.json';
 import IButton from '../../components/buttons/IButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import {height} from '../../utils/utils';
-import tw from '../../lib/tailwind';
 import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {height} from '../../utils/utils';
+import Background from '../components/Background';
+import EventD from './event_d.json';
 
 const VenuesDetails = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
@@ -56,7 +56,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         containerStyle={tw`justify-between`}
       />
 
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="always">
         {/*================= View or image part ==================  */}
 
         <View style={tw`mx-4 my-2`}>
@@ -76,7 +76,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
             <SvgXml width={20} height={20} xml={IconMultiUserCyan} />
           </View>
           <Text style={tw`text-white50 text-base font-RobotoBold`}>
-            Current Guest on Guestlists
+            Total RSVP guests
           </Text>
           <Text style={tw`text-white50 text-base font-RobotoBold`}>
             {EventD.guestlist.current_guest_count}
@@ -92,7 +92,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         <View style={tw`px-4 gap-5 mt-5`}>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Date:
+              Date :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.date}
@@ -100,7 +100,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Start time:
+              Start time :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.start_time}
@@ -108,7 +108,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              End time:
+              End time :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.end_time}
@@ -116,7 +116,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Capacity:
+              Capacity :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.capacity}
@@ -124,7 +124,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Entry fees:
+              Entry fee :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.entry_fees}
@@ -132,7 +132,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Booked DJs
+              Booked DJs :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.booked_djs}
@@ -140,7 +140,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Free entry
+              Free entry :
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.guestlist.free_entries}
@@ -152,7 +152,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         <View style={tw`px-4 py-10 gap-5`}>
           <TButton
             onPress={() => {
-              navigation?.navigate('GuestList');
+              navigation?.navigate('VenueGuestList');
             }}
             title="View Guest List"
             titleStyle={tw`text-base text-white50 font-RobotoBold`}

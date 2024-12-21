@@ -1,17 +1,19 @@
 import {ScrollView, Text, View} from 'react-native';
 
+import React from 'react';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
 import {NavigProps} from '../../interfaces/NaviProps';
-import React from 'react';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const News = ({navigation}: NavigProps<null>) => {
   return (
     <Background style={tw`flex-1 `}>
       <BackWithTitle title="News" onPress={() => navigation.goBack()} />
-      <ScrollView contentContainerStyle={tw`gap-10`}>
+      <ScrollView
+        contentContainerStyle={tw`gap-10`}
+        keyboardShouldPersistTaps="always">
         <View style={tw`px-4 gap-2`}>
           <AniImage
             source={{

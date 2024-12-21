@@ -1,15 +1,15 @@
-import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 
-import Background from '../components/Background';
-import {Checkbox} from 'react-native-ui-lib';
 import {Formik} from 'formik';
+import React from 'react';
+import {Checkbox} from 'react-native-ui-lib';
+import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
-import React from 'react';
-import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 interface ISingInForm {
   email: string;
@@ -22,7 +22,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
 
   const onSubmitHandler = (data: ISingInForm) => {
     console.log(data);
-    navigation?.navigate('HomeRoutes');
+    (navigation as any)?.replace('HomeRoutes');
   };
 
   return (
@@ -33,17 +33,14 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         keyboardShouldPersistTaps="always">
         <View style={tw`px-[4%] mt-[15%]`}>
           <Text style={tw`text-3xl text-white font-RobotoBlack `}>
-            Welcome back!
+            Welcome to Nite
+            {/* 🌙 */}
           </Text>
         </View>
         {/*================= login title and subtitle ================= */}
         <View style={tw`px-[4%] gap-3`}>
           <Text style={tw`text-[24px] text-white100 font-RobotoBlack `}>
             Log In.
-          </Text>
-
-          <Text style={tw`text-sm text-black60 font-RobotoMedium`}>
-            Log In with your data that you entered during your registration
           </Text>
         </View>
         {/*================= inputs fields email or password  ================= */}
@@ -63,8 +60,8 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               errors.email = 'Invalid email address';
             }
             // check or validity of password 6 digit
-            if (values.password.length < 6) {
-              errors.password = 'Password must be at least 6 characters';
+            if (values.password.length < 8) {
+              errors.password = 'Password must be at least 8 characters';
             }
             if (!values.password) {
               errors.password = 'Required';
@@ -88,7 +85,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   value={values.email}
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
-                  placeholder="Enter you email"
+                  placeholder="Enter Your Email"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   svgFirstIcon={IconEmailGay}
@@ -139,7 +136,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                 <TButton
                   onPress={() => {
                     // handleSubmit()
-                    navigation?.navigate('Home');
+                    (navigation as any)?.replace('Home');
                   }}
                   title="Log in"
                   containerStyle={tw`w-full  h-12 items-center py-0 mt-3 rounded-lg bg-primary text-lg `}
@@ -154,25 +151,22 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         <View style={tw`items-center gap-2 mt-6 px-4`}>
           <TouchableOpacity
             style={tw`self-end`}
-            onPress={() => navigation?.navigate('ForgetPassword')}>
+            onPress={() => (navigation as any)?.replace('ForgetPassword')}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
               Forgot password?
             </Text>
           </TouchableOpacity>
         </View>
         <View style={tw`flex-row justify-center mt-12 `}>
-          <TouchableOpacity style={tw`flex-row items-center`}>
+          <View style={tw`flex-row items-center`}>
             <Text style={tw`text-black60 font-NunitoSansLight`}>
               Don’t have an account?{' '}
             </Text>
-            <Text
-              onPress={() => {
-                navigation?.navigate('SignUp');
-              }}
-              style={tw`text-primary font-NunitoSansLight`}>
-              Sign Up
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => (navigation as any)?.replace('SignUp')}>
+              <Text style={tw`text-primary font-RobotoBold`}>Sign up</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </Background>

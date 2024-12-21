@@ -31,10 +31,11 @@ interface createProps {
   end_time: string;
   capacity: string;
   entry_fee: string;
+  free_entry: string;
   resident_dj: string;
 }
 
-const EventEdit = ({navigation}: NavigProps<null>) => {
+const EventCreate = ({navigation}: NavigProps<null>) => {
   const handleImageUpdate = async () => {
     // console.log(values);
 
@@ -87,7 +88,10 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit" onPress={() => navigation?.goBack()} />
+      <BackWithTitle
+        title="Create Event"
+        onPress={() => navigation?.goBack()}
+      />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -356,4 +360,4 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default EventEdit;
+export default EventCreate;

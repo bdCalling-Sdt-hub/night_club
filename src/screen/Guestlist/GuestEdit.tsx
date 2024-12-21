@@ -26,7 +26,8 @@ import Background from '../components/Background';
 
 interface createProps {
   name: string;
-  people: string;
+  total: string;
+  check_in: string;
   entry_fee: string;
   free_entry: string;
   free_entry_time: string;
@@ -36,7 +37,7 @@ interface createProps {
   tag: string;
 }
 
-const AddNewGuest = ({navigation}: NavigProps<null>) => {
+const GuestEdit = ({navigation}: NavigProps<null>) => {
   const [extraFields, setExtraFields] = React.useState({
     note: '',
     email: '',
@@ -73,8 +74,8 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
     if (!values.name) {
       errors.name = 'Name is required';
     }
-    if (!values.people) {
-      errors.people = 'Number of people is required';
+    if (!values.total) {
+      errors.total = 'Number of total is required';
     }
     if (!values.entry_fee) {
       errors.entry_fee = 'Entry fee is required';
@@ -101,10 +102,25 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
     return errors;
   };
 
+  const handleNewTag = () => {
+    if (!newTag) return;
+    setTags([...tags, {label: newTag, value: newTag}]);
+    setNewTag('');
+  };
+
+  const handleGuestList = () => {
+    if (!guestList) return;
+    setGuestListAvailable([
+      ...guestListAvailable,
+      {label: guestList, value: guestList},
+    ]);
+    setGuestList('');
+  };
+
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle
-        title="Add New Guest"
+        title="Guest Details"
         onPress={() => navigation?.goBack()}
       />
       <ScrollView
@@ -112,16 +128,15 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
           initialValues={{
-            name: '',
-            people: '',
-            entry_fee: '',
-            free_entry: '',
+            name: 'AlexZender',
+            total: '50',
+            entry_fee: '100',
+            free_entry: '6',
             free_entry_time: '',
-            email: '',
-            note: '',
-            added_by: '',
-            guest_list: '',
-            tag: '',
+            check_in: '10',
+            added_by: 'ALex Zender',
+            guest_list: 'Guest List 1',
+            tag: 'VIP',
           }}
           onSubmit={values => {
             console.log(values);
@@ -209,18 +224,23 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
                 Amount of people{' '}
-                {errors.people && touched.people && (
+                {errors.total && touched.total && (
                   <Text style={[tw`text-red-500 text-[10px] `]}>
                     {' '}
-                    {errors.people}
+                    {errors.total}
                   </Text>
                 )}
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
+                  disabled={
+                    values?.total === '' ||
+                    values?.total === '0' ||
+                    values?.total === values.check_in
+                  }
                   onPress={() => {
-                    if (parseInt(values.people) > 0) {
-                      handleChange('people')(`${parseInt(values.people) - 1}`);
+                    if (parseInt(values.total) > 0) {
+                      handleChange('total')(`${parseInt(values.total) - 1}`);
                     }
                   }}
                   containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
@@ -229,28 +249,42 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                 <InputText
                   placeholder="0"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.people}
+                  value={values.total}
+                  editable={false}
                   fieldStyle={tw`text-center`}
                   keyboardType="numeric"
                   cursorColor={PrimaryColor}
-                  onChangeText={handleChange('people')}
-                  onBlur={handleBlur('people')}
+                  onChangeText={handleChange('total')}
+                  onBlur={handleBlur('total')}
                   textAlign="center"
-                  errorText={errors.people}
-                  touched={touched.people}
+                  errorText={errors.total}
+                  touched={touched.total}
                 />
                 <TButton
                   containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="+"
                   onPress={() => {
-                    if (!values.people) {
-                      handleChange('people')('1');
+                    if (!values.total) {
+                      handleChange('total')('1');
                     } else {
-                      handleChange('people')(`${parseInt(values.people) + 1}`);
+                      handleChange('total')(`${parseInt(values.total) + 1}`);
                     }
                   }}
                 />
               </View>
+              {/* <View>
+                <TButton
+                  onPress={() => {
+                    handleChange('check_in')(
+                      `${parseInt(values.check_in) + 1}`,
+                    );
+                  }}
+                  disabled={values?.check_in === values?.total}
+                  containerStyle={tw`h-12 bg-transparent border border-green-500 w-full rounded-lg`}
+                  titleStyle={tw`text-green-500 font-RobotoMedium text-base`}
+                  title={`Checked In ${values?.check_in}/${values?.total}`}
+                />
+              </View> */}
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -284,7 +318,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
-                  label="Free entry time (optional)"
+                  label="Free entry time"
                   editable={false}
                   onPress={() =>
                     setOpen({
@@ -292,7 +326,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       free_entry_end_time: false,
                     })
                   }
-                  placeholder="Enter free entry time"
+                  placeholder="Default Stop"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={
                     values.free_entry_time
@@ -379,6 +413,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   />
                 </View>
               )} */}
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -496,8 +531,8 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       <IwtButton
                         svg={IconSmallPlusCyan}
                         title="Add new text field"
-                        titleStyle={tw`font-RobotoRegular text-primary text-xs shadow-none border-0`}
-                        containerStyle={tw`mt-5  p-0 rounded-lg w-full h-8 items-center bg-transparent`}
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs `}
+                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent justify-center h-4`}
                         onPress={() => {
                           // handleSubmit();
                         }}
@@ -570,4 +605,4 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default AddNewGuest;
+export default GuestEdit;
