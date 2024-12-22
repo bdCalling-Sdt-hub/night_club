@@ -105,7 +105,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         <View style={tw`px-4 gap-5 mt-5`}>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
-              Nightclub Manager :
+              Nightclub Manager:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
               {venuesD.venues_details.nightclub_manager}
@@ -127,7 +127,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
-              Dancefloors :
+              Dancefloors:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
               {venuesD.venues_details.bars}

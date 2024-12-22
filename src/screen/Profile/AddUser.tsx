@@ -1,10 +1,9 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ScrollView, Text, View} from 'react-native';
 
 import {Formik} from 'formik';
 import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -144,22 +143,15 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                   />
                 </View>
                 <View style={tw`mt-2`}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setOptionSendMail({
-                        sendMail: true,
-                        setPass: false,
-                      });
-                    }}
-                    style={tw`flex-row gap-3 items-center  mb-4`}>
+                  <View style={tw`flex-row gap-3 items-center  mb-4`}>
                     <Checkbox
                       borderRadius={2}
                       size={15}
                       iconColor="#fff"
                       value={optionSendMail?.sendMail}
-                      onValueChange={() => {
+                      onValueChange={value => {
                         setOptionSendMail({
-                          sendMail: true,
+                          sendMail: value,
                           setPass: false,
                         });
                       }}
@@ -169,24 +161,17 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                     <Text style={tw`text-white60 font-RobotoBold text-base`}>
                       Send invitation to email
                     </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setOptionSendMail({
-                        sendMail: false,
-                        setPass: true,
-                      });
-                    }}
-                    style={tw`flex-row gap-3 items-center  mb-2`}>
+                  </View>
+                  <View style={tw`flex-row gap-3 items-center  mb-2`}>
                     <Checkbox
                       borderRadius={2}
                       size={15}
                       iconColor="#fff"
                       value={optionSendMail?.setPass}
-                      onValueChange={() => {
+                      onValueChange={value => {
                         setOptionSendMail({
-                          sendMail: true,
-                          setPass: false,
+                          sendMail: false,
+                          setPass: value,
                         });
                       }}
                       style={tw``}
@@ -195,7 +180,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                     <Text style={tw`text-white60 font-RobotoBold text-base`}>
                       Set password for User
                     </Text>
-                  </TouchableOpacity>
+                  </View>
                 </View>
                 {optionSendMail?.setPass && (
                   <View>
@@ -208,14 +193,14 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                 )}
               </View>
 
-              <View style={tw`px-4  mt-12 gap-5 `}>
+              {/* <View style={tw`px-4  mt-12 gap-5 `}>
                 <TButton title="Save" onPress={handleSubmit} />
                 <TButton
                   title="Cancel"
                   onPress={() => navigation?.goBack()}
                   containerStyle={tw`bg-transparent border border-red-800`}
                 />
-              </View>
+              </View> */}
             </View>
           )}
         </Formik>

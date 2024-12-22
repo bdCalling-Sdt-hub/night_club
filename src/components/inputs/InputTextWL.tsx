@@ -5,7 +5,7 @@ import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import tw from '../../lib/tailwind';
 
-interface InputTextProps
+export interface InputTextProps
   extends Omit<TextFieldProps, 'containerStyle' | 'fieldStyle'> {
   onPress?: () => void;
   onSvgPress?: () => void;

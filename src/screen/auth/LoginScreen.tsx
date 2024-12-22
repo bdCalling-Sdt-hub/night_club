@@ -22,7 +22,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
 
   const onSubmitHandler = (data: ISingInForm) => {
     console.log(data);
-    (navigation as any)?.replace('HomeRoutes');
+    (navigation as any)?.replace('Home');
   };
 
   return (
@@ -99,7 +99,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Password"
-                  onPress={() => setShowPass(!showPass)}
+                  onSvgPress={() => setShowPass(!showPass)}
                   value={values.password}
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
@@ -151,7 +151,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         <View style={tw`items-center gap-2 mt-6 px-4`}>
           <TouchableOpacity
             style={tw`self-end`}
-            onPress={() => (navigation as any)?.replace('ForgetPassword')}>
+            onPress={() => navigation.navigate('ForgetPassword')}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
               Forgot password?
             </Text>
@@ -162,8 +162,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
             <Text style={tw`text-black60 font-NunitoSansLight`}>
               Don’t have an account?{' '}
             </Text>
-            <TouchableOpacity
-              onPress={() => (navigation as any)?.replace('SignUp')}>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
               <Text style={tw`text-primary font-RobotoBold`}>Sign up</Text>
             </TouchableOpacity>
           </View>

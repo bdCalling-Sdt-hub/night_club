@@ -322,7 +322,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Resident dj"
-                  placeholder="Enter dance floors count"
+                  placeholder="Enter Resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.resident_dj}
                   onChangeText={handleChange('resident_dj')}

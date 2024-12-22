@@ -92,7 +92,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         <View style={tw`px-4 gap-5 mt-5`}>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Date :
+              Date:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.date}
@@ -100,7 +100,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Start time :
+              Start time:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.start_time}
@@ -108,7 +108,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              End time :
+              End time:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.end_time}
@@ -116,7 +116,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Capacity :
+              Capacity:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.capacity}
@@ -124,7 +124,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Entry fee :
+              Entry fee:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.entry_fees}
@@ -132,7 +132,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Booked DJs :
+              Booked DJs:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.booked_djs}
@@ -140,7 +140,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
-              Free entry :
+              Free entry:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
               {EventD.guestlist.free_entries}

@@ -156,7 +156,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
 
                 <InputTextWL
                   cursorColor={PrimaryColor}
-                  label="Company Name"
+                  label="Company Name, if applicable"
                   value={values.company}
                   onChangeText={handleChange('company')}
                   onBlur={handleBlur('company')}
@@ -169,7 +169,8 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 )}
 
                 <View>
-                  <Text style={tw`text-white100 font-RobotoMedium text-sm`}>
+                  <Text
+                    style={tw`text-white100 font-RobotoMedium text-sm px-[2%]`}>
                     Phone
                   </Text>
                   <View style={tw`bg-base w-full my-2 flex-row items-end `}>
@@ -214,7 +215,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                               placeholderTextColor={'#B0B0B0'}
                               onChangeText={preps.onSearchChange}
                               placeholder="Search"
-                              containerStyle={tw`h-12 w-full  border-0 rounded-none bg-base border-b border-[#D1D1D1]`}
+                              containerStyle={tw`h-12 w-full  border-0 rounded-none bg-base border-b border-gray-800`}
                             />
                           </View>
                         );
@@ -265,7 +266,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   value={values.password}
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
-                  onPress={() => setShowPass(!showPass)}
+                  onSvgPress={() => setShowPass(!showPass)}
                   placeholder="Enter Your Password"
                   containerStyle={tw`h-12`}
                   secureTextEntry={!showPass}
@@ -296,16 +297,16 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   </Text>
                 </TouchableOpacity>
                 <TButton
-                  // disabled={
-                  //   !values.email ||
-                  //   !values.password ||
-                  //   !values.company ||
-                  //   !values.fullname ||
-                  //   !values.phone
-                  // }
+                  disabled={
+                    !values.email ||
+                    !values.password ||
+                    !values.company ||
+                    !values.fullname ||
+                    !values.phone
+                  }
                   onPress={() => {
-                    // handleSubmit();
-                    (navigation as any)?.replace('VerifyEmail');
+                    handleSubmit();
+                    // (navigation as any)?.replace('VerifyEmail');
                   }}
                   title="Sign Up"
                   containerStyle={tw`w-full h-12 py-0 items-center ${
@@ -339,8 +340,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             <Text style={tw`text-white400 font-NunitoSansLight`}>
               Already have an account?{' '}
             </Text>
-            <TouchableOpacity
-              onPress={() => (navigation as any)?.replace('Login')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={tw`text-primary font-NunitoSansLight`}>Login</Text>
             </TouchableOpacity>
           </View>

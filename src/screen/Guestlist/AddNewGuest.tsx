@@ -1,10 +1,8 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
-  IconCleanGray,
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
-  IconTimeGray,
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
@@ -15,9 +13,9 @@ import DatePicker from 'react-native-date-picker';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -280,46 +278,26 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   keyboardType="decimal-pad"
                 />
               </View>
-
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Free entry time (optional)"
-                  editable={false}
-                  onPress={() =>
-                    setOpen({
-                      free_entry_time: true,
-                      free_entry_end_time: false,
-                    })
-                  }
-                  placeholder="Enter free entry time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={
-                    values.free_entry_time
-                      ? 'Open to free entry at ' +
-                        moment(values.free_entry_time).format('hh:mm A')
-                      : values.free_entry_time
-                  }
-                  onChangeText={handleChange('free_entry_time')}
-                  onBlur={handleBlur('free_entry_time')}
-                  errorText={errors.free_entry_time}
-                  touched={touched.free_entry_time}
-                  svgSecondIcon={!values.free_entry_time && IconTimeGray}
-                  Component2={
-                    <>
-                      {values.free_entry_time && (
-                        <IButton
-                          onPress={() => {
-                            handleChange('free_entry_time')('');
-                          }}
-                          svg={IconCleanGray}
-                          containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   shadow-none`}
-                        />
-                      )}
-                    </>
-                  }
-                />
-              </View>
+              <DateTimePicker
+                value={
+                  values.free_entry_time
+                    ? moment(values.free_entry_time).format('hh:mm A')
+                    : ''
+                }
+                label="Free entry time (optional)"
+                placeholder="Enter free entry time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('free_entry_time')}
+                onBlur={handleBlur('free_entry_time')}
+                errorText={errors.free_entry_time}
+                touched={touched.free_entry_time}
+                onClear={() => {
+                  handleChange('free_entry_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('free_entry_time')(date);
+                }}
+              />
 
               <DatePicker
                 style={tw`border-0 h-12 rounded-lg bg-transparent`}
@@ -333,7 +311,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                 onConfirm={(currentData: any) => {
                   if (currentData) {
                     // Format the date with time, assuming you want to specify the time as well.
-                    console.log(currentData.toISOString());
+                    // console.log(currentData.toISOString());
                     if (open.free_entry_time) {
                       handleChange('free_entry_time')(
                         currentData.toISOString(),

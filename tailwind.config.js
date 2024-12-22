@@ -56,8 +56,6 @@ module.exports = {
       },
 
       colors: {
-        text14: '14px',
-        text16: '16px',
         primary40: 'rgba(153, 204, 223, 0.3)',
         primary50: 'rgba(85, 170, 202, 0.2)',
         primary800: 'rgba(9, 94, 126, 1)',

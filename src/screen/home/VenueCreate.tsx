@@ -1,10 +1,12 @@
 import {ScrollView, Text, View} from 'react-native';
 
 import {Formik} from 'formik';
+import moment from 'moment';
 import React from 'react';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {IconPlusGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -189,32 +191,48 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   touched={touched.location}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Opening time"
-                  placeholder="Enter opening time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.openingTime}
-                  onChangeText={handleChange('openingTime')}
-                  onBlur={handleBlur('openingTime')}
-                  errorText={errors.openingTime}
-                  touched={touched.openingTime}
-                />
-              </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Closing time"
-                  placeholder="Enter closing time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.closingTime}
-                  onChangeText={handleChange('closingTime')}
-                  onBlur={handleBlur('closingTime')}
-                  errorText={errors.closingTime}
-                  touched={touched.closingTime}
-                />
-              </View>
+              <DateTimePicker
+                cursorColor={PrimaryColor}
+                label="Opening time"
+                placeholder="Enter opening time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                value={
+                  values.openingTime
+                    ? moment(values.openingTime).format('hh:mm A')
+                    : ''
+                }
+                onChangeText={handleChange('openingTime')}
+                onBlur={handleBlur('openingTime')}
+                errorText={errors.openingTime}
+                touched={touched.openingTime}
+                onClear={() => {
+                  handleChange('openingTime')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('openingTime')(date);
+                }}
+              />
+              <DateTimePicker
+                value={
+                  values.closingTime
+                    ? moment(values.closingTime).format('hh:mm A')
+                    : ''
+                }
+                label="Closing time"
+                placeholder="Enter closing time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('closingTime')}
+                onBlur={handleBlur('closingTime')}
+                errorText={errors.closingTime}
+                touched={touched.closingTime}
+                onClear={() => {
+                  handleChange('closingTime')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('closingTime')(date);
+                }}
+              />
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -222,6 +240,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   placeholder="Enter capacity"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.capacity}
+                  keyboardType="numeric"
                   onChangeText={handleChange('capacity')}
                   onBlur={handleBlur('capacity')}
                   errorText={errors.capacity}
@@ -237,6 +256,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   value={values.bars}
                   onChangeText={handleChange('bars')}
                   onBlur={handleBlur('bars')}
+                  keyboardType="numeric"
                   errorText={errors.bars}
                   touched={touched.bars}
                 />
@@ -248,6 +268,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   placeholder="Enter dance floors count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.danceFloor}
+                  keyboardType="numeric"
                   onChangeText={handleChange('danceFloor')}
                   onBlur={handleBlur('danceFloor')}
                   errorText={errors.danceFloor}
@@ -258,7 +279,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Resident dj"
-                  placeholder="Enter dance floors count"
+                  placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.residentDj}
                   onChangeText={handleChange('residentDj')}
@@ -269,18 +290,12 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <TButton
-                  title="Update"
+                  title="Create"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={() => {
                     handleSubmit();
                   }}
-                />
-                <TButton
-                  title="Delete"
-                  titleStyle={tw`font-RobotoBold text-red-500 text-base`}
-                  containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
-                  onPress={() => navigation?.goBack()}
                 />
               </View>
             </View>

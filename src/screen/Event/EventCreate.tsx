@@ -7,6 +7,7 @@ import {
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
@@ -14,6 +15,7 @@ import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -36,6 +38,11 @@ interface createProps {
 }
 
 const EventCreate = ({navigation}: NavigProps<null>) => {
+  const [open, setOpen] = React.useState({
+    openTime: false,
+    closeTime: false,
+  });
+
   const handleImageUpdate = async () => {
     // console.log(values);
 
@@ -229,7 +236,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Event name"
-                  placeholder="Enter Event full name"
+                  placeholder="Enter event full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.name}
                   onChangeText={handleChange('name')}
@@ -242,7 +249,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Event description"
-                  placeholder="Describe Event information"
+                  placeholder="Describe event information"
                   multiline
                   containerStyle={tw`border-0 h-24 rounded-lg`}
                   textAlignVertical="top"
@@ -258,7 +265,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Event date"
-                  placeholder="Enter Event date name"
+                  placeholder="Enter event date name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.date}
                   onChangeText={handleChange('date')}
@@ -267,32 +274,47 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   touched={touched.date}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Opening time"
-                  placeholder="Enter opening time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.start_time}
-                  onChangeText={handleChange('start_time')}
-                  onBlur={handleBlur('start_time')}
-                  errorText={errors.start_time}
-                  touched={touched.start_time}
-                />
-              </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Closing time"
-                  placeholder="Enter closing time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.end_time}
-                  onChangeText={handleChange('end_time')}
-                  onBlur={handleBlur('end_time')}
-                  errorText={errors.end_time}
-                  touched={touched.end_time}
-                />
-              </View>
+              <DateTimePicker
+                value={
+                  values.start_time
+                    ? moment(values.start_time).format('hh:mm A')
+                    : ''
+                }
+                label="Opening time"
+                placeholder="Please select open time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('start_time')}
+                onBlur={handleBlur('start_time')}
+                errorText={errors.start_time}
+                touched={touched.start_time}
+                onClear={() => {
+                  handleChange('start_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('start_time')(date);
+                }}
+              />
+              <DateTimePicker
+                value={
+                  values.end_time
+                    ? moment(values.end_time).format('hh:mm A')
+                    : ''
+                }
+                label="Closing time"
+                placeholder="Please select close time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('end_time')}
+                onBlur={handleBlur('end_time')}
+                errorText={errors.end_time}
+                touched={touched.end_time}
+                onClear={() => {
+                  handleChange('end_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('end_time')(date);
+                }}
+              />
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -326,7 +348,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Resident dj"
-                  placeholder="Enter dance floors count"
+                  placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.resident_dj}
                   onChangeText={handleChange('resident_dj')}
