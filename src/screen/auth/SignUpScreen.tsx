@@ -17,6 +17,10 @@ import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {createUser} from '../../firebase/useDatabase';
+import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import countries from './countries.json';
@@ -29,16 +33,35 @@ interface ISingUpForm {
 }
 
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
+  const {closeToast, showToast} = useToast();
+  const {setUser, user} = useAuth();
+  const {SignUpWithEmailPass} = useFireAuth();
+
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [open, setOpen] = useState(false);
-  const [phoneCode, setPhoneCode] = useState(null);
-  const onSubmitHandler = (data: ISingUpForm) => {
+  const [phoneCode, setPhoneCode] = useState('+46');
+  const onSubmitHandler = async (data: ISingUpForm) => {
     if (!data.phone.startsWith('+')) {
       data.phone = phoneCode + data.phone;
     }
-    console.log(data);
-    (navigation as any)?.replace('VerifyEmail');
+    // console.log(data);
+    try {
+      const res = await SignUpWithEmailPass(data.email, data.password);
+      if (res) {
+        if (res?.user?.email) {
+          createUser(res.user?.uid, data).then(res => {
+            console.log('user created', res);
+          });
+        }
+        // setUser(res.user);
+        console.log(res);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    // (navigation as any)?.replace('VerifyEmail');
   };
 
   return (

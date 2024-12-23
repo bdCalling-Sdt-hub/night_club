@@ -10,7 +10,27 @@ export const useFireAuth = () => {
       throw error;
     }
   };
-  //   display imge update
+  // ================  sign up with email and password ===================
+  const SignUpWithEmailPass = async (email: string, password: string) => {
+    try {
+      const res = await auth().createUserWithEmailAndPassword(email, password);
+      return res;
+    } catch (error) {
+      throw error;
+    }
+  };
+  // ================  update user ===================
+  const UpdateUser = async (name: string, image: string) => {
+    try {
+      await auth().currentUser?.updateProfile({
+        displayName: name,
+        photoURL: image,
+      });
+    } catch (error) {
+      throw error;
+    }
+  };
+  //===============   display imge update ==================
   const displayImage = async (image: string) => {
     try {
       await auth().currentUser?.updateProfile({
@@ -21,7 +41,7 @@ export const useFireAuth = () => {
     }
   };
 
-  // user name udpate
+  //================ user name udpate ======================
   const updateUserName = async (name: string) => {
     try {
       await auth().currentUser?.updateProfile({
@@ -32,7 +52,7 @@ export const useFireAuth = () => {
     }
   };
 
-  // logout
+  //====================== logout =================
   const SignOut = async () => {
     try {
       await auth().signOut();
@@ -41,5 +61,12 @@ export const useFireAuth = () => {
     }
   };
 
-  return {SignInWithEmailPass, SignOut, displayImage, updateUserName};
+  return {
+    SignInWithEmailPass,
+    SignOut,
+    displayImage,
+    updateUserName,
+    SignUpWithEmailPass,
+    UpdateUser,
+  };
 };

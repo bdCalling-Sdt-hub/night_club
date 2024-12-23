@@ -7,6 +7,7 @@ import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {uploadFileToFirebase} from '../../firebase/updateMedia';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {IconImage} from '../../icons/Special.icon';
 import {IconPenCyan} from '../../icons/icons';
@@ -40,9 +41,17 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
     }
   };
 
-  const handleUpdate = () => {};
+  const handleUpdate = async () => {
+    try {
+      const url = await uploadFileToFirebase(image);
+      console.log(url);
+      setImage({uri: url});
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  console.log(image);
+  // console.log(image);
 
   return (
     <Background style={tw`flex-1 `}>
@@ -102,7 +111,7 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
           <TButton
             title="Update"
             containerStyle={tw``}
-            onPress={() => navigation?.goBack()}
+            onPress={() => handleUpdate()}
           />
           <TButton
             title="Cancel"

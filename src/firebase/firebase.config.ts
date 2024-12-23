@@ -16,18 +16,3 @@
 // const app = initializeApp(firebaseConfig);
 
 // Get user document with an ID of ABC
-import firestore from '@react-native-firebase/firestore';
-
-const usersCollection = firestore().collection('Users');
-
-export const getUser = async (uid: string) => {
-  const user = await usersCollection.doc(uid).get();
-  if (user.exists) {
-    return user.data();
-  } else {
-    return null;
-  }
-};
-export const createUser = async (uid: string, data: any) => {
-  await usersCollection.doc(uid).set(data);
-};
