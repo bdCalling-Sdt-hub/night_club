@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>351876329586-ejsdcg3f97jmsvgfjoud0elu3otqp75s.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.351876329586-ejsdcg3f97jmsvgfjoud0elu3otqp75s</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>351876329586-blbs2cmanm5ltlk8fg1n3igjvc2jmtqg.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCFPGpPEfVuS09UW4YCTcpNnnWK0adlQa4</string>
+	<key>GCM_SENDER_ID</key>
+	<string>351876329586</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>org.reactjs.native.example.night-club</string>
+	<key>PROJECT_ID</key>
+	<string>pushnotifiation-d1bcb</string>
+	<key>STORAGE_BUCKET</key>
+	<string>pushnotifiation-d1bcb.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:351876329586:ios:ca7174c3a07dfb6d3a52eb</string>
+	<key>DATABASE_URL</key>
+	<string>https://pushnotifiation-d1bcb-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
