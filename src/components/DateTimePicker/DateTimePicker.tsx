@@ -38,7 +38,7 @@ const DateTimePicker = ({
                 <IButton
                   onPress={onClear}
                   svg={IconCleanGray}
-                  containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   shadow-none`}
+                  containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   `}
                 />
               )}
             </>

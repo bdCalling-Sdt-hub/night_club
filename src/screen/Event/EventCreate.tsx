@@ -149,7 +149,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                           handleChange('image')('');
                         }}
                         svg={IconCloseGray}
-                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full shadow-none justify-center items-center`}
+                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full  justify-center items-center`}
                       />
                     </View>
                   ) : (
@@ -161,7 +161,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                         // handleBlur('image');
                         image && handleChange('image')(image?.uri);
                       }}
-                      containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
+                      containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
                       titleStyle={tw`text-white font-RobotoBold text-sm`}
                       title="Upload image"
@@ -176,9 +176,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.venue}
                   onChange={handleChange('venue')}
                   onBlur={handleBlur('venue')}
+                  shouldRasterizeIOS
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
@@ -213,7 +215,6 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     );
                   }}
                   fieldType={Picker.fieldTypes.filter}
-                  paddingH
                   items={[
                     {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
                     {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},

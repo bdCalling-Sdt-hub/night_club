@@ -65,11 +65,12 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
             <IwtButton
               title="Filter"
               svg={IconFilterGray}
-              containerStyle={tw`p-0 bg-transparent items-center shadow-none  w-20`}
+              containerStyle={tw`p-0 bg-transparent items-center   w-20`}
             />
 
             <View style={tw`px-4 flex-row items-center gap-2`}>
               <Picker
+                useSafeArea
                 value={selectVenue}
                 onChange={text => setSelectVenue(text)}
                 renderInput={preps => {
@@ -139,6 +140,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 }}
               />
               <Picker
+                useSafeArea
                 value={selectEvent}
                 onChange={text => setSelectEvent(text)}
                 renderInput={preps => {

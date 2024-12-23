@@ -1,25 +1,25 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
 import {Formik} from 'formik';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
+import {Picker} from 'react-native-ui-lib';
 import Video from 'react-native-video';
-import tw from '../../lib/tailwind';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useMediaPicker} from '../../hook/useMediaPicker';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   name: string;
@@ -166,7 +166,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                           handleChange('video')('');
                         }}
                         svg={IconCloseGray}
-                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full shadow-none justify-center items-center`}
+                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full  justify-center items-center`}
                       />
                     </View>
                   ) : (
@@ -178,7 +178,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                         // handleBlur('video');
                         video && handleChange('video')(video?.uri);
                       }}
-                      containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
+                      containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
                       titleStyle={tw`text-white font-RobotoBold text-sm`}
                       title="Upload video"
@@ -210,7 +210,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                           handleChange('image')('');
                         }}
                         svg={IconCloseGray}
-                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full shadow-none justify-center items-center`}
+                        containerStyle={tw`absolute  top-0 right-0 w-8 h-8 bg-secondary rounded-full  justify-center items-center`}
                       />
                     </View>
                   ) : (
@@ -222,7 +222,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                         // handleBlur('image');
                         image && handleChange('image')(image?.uri);
                       }}
-                      containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
+                      containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
                       titleStyle={tw`text-white font-RobotoBold text-sm`}
                       title="Upload image"
@@ -361,6 +361,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.nightclubManager}
                   onChange={handleChange('nightclubManager')}
                   onBlur={handleBlur('nightclubManager')}
@@ -412,6 +413,7 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.status}
                   onChange={handleChange('status')}
                   onBlur={handleBlur('status')}

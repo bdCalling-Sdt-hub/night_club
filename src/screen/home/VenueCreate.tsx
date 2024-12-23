@@ -117,7 +117,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                       handleBlur('video');
                       handleChange('video');
                     }}
-                    containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
+                    containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                     svg={IconPlusGray}
                     titleStyle={tw`text-white font-RobotoBold text-base`}
                     title="Upload video"
@@ -136,7 +136,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                 <View
                   style={tw`border border-white60 h-20 rounded-lg border-dashed justify-center items-center my-3`}>
                   <IwtButton
-                    containerStyle={tw`bg-transparent border border-primary shadow-none w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
+                    containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                     svg={IconPlusGray}
                     titleStyle={tw`text-white font-RobotoBold text-base`}
                     title="Upload image"

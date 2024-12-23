@@ -7,13 +7,13 @@ import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 interface SplashProps extends NavigProps<null> {
-  setIsSplash: React.Dispatch<SetStateAction<boolean>>;
+  setIsSplash?: React.Dispatch<SetStateAction<boolean>>;
   isSplash?: boolean;
 }
 
-const SplashScreen = ({setIsSplash, route, navigation}: SplashProps) => {
+const SplashScreen = ({navigation}: SplashProps) => {
   setTimeout(() => {
-    (navigation as any)?.replace('Login');
+    (navigation as any)?.replace('loading');
   }, 1000);
   return (
     <Background>

@@ -1,4 +1,3 @@
-import {useLinkBuilder, useTheme} from '@react-navigation/native';
 import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCalendarCyan,
@@ -23,9 +22,6 @@ import ProfileScreen from '../screen/Profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
-  const {colors} = useTheme();
-  const {buildHref} = useLinkBuilder();
-
   return (
     <Background style={tw`bg-base`}>
       <View style={tw`flex-row justify-between px-4 h-16 items-center`}>
@@ -171,5 +167,5 @@ function BottomRoutes() {
 export default BottomRoutes;
 
 const Button = () => {
-  return <></>;
+  return <View></View>;
 };

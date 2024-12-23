@@ -44,6 +44,7 @@ function Routes() {
           headerShown: false,
           statusBarAnimation: 'fade',
           statusBarBackgroundColor: BaseColor,
+          statusBarStyle: 'light',
           animation: 'slide_from_right',
         }}>
         <Stack.Screen name="Loading" component={LoadingSplash} />

@@ -149,6 +149,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.tag}
                   onChange={handleChange('tag')}
                   onBlur={handleBlur('tag')}
@@ -373,6 +374,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.guest_list}
                   onChange={handleChange('guest_list')}
                   onBlur={handleBlur('guest_list')}
@@ -463,6 +465,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
               <View>
                 <View style={tw`bg-base `}>
                   <Picker
+                    useSafeArea
                     onChange={(value: string) => {
                       setExtraFields({
                         ...extraFields,
@@ -474,7 +477,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                       <IwtButton
                         svg={IconSmallPlusCyan}
                         title="Add new text field"
-                        titleStyle={tw`font-RobotoRegular text-primary text-xs shadow-none border-0`}
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs  border-0`}
                         containerStyle={tw`mt-5  p-0 rounded-lg w-full h-8 items-center bg-transparent`}
                         onPress={() => {
                           // handleSubmit();

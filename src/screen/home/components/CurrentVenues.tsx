@@ -31,7 +31,10 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
             </TouchableOpacity>
           }>
-          <Card.Image source={item.image} />
+          <Card.Image
+            source={item.image}
+            imageStyle={tw`h-16 w-16 rounded-lg`}
+          />
           <Card.Details
             data={[
               {

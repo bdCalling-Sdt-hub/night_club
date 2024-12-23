@@ -1,27 +1,27 @@
+import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import {Text, TouchableOpacity, View} from 'react-native';
 
-import AllGuest from './components/AllGuest';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import {BaseColor} from '../../utils/utils';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import OptionSelect from '../../components/cards/OptionSelect';
-import {Picker} from 'react-native-ui-lib';
 import React from 'react';
-import SavedGuestList from './components/SavedGuestList';
-import SearchCard from '../../components/cards/SearchCard';
 import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import data from './guest.json';
-import tw from '../../lib/tailwind';
-import {useImportFile} from '../../hook/useImportFile';
+import OptionSelect from '../../components/cards/OptionSelect';
+import SearchCard from '../../components/cards/SearchCard';
 import {useToast} from '../../components/modals/Toaster';
+import {useImportFile} from '../../hook/useImportFile';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {BaseColor} from '../../utils/utils';
+import Background from '../components/Background';
+import AllGuest from './components/AllGuest';
+import SavedGuestList from './components/SavedGuestList';
+import data from './guest.json';
 
 const GuestListScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
@@ -121,11 +121,12 @@ const GuestListScreen = ({navigation}: NavigProps<null>) => {
         <IwtButton
           title="Filter"
           svg={IconFilterGray}
-          containerStyle={tw`p-0 bg-transparent items-center shadow-none  w-20`}
+          containerStyle={tw`p-0 bg-transparent items-center   w-20`}
         />
 
         <View style={tw`px-1 flex-row items-center gap-2`}>
           <Picker
+            useSafeArea
             value={tags}
             onChange={text => setTags(text)}
             renderInput={preps => {

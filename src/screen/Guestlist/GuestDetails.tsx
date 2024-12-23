@@ -166,6 +166,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.tag}
                   onChange={handleChange('tag')}
                   onBlur={handleBlur('tag')}
@@ -347,7 +348,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
                             handleChange('free_entry_time')('');
                           }}
                           svg={IconCleanGray}
-                          containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   shadow-none`}
+                          containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   `}
                         />
                       )}
                     </>
@@ -430,6 +431,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
               </View>
               <View style={tw`bg-base `}>
                 <Picker
+                  useSafeArea
                   value={values.guest_list}
                   onChange={handleChange('guest_list')}
                   onBlur={handleBlur('guest_list')}
@@ -520,6 +522,7 @@ const GuestDetails = ({navigation}: NavigProps<null>) => {
               <View>
                 <View style={tw`bg-base `}>
                   <Picker
+                    useSafeArea
                     onChange={(value: string) => {
                       setExtraFields({
                         ...extraFields,

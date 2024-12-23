@@ -1,4 +1,4 @@
-import {Text, TouchableOpacity, View} from 'react-native';
+import {Platform, Text, TouchableOpacity, View} from 'react-native';
 
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -24,7 +24,9 @@ const BackWithHeader = ({
   return (
     <View
       style={[
-        tw`px-[4%] pt-8 pb-4 flex-row gap-3 items-center`,
+        tw`px-[4%] ${
+          Platform.OS === 'android' ? 'pt-5' : 'pt-0'
+        }  pb-4 flex-row gap-3 items-center`,
         containerStyle,
       ]}>
       {!offBack && (

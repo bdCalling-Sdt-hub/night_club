@@ -220,11 +220,12 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
         <IwtButton
           title="Filter"
           svg={IconFilterGray}
-          containerStyle={tw`p-0 bg-transparent items-center shadow-none  w-20`}
+          containerStyle={tw`p-0 bg-transparent items-center   w-20`}
         />
 
         <View style={tw`px-4 flex-row items-center gap-2`}>
           <Picker
+            useSafeArea
             value={addedBy}
             onChange={text => setAddedBy(text)}
             renderInput={preps => {
@@ -292,6 +293,7 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
             }}
           />
           <Picker
+            useSafeArea
             value={tags}
             onChange={text => setTags(text)}
             renderInput={preps => {

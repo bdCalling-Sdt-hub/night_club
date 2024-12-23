@@ -22,7 +22,6 @@ import tw from '../../lib/tailwind';
 import countries from './countries.json';
 
 interface ISingUpForm {
-  company: string;
   email: string;
   fullname: string;
   password: string;
@@ -76,12 +75,10 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
               email?: string;
               fullname?: string;
               password?: string;
-              company?: string;
+
               phone?: string;
             } = {};
-            if (!values.company) {
-              errors.company = 'Required';
-            }
+
             if (!values.fullname) {
               errors.fullname = 'Required';
             }
@@ -164,9 +161,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   containerStyle={tw`h-12`}
                   svgFirstIcon={IconCompanyGray}
                 />
-                {errors.company && touched.company && (
-                  <Text style={tw`text-red-500`}>{errors.company}</Text>
-                )}
 
                 <View>
                   <Text
@@ -175,6 +169,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   </Text>
                   <View style={tw`bg-base w-full my-2 flex-row items-end `}>
                     <Picker
+                      useSafeArea
                       onChange={value => {
                         setPhoneCode(value);
                       }}
@@ -185,7 +180,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                             style={tw`flex-row items-center justify-center h-full gap-1 px-2`}>
                             <Text
                               style={tw`text-white100 font-RobotoMedium text-sm text-center`}>
-                              {phoneCode || '+1'}
+                              {phoneCode || '+46'}
                             </Text>
                           </View>
                         </View>
@@ -300,7 +295,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   disabled={
                     !values.email ||
                     !values.password ||
-                    !values.company ||
                     !values.fullname ||
                     !values.phone
                   }
@@ -312,7 +306,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   containerStyle={tw`w-full h-12 py-0 items-center ${
                     !values.email ||
                     !values.password ||
-                    !values.company ||
                     !values.fullname ||
                     !values.phone
                       ? 'bg-gray-500'

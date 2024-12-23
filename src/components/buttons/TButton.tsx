@@ -33,7 +33,7 @@ const TButton = ({
       disabled={isLoading || disabled}
       activeOpacity={0.5}
       style={[
-        tw`bg-primary h-12 flex-row justify-center items-center gap-3 rounded-lg shadow-md  ${
+        tw`bg-primary h-12 flex-row justify-center items-center gap-3 rounded-lg   ${
           disabled ? 'opacity-60' : 'opacity-100'
         }`,
         containerStyle,

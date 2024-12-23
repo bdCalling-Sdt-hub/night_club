@@ -31,7 +31,10 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
             </TouchableOpacity>
           }>
-          <Card.Image source={item.image} />
+          <Card.Image
+            source={item.image}
+            imageStyle={tw`h-14 w-14 rounded-lg`}
+          />
           <Card.Details
             data={[
               {

@@ -12,12 +12,16 @@ import {IconCloseGray, IconLoginRed} from '../icons/icons';
 import IwtButton from '../components/buttons/IwtButton';
 import TButton from '../components/buttons/TButton';
 import {useToast} from '../components/modals/Toaster';
+import {useAuth} from '../context/AuthProvider';
+import {useFireAuth} from '../firebase/useFireAuth';
 import tw from '../lib/tailwind';
 import BottomRoutes from './BottomRoutes';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // console.log(user);
   const {closeToast, showToast} = useToast();
+  const {setUser} = useAuth();
+  const {SignOut} = useFireAuth();
 
   const handleDeleteAccount = () => {
     showToast({
@@ -108,7 +112,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           titleStyle={tw`text-white60 font-RobotoBold text-base`}
           svg={IconLoginRed}
           onPress={() => {
-            (props.navigation as any).replace('Login');
+            SignOut();
+            setUser(undefined);
+            (props.navigation as any).replace('Loading');
             props.navigation.closeDrawer();
           }}
         />

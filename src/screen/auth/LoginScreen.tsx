@@ -6,6 +6,9 @@ import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {PrimaryColor} from '../../utils/utils';
@@ -17,13 +20,53 @@ interface ISingInForm {
 }
 
 const LoginScreen = ({navigation}: NavigProps<null>) => {
+  const {closeToast, showToast} = useToast();
+  const {SignInWithEmailPass} = useFireAuth();
+  const {user, setUser} = useAuth();
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
-  const onSubmitHandler = (data: ISingInForm) => {
-    console.log(data);
-    (navigation as any)?.replace('Home');
+  const onSubmitHandler = async (data: ISingInForm) => {
+    try {
+      setLoading(true);
+
+      SignInWithEmailPass(data.email, data.password)
+        .then(res => {
+          setUser(res.user);
+          setLoading(false);
+          navigation.navigate('Loading');
+        })
+        .catch(error => {
+          // console.log(error);
+          setLoading(false);
+          if (error.code === 'auth/invalid-email') {
+            showToast({
+              title: 'Invalid Email',
+              content: 'That email address is invalid!',
+              onPress() {
+                closeToast();
+              },
+            });
+          }
+          if (error.code === 'auth/invalid-credential') {
+            showToast({
+              title: 'Invalid Credential',
+              content: 'The supplied credential is invalid.',
+              onPress() {
+                closeToast();
+              },
+            });
+          }
+        });
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+    // (navigation as any)?.replace('Home');
   };
+
+  console.log(user);
 
   return (
     <Background style={tw`bg-base h-full`}>
@@ -60,7 +103,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               errors.email = 'Invalid email address';
             }
             // check or validity of password 6 digit
-            if (values.password.length < 8) {
+            if (values.password.length < 6) {
               errors.password = 'Password must be at least 8 characters';
             }
             if (!values.password) {
@@ -134,9 +177,10 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   </Text>
                 </TouchableOpacity>
                 <TButton
+                  isLoading={loading}
                   onPress={() => {
-                    // handleSubmit()
-                    (navigation as any)?.replace('Home');
+                    handleSubmit();
+                    // (navigation as any)?.replace('Home');
                   }}
                   title="Log in"
                   containerStyle={tw`w-full  h-12 items-center py-0 mt-3 rounded-lg bg-primary text-lg `}
@@ -151,7 +195,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         <View style={tw`items-center gap-2 mt-6 px-4`}>
           <TouchableOpacity
             style={tw`self-end`}
-            onPress={() => navigation.navigate('ForgetPassword')}>
+            onPress={() => navigation.navigate('ForgotPassword')}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
               Forgot password?
             </Text>

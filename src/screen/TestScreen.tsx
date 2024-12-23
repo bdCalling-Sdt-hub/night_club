@@ -126,6 +126,7 @@ export default class TestScreen extends Component {
             Picker
           </Text>
           <Picker
+            useSafeArea
             placeholder="Favorite Language"
             floatingPlaceholder
             value={this.state.language}
@@ -142,6 +143,7 @@ export default class TestScreen extends Component {
           />
 
           <Picker
+            useSafeArea
             placeholder="Favorite Languages (up to 3)"
             value={this.state.languages}
             onChange={items => this.setState({languages: items})}
@@ -151,6 +153,7 @@ export default class TestScreen extends Component {
           />
 
           <Picker
+            useSafeArea
             label="Wheel Picker"
             placeholder="Pick a Language"
             useWheelPicker
@@ -160,6 +163,7 @@ export default class TestScreen extends Component {
           />
 
           <Picker
+            useSafeArea
             label="Custom modal"
             placeholder="Pick multiple Languages"
             value={this.state.customModalValues}
@@ -170,6 +174,7 @@ export default class TestScreen extends Component {
           />
 
           <Picker
+            useSafeArea
             label="Dialog Picker"
             placeholder="Favorite Language"
             mode={Picker.modes.MULTI}
@@ -193,6 +198,7 @@ export default class TestScreen extends Component {
             Custom Picker:
           </Text>
           <Picker
+            useSafeArea
             value={this.state.filter}
             onChange={filter => this.setState({filter})}
             renderInput={(_value?: any, label?: string) => {
@@ -229,6 +235,7 @@ export default class TestScreen extends Component {
             (Form/Filter/Settings)
           </Text>
           <Picker
+            useSafeArea
             value={this.state.filter}
             onChange={value => this.setState({filter: value})}
             label="Your Posts: "
@@ -238,6 +245,7 @@ export default class TestScreen extends Component {
             items={filters}
           />
           <Picker
+            useSafeArea
             value={this.state.scheme}
             onChange={value => this.setState({scheme: value})}
             label="Color Scheme"
