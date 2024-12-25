@@ -1,6 +1,4 @@
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {Checkbox, Picker} from 'react-native-ui-lib';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
   IconCloseGray,
   IconCompanyGray,
@@ -10,55 +8,98 @@ import {
   IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
 import {Formik} from 'formik';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
+import {IUser} from '../../firebase/interface';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import {createUser} from '../../firebase/useDatabase';
-import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
+import {Picker} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
 import countries from './countries.json';
-
-interface ISingUpForm {
-  email: string;
-  fullname: string;
-  password: string;
-  phone: string;
-}
+import {createUser} from '../../firebase/database/user.doc';
+import tw from '../../lib/tailwind';
+import {useAuth} from '../../context/AuthProvider';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {useToast} from '../../components/modals/Toaster';
 
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
-  const {setUser, user} = useAuth();
+  const {setUser, user, setUserId} = useAuth();
   const {SignUpWithEmailPass} = useFireAuth();
+  const [loading, setLoading] = React.useState(false);
 
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [open, setOpen] = useState(false);
   const [phoneCode, setPhoneCode] = useState('+46');
-  const onSubmitHandler = async (data: ISingUpForm) => {
-    if (!data.phone.startsWith('+')) {
-      data.phone = phoneCode + data.phone;
+  const onSubmitHandler = async (data: IUser) => {
+    if (!data.phoneNumber.startsWith('+')) {
+      data.phoneNumber = phoneCode + data.phoneNumber;
     }
+
     // console.log(data);
     try {
+      setLoading(true);
+      // Sign up the user using your custom function
       const res = await SignUpWithEmailPass(data.email, data.password);
-      if (res) {
-        if (res?.user?.email) {
-          createUser(res.user?.uid, data).then(res => {
-            console.log('user created', res);
+      if (res?.user?.uid) {
+        data.role = 'super-owner';
+        delete data.password;
+        await createUser(res.user?.uid, data);
+        // console.log('User created successfully in Firestore.');
+      }
+      if (res?.user?.email) {
+        // Send email verification with handleCodeInApp
+
+        const verification = await fetch(
+          'https://send-verification-code-3heivjy47q-uc.a.run.app/',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              to: data.email,
+              uid: res.user.uid,
+            }),
+          },
+        );
+
+        const verificationResponse = await verification.json();
+
+        console.log(verificationResponse);
+
+        if (verificationResponse?.message) {
+          setUserId(res.user.uid);
+          // Optionally store the user locally
+          // setUser(res.user);
+          showToast({
+            title: 'Please check your email',
+            content: "We've sent a verification code to your email address.",
+            onPress() {
+              closeToast();
+            },
           });
+
+          // Navigate to an email verification screen
+          (navigation as any)?.replace('VerifyEmail', {
+            email: data.email,
+          });
+          setLoading(false);
+        } else {
+          setLoading(false);
+          console.warn(
+            'Error sending verification email:',
+            verificationResponse,
+          );
         }
-        // setUser(res.user);
-        console.log(res);
       }
     } catch (error) {
-      console.log(error);
+      console.error('Error signing up or sending verification email:', error);
     }
 
     // (navigation as any)?.replace('VerifyEmail');
@@ -89,21 +130,21 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             email: '',
             password: '',
             company: '',
-            fullname: '',
-            phone: '',
+            displayName: '',
+            phoneNumber: '',
           }}
           onSubmit={onSubmitHandler}
           validate={values => {
             const errors: {
               email?: string;
-              fullname?: string;
+              displayName?: string;
               password?: string;
 
-              phone?: string;
+              phoneNumber?: string;
             } = {};
 
-            if (!values.fullname) {
-              errors.fullname = 'Required';
+            if (!values.displayName) {
+              errors.displayName = 'Required';
             }
             if (!values.email) {
               errors.email = 'Required';
@@ -114,8 +155,8 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             ) {
               errors.email = 'Invalid email address';
             }
-            if (!values.phone) {
-              errors.phone = 'Required';
+            if (!values.phoneNumber) {
+              errors.phoneNumber = 'Required';
             }
             // check or validity of email
             if (
@@ -162,16 +203,16 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Full Name"
-                  value={values.fullname}
-                  onChangeText={handleChange('fullname')}
-                  onBlur={handleBlur('fullname')}
+                  value={values.displayName}
+                  onChangeText={handleChange('displayName')}
+                  onBlur={handleBlur('displayName')}
                   placeholder="Enter your full name"
                   containerStyle={tw`h-12`}
                   svgFirstIcon={IconUserGray}
                 />
 
-                {errors.fullname && touched.fullname && (
-                  <Text style={tw`text-red-500`}>{errors.fullname}</Text>
+                {errors.displayName && touched.displayName && (
+                  <Text style={tw`text-red-500`}>{errors.displayName}</Text>
                 )}
 
                 <InputTextWL
@@ -262,9 +303,9 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                     <InputText
                       cursorColor={PrimaryColor}
                       label="Phone"
-                      value={values.phone}
-                      onChangeText={handleChange('phone')}
-                      onBlur={handleBlur('phone')}
+                      value={values.phoneNumber}
+                      onChangeText={handleChange('phoneNumber')}
+                      onBlur={handleBlur('phoneNumber')}
                       placeholder="Enter your phone number"
                       keyboardType="decimal-pad"
                       containerStyle={tw`h-12 w-full border-l-0 rounded-l-none px-2 `}
@@ -273,8 +314,8 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   </View>
                 </View>
 
-                {errors.phone && touched.phone && (
-                  <Text style={tw`text-red-500`}>{errors.phone}</Text>
+                {errors.phoneNumber && touched.phoneNumber && (
+                  <Text style={tw`text-red-500`}>{errors.phoneNumber}</Text>
                 )}
 
                 {/*================== password =================== */}
@@ -297,29 +338,14 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
               </View>
 
               {/* check box the Keep me logged In */}
-              <View style={tw`px-[4%] `}>
-                <TouchableOpacity
-                  style={tw` my-5 flex-row items-center `}
-                  onPress={() => {
-                    setCheck(!check);
-                  }}>
-                  <Checkbox
-                    color={PrimaryColor}
-                    size={25}
-                    style={tw`border-2 border-[#E8E8EA]`}
-                    value={check}
-                    onValueChange={value => setCheck(value)}
-                  />
-                  <Text style={tw`ml-2  font-RobotoBold text-white400`}>
-                    Keep me logged in
-                  </Text>
-                </TouchableOpacity>
+              <View style={tw`px-[4%] mt-5`}>
                 <TButton
+                  isLoading={loading}
                   disabled={
                     !values.email ||
                     !values.password ||
-                    !values.fullname ||
-                    !values.phone
+                    !values.displayName ||
+                    !values.phoneNumber
                   }
                   onPress={() => {
                     handleSubmit();
@@ -329,8 +355,8 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   containerStyle={tw`w-full h-12 py-0 items-center ${
                     !values.email ||
                     !values.password ||
-                    !values.fullname ||
-                    !values.phone
+                    !values.displayName ||
+                    !values.phoneNumber
                       ? 'bg-gray-500'
                       : 'bg-primary'
                   } text-lg `}

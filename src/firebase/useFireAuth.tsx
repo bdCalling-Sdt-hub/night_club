@@ -10,6 +10,15 @@ export const useFireAuth = () => {
       throw error;
     }
   };
+
+  const handleResetPassword = async (email: string) => {
+    try {
+      await auth().sendPasswordResetEmail(email);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // ================  sign up with email and password ===================
   const SignUpWithEmailPass = async (email: string, password: string) => {
     try {
@@ -68,5 +77,6 @@ export const useFireAuth = () => {
     updateUserName,
     SignUpWithEmailPass,
     UpdateUser,
+    handleResetPassword,
   };
 };

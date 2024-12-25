@@ -1,13 +1,17 @@
-import React from 'react';
-import {View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
+import React, {Suspense} from 'react';
+
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
-import OptionSelect from '../../components/cards/OptionSelect';
-import SearchCard from '../../components/cards/SearchCard';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
-import CurrentVenues from './components/CurrentVenues';
-import VHistory from './components/VHistory';
+import {NavigProps} from '../../interfaces/NaviProps';
+import OptionSelect from '../../components/cards/OptionSelect';
+import {PrimaryColor} from '../../utils/utils';
+import SearchCard from '../../components/cards/SearchCard';
+import tw from '../../lib/tailwind';
+
+// Lazy loading the CurrentVenues component
+const CurrentVenues = React.lazy(() => import('./components/CurrentVenues'));
+const VHistory = React.lazy(() => import('./components/VHistory'));
 
 const Home = ({navigation}: NavigProps<null>) => {
   const [selectOption, setSelectOption] = React.useState('Current Venues');
@@ -30,9 +34,23 @@ const Home = ({navigation}: NavigProps<null>) => {
       </View>
 
       {selectOption === 'History' ? (
-        <VHistory />
+        <Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <VHistory />
+        </Suspense>
       ) : (
-        <CurrentVenues navigation={navigation} />
+        <Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <CurrentVenues navigation={navigation} />
+        </Suspense>
       )}
     </Background>
   );

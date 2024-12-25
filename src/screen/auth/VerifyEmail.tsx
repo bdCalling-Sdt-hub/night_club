@@ -7,14 +7,22 @@ import {
   View,
 } from 'react-native';
 
-import React from 'react';
+import {FieldValue} from '@react-native-firebase/firestore';
 import {NavigProps} from '../../interfaces/NaviProps';
+import React from 'react';
 import tw from '../../lib/tailwind';
+import {useToast} from '../../components/modals/Toaster';
+import {usersCollection} from '../../firebase/database/collections';
 
-const VerifyEmail = ({navigation}: NavigProps<null>) => {
+const VerifyEmail = ({
+  navigation,
+  route,
+}: NavigProps<{email: string; forget?: boolean}>) => {
+  const {closeToast, showToast} = useToast();
   // Use React state with correct typing for OTP (array of strings)
   const [otp, setOtp] = React.useState<string[]>(['', '', '', '']);
   const inputRefs = React.useRef<(TextInput | null)[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   // Function to handle text change with correct typing for value and index
 
@@ -61,10 +69,62 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
     inputRefs.current[0]?.focus();
   }, []);
 
+  const handleUserVerification = async () => {
+    // console.log(otp.join(''));wait userRef.where("email", "==", email).get();
+    try {
+      setLoading(true);
+      const userSnapshot = (
+        await usersCollection.where('email', '==', route?.params.email).get()
+      ).docs[0];
+
+      if (userSnapshot) {
+        const user = userSnapshot.data();
+
+        if (user?.verify_code == otp.join('')) {
+          await userSnapshot.ref.update({
+            verify_code: FieldValue.delete(),
+            emailVerified: true,
+          });
+          setOtp(['', '', '', '']);
+          if (route?.params.forget) {
+            setLoading(false);
+            navigation.navigate('ResetPassword', {
+              email: route?.params.email,
+            });
+          } else {
+            setLoading(false);
+            navigation.navigate('VerifySuccess');
+          }
+        } else {
+          showToast({
+            title: 'Wrong',
+            content: 'Your entered OTP is incorrect.\n Please try again.',
+            onPress() {
+              setLoading(false);
+              closeToast();
+            },
+          });
+        }
+      } else {
+        setLoading(false);
+        showToast({
+          title: 'Error',
+          content: 'User not found.',
+          onPress() {
+            closeToast();
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   React.useEffect(() => {
     if (otp[3] !== '') {
-      console.log(otp.join(''));
-      (navigation as any)?.replace('VerifySuccess');
+      handleUserVerification();
+
+      // (navigation as any)?.replace('VerifySuccess');
     }
   }, [otp]);
 
@@ -95,6 +155,7 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
                   <TextInput
                     ref={el => (inputRefs.current[index] = el)}
                     value={digit}
+                    editable={!loading}
                     onChangeText={value => {
                       // Validate the input to allow only numbers
                       if (/^\d*$/.test(value)) {

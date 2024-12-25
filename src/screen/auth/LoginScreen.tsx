@@ -1,18 +1,18 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {Formik} from 'formik';
-import React from 'react';
+import Background from '../components/Background';
 import {Checkbox} from 'react-native-ui-lib';
-import TButton from '../../components/buttons/TButton';
+import {Formik} from 'formik';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {PrimaryColor} from '../../utils/utils';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import {useFireAuth} from '../../firebase/useFireAuth';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 interface ISingInForm {
   email: string;
@@ -21,8 +21,8 @@ interface ISingInForm {
 
 const LoginScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
-  const {SignInWithEmailPass} = useFireAuth();
-  const {user, setUser} = useAuth();
+  const {SignInWithEmailPass, handleResetPassword} = useFireAuth();
+  const {user, setUser, setUserId} = useAuth();
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -33,7 +33,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
 
       SignInWithEmailPass(data.email, data.password)
         .then(res => {
-          setUser(res.user);
+          setUserId(res.user.uid);
           setLoading(false);
           navigation.navigate('Loading');
         })
@@ -195,7 +195,9 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         <View style={tw`items-center gap-2 mt-6 px-4`}>
           <TouchableOpacity
             style={tw`self-end`}
-            onPress={() => navigation.navigate('ForgotPassword')}>
+            onPress={() => {
+              navigation.navigate('ForgetPassword');
+            }}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
               Forgot password?
             </Text>
