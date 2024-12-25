@@ -29,7 +29,7 @@ import {useToast} from '../../components/modals/Toaster';
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const {setUser, user, setUserId} = useAuth();
-  const {SignUpWithEmailPass} = useFireAuth();
+  const {SignUpWithEmailPass, handleVerifyEmail} = useFireAuth();
   const [loading, setLoading] = React.useState(false);
 
   const [check, setCheck] = React.useState(false);
@@ -52,54 +52,54 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
         await createUser(res.user?.uid, data);
         // console.log('User created successfully in Firestore.');
       }
-      if (res?.user?.email) {
-        // Send email verification with handleCodeInApp
-
-        const verification = await fetch(
-          'https://send-verification-code-3heivjy47q-uc.a.run.app/',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              to: data.email,
-              uid: res.user.uid,
-            }),
-          },
-        );
-
-        const verificationResponse = await verification.json();
-
-        console.log(verificationResponse);
-
-        if (verificationResponse?.message) {
-          setUserId(res.user.uid);
-          // Optionally store the user locally
-          // setUser(res.user);
-          showToast({
-            title: 'Please check your email',
-            content: "We've sent a verification code to your email address.",
-            onPress() {
-              closeToast();
-            },
+      if (res.user?.email) {
+        handleVerifyEmail(res.user.email)
+          .then(res => {
+            // console.log(res);
+            // reset form data
+            // console.log(res);
+            if (res.success) {
+              (navigation as any)?.replace('SendMailSuccess');
+            } else {
+              showToast({
+                title: 'Wrong',
+                content: res?.message,
+                onPress: closeToast,
+              });
+              setLoading(false);
+            }
+            // Linking.openURL(res?.verificationLink);
+          })
+          .catch(error => {
+            console.log(error);
+            showToast({
+              title: 'Wrong',
+              content: error?.message,
+              onPress: closeToast,
+            });
+            setLoading(false);
           });
-
-          // Navigate to an email verification screen
-          (navigation as any)?.replace('VerifyEmail', {
-            email: data.email,
-          });
-          setLoading(false);
-        } else {
-          setLoading(false);
-          console.warn(
-            'Error sending verification email:',
-            verificationResponse,
-          );
-        }
       }
+
+      setLoading(false);
     } catch (error) {
-      console.error('Error signing up or sending verification email:', error);
+      console.log(error);
+
+      if (error?.code === 'auth/email-already-in-use') {
+        showToast({
+          title: 'Wrong',
+          content: 'This email is already in use.',
+          onPress: closeToast,
+        });
+      }
+      if (error?.code === 'auth/invalid-email') {
+        showToast({
+          title: 'Wrong',
+          content: 'That email address is invalid!',
+          onPress: closeToast,
+        });
+      }
+      setLoading(false);
     }
 
     // (navigation as any)?.replace('VerifyEmail');
@@ -165,10 +165,10 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
               errors.email = 'Invalid email address';
             }
             // check or validity of password 8 digit
-            if (values.password.length < 8) {
+            if (values?.password?.length < 8) {
               errors.password = 'Password must be at least 8 characters';
             }
-            if (!values.password) {
+            if (!values?.password) {
               errors.password = 'Required';
             }
             return errors;

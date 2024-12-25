@@ -13,7 +13,6 @@ import EventEdit from '../screen/Event/EventEdit';
 import ForgetPassword from '../screen/auth/ForgetPassword';
 import GuestDetails from '../screen/Guestlist/GuestDetails';
 import GuestEdit from '../screen/Guestlist/GuestEdit';
-import {Linking} from 'react-native';
 import LoadingSplash from '../screen/spalsh/LoadingSplash';
 import LoginScreen from '../screen/auth/LoginScreen';
 import ManageUsers from '../screen/Profile/ManageUsers';
@@ -21,6 +20,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import News from '../screen/Settings/News';
 import PrivacyAndPolicy from '../screen/Settings/PrivacyAndPolicy';
 import ResetPassword from '../screen/auth/ResetPassword';
+import SendMailSuccess from '../screen/auth/SendMailSuccess';
 import SignUpScreen from '../screen/auth/SignUpScreen';
 import Support from '../screen/Settings/Support';
 import TermsAndCondition from '../screen/Settings/TermsAndCondition';
@@ -33,36 +33,35 @@ import VenuesEdit from '../screen/home/VenuesEdit';
 import VerifyEmail from '../screen/auth/VerifyEmail';
 import VerifySuccess from '../screen/auth/VerifySuccess';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {useEffect} from 'react';
 
 const Stack = createNativeStackNavigator();
 
 const linking = {
-  prefixes: ['myapp://', 'https://yourapp.com'],
+  prefixes: ['https://pushnotifiation-d1bcb.web.app/'],
   config: {
     screens: {
-      EmailVerified: 'email-verified',
-      ResetPassword: 'reset-password',
+      VerifySuccess: 'email-verified',
+      Login: 'login',
     },
   },
 };
 
 function Routes() {
-  useEffect(() => {
-    const handleDeepLink = event => {
-      const url = event.url;
+  // useEffect(() => {
+  //   const handleDeepLink = event => {
+  //     const url = event.url;
 
-      if (url.includes('email-verified')) {
-        console.log('Email verified', url);
-      }
-    };
+  //     if (url.includes('email-verified')) {
+  //       console.log('Email verified', url);
+  //     }
+  //   };
 
-    Linking.addEventListener('url', handleDeepLink);
+  //   Linking.addEventListener('url', handleDeepLink);
 
-    return () => {
-      Linking.removeAllListeners('url');
-    };
-  }, []);
+  //   return () => {
+  //     Linking.removeAllListeners('url');
+  //   };
+  // }, []);
   return (
     <NavigationContainer linking={linking}>
       <Stack.Navigator
@@ -81,6 +80,7 @@ function Routes() {
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="VerifyEmail" component={VerifyEmail} />
         <Stack.Screen name="VerifySuccess" component={VerifySuccess} />
+        <Stack.Screen name="SendMailSuccess" component={SendMailSuccess} />
         <Stack.Screen name="ForgetPassword" component={ForgetPassword} />
         <Stack.Screen name="CreatePassword" component={CreateNewPassword} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />

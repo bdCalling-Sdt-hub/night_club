@@ -170,3 +170,13 @@ export const IconPenCyan = `<svg width="14" height="15" viewBox="0 0 14 15" fill
 </svg>
 
 `;
+
+export const IconEmailSending = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64px" height="64px">
+  <circle cx="32" cy="32" r="32" fill="#55AACA" />
+  <path d="M16 24l16 12 16-12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M16 24v16h32V24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M32 36L16 24l16 12 16-12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="32" cy="32" r="31" fill="none" stroke="#55AACA" stroke-width="2" />
+</svg>
+`;

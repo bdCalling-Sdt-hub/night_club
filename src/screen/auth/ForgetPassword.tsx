@@ -7,44 +7,24 @@ import {NavigProps} from '../../interfaces/NaviProps';
 import {PrimaryColor} from '../../utils/utils';
 import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
+import {useFireAuth} from '../../firebase/useFireAuth';
 import {useToast} from '../../components/modals/Toaster';
 
 const ForgetPassword = ({navigation}: NavigProps<null>) => {
   const [email, setEmail] = React.useState('');
   const {closeToast, showToast} = useToast();
   const [loading, setLoading] = React.useState(false);
+  const {handleResetPassword} = useFireAuth();
 
   const onSubmit = useCallback(async () => {
     // console.log(email);
 
     try {
       if (email) {
-        setLoading(true);
-        const res = await fetch(
-          'https://send-verification-code-3heivjy47q-uc.a.run.app/',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              email: email,
-            }),
-          },
-        );
-        const data = await res.json();
-
-        // console.log(data);
-
-        if (data?.message) {
-          showToast({
-            title: 'Please check your email',
-            content: "We've sent a verification code to your email address.",
-            onPress: closeToast,
-          });
+        handleResetPassword(email).then(res => {
           setLoading(false);
-          navigation.navigate('VerifyEmail', {email, forget: true});
-        }
+          (navigation as any)?.replace('SendMailSuccess');
+        });
 
         // console.log(data);
       } else {

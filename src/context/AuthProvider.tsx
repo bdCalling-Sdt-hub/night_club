@@ -31,7 +31,7 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
     setInitialLoading(true);
     const currentUser = auth().currentUser;
 
-    if (currentUser) {
+    if (currentUser?.emailVerified) {
       // const idTokenResult = await currentUser.getIdTokenResult();
       // console.log('Custom Claims:', currentUser);
       setUserId(currentUser.uid);

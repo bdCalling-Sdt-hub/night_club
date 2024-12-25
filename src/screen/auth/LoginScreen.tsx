@@ -21,8 +21,9 @@ interface ISingInForm {
 
 const LoginScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
-  const {SignInWithEmailPass, handleResetPassword} = useFireAuth();
-  const {user, setUser, setUserId} = useAuth();
+  const {SignInWithEmailPass, handleResetPassword, handleVerifyEmail} =
+    useFireAuth();
+  const {userId, setUserId} = useAuth();
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -33,9 +34,47 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
 
       SignInWithEmailPass(data.email, data.password)
         .then(res => {
-          setUserId(res.user.uid);
-          setLoading(false);
-          navigation.navigate('Loading');
+          if (res.user.emailVerified) {
+            setUserId(res.user.uid);
+            setLoading(false);
+            (navigation as any)?.replace('Home');
+          } else {
+            setLoading(false);
+            showToast({
+              title: 'Email not verified',
+              content: 'Please verify your email before logging in.',
+              multipleBTNStyle: tw`flex-col gap-3`,
+              multipleButton: [
+                {
+                  buttonText: 'Resend',
+                  onPress: () => {
+                    handleVerifyEmail(data.email).then(res => {
+                      // closeToast();
+                      if (res.success) {
+                        showToast({
+                          title: 'Success',
+                          content: res.message,
+                          onPress: closeToast,
+                        });
+                      } else {
+                        showToast({
+                          title: 'Warning',
+                          content: res.message,
+                          onPress: closeToast,
+                        });
+                      }
+                    });
+                  },
+                },
+                {
+                  buttonText: 'Cancel',
+                  onPress: () => {
+                    closeToast();
+                  },
+                },
+              ],
+            });
+          }
         })
         .catch(error => {
           // console.log(error);
@@ -66,7 +105,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
     // (navigation as any)?.replace('Home');
   };
 
-  console.log(user);
+  console.log(userId);
 
   return (
     <Background style={tw`bg-base h-full`}>

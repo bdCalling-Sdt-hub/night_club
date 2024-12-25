@@ -11,9 +11,39 @@ export const useFireAuth = () => {
     }
   };
 
-  const handleResetPassword = async (email: string) => {
+  const handleVerifyEmail = async (email: string) => {
     try {
-      await auth().sendPasswordResetEmail(email);
+      const res = await fetch(
+        'https://us-central1-pushnotifiation-d1bcb.cloudfunctions.net/send_email_verification',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+          }),
+        },
+      );
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const handleResetPassword = async (email: string) => {
+    const actionCodeSettings = {
+      url: `https://pushnotifiation-d1bcb.web.app/login`,
+      handleCodeInApp: true,
+    };
+    try {
+      const res = await auth().sendPasswordResetEmail(
+        email,
+        actionCodeSettings,
+      );
+      console.log(res);
+      return res;
     } catch (error) {
       console.log(error);
     }
@@ -78,5 +108,6 @@ export const useFireAuth = () => {
     SignUpWithEmailPass,
     UpdateUser,
     handleResetPassword,
+    handleVerifyEmail,
   };
 };
