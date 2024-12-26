@@ -79,7 +79,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
         {/* PageControl to show the current page */}
         <PageControl
-          numOfPages={2}
+          numOfPages={[venue?.image, venue?.video]}
           currentPage={currentPage} // Bind current page from state
           color={PrimaryColor}
           inactiveColor="white"
