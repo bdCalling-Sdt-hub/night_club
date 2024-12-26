@@ -41,7 +41,7 @@ interface createProps {
   residentDj: string;
 }
 
-const VenueEdit = ({navigation}: NavigProps<{item: IVenue}>) => {
+const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
@@ -125,29 +125,12 @@ const VenueEdit = ({navigation}: NavigProps<{item: IVenue}>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle
-        title="Create Venue"
-        onPress={() => navigation?.goBack()}
-      />
+      <BackWithTitle title="Edit Venue" onPress={() => navigation?.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
-          initialValues={{
-            name: '',
-            location: '',
-            description: '',
-            image: null,
-            video: null,
-            openingTime: '',
-            closingTime: '',
-            capacity: '',
-            bars: '',
-            danceFloor: '',
-            nightclubManager: '',
-            residentDj: '',
-            status: '',
-          }}
+          initialValues={route?.params?.item}
           onSubmit={(values, {resetForm}) => {
             addVenue(values).then(() => {
               resetForm();

@@ -169,7 +169,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
           />
           <TButton
             onPress={() => {
-              navigation?.navigate('VenueEdit');
+              navigation?.navigate('VenueEdit', {item: venue});
             }}
             title="Edit"
             titleStyle={tw`text-base text-primary font-RobotoBold`}
