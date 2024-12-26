@@ -1,4 +1,5 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IVenue, addVenue} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -7,6 +8,7 @@ import {
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
@@ -15,7 +17,9 @@ import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -37,7 +41,8 @@ interface createProps {
   residentDj: string;
 }
 
-const VenuesEdit = ({navigation}: NavigProps<null>) => {
+const VenueEdit = ({navigation}: NavigProps<{item: IVenue}>) => {
+  const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const handleImageUpdate = async () => {
@@ -47,8 +52,8 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
       selectionLimit: 1,
       option: 'library',
     });
-
     if (!image) {
+      setImageUpdateLoad(false);
       return;
     }
 
@@ -63,8 +68,8 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
       selectionLimit: 1,
       option: 'library',
     });
-
     if (!video) {
+      setVideoUpdateLoad(false);
       return;
     }
 
@@ -120,7 +125,10 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit" onPress={() => navigation?.goBack()} />
+      <BackWithTitle
+        title="Create Venue"
+        onPress={() => navigation?.goBack()}
+      />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -140,8 +148,15 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
             residentDj: '',
             status: '',
           }}
-          onSubmit={values => {
-            console.log(values);
+          onSubmit={(values, {resetForm}) => {
+            addVenue(values).then(() => {
+              resetForm();
+              showToast({
+                title: 'success',
+                content: 'Venue created successfully',
+                onPress: closeToast,
+              });
+            });
           }}
           validate={(values: createProps) => handleValidate(values)}>
           {({
@@ -179,12 +194,14 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                     </View>
                   ) : (
                     <IwtButton
+                      isLoading={videoUpdateLoad}
+                      loadingColor="white"
                       onPress={async () => {
                         const video = await handleVideoUpdate();
                         // console.log('pressed');
                         // console.log(video);
                         // handleBlur('video');
-                        video && handleChange('video')(video?.uri);
+                        video && handleChange('video')(video);
                       }}
                       containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
@@ -223,12 +240,13 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                     </View>
                   ) : (
                     <IwtButton
+                      isLoading={imageUpdateLoad}
                       onPress={async () => {
                         const image = await handleImageUpdate();
                         // console.log('pressed');
                         // console.log(image);
                         // handleBlur('image');
-                        image && handleChange('image')(image?.uri);
+                        image && handleChange('image')(image);
                       }}
                       containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
@@ -286,32 +304,48 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                   touched={touched.location}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Opening time"
-                  placeholder="Enter opening time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.openingTime}
-                  onChangeText={handleChange('openingTime')}
-                  onBlur={handleBlur('openingTime')}
-                  errorText={errors.openingTime}
-                  touched={touched.openingTime}
-                />
-              </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Closing time"
-                  placeholder="Enter closing time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.closingTime}
-                  onChangeText={handleChange('closingTime')}
-                  onBlur={handleBlur('closingTime')}
-                  errorText={errors.closingTime}
-                  touched={touched.closingTime}
-                />
-              </View>
+              <DateTimePicker
+                cursorColor={PrimaryColor}
+                label="Opening time"
+                placeholder="Enter opening time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                value={
+                  values.openingTime
+                    ? moment(values.openingTime).format('hh:mm A')
+                    : ''
+                }
+                onChangeText={handleChange('openingTime')}
+                onBlur={handleBlur('openingTime')}
+                errorText={errors.openingTime}
+                touched={touched.openingTime}
+                onClear={() => {
+                  handleChange('openingTime')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('openingTime')(date);
+                }}
+              />
+              <DateTimePicker
+                value={
+                  values.closingTime
+                    ? moment(values.closingTime).format('hh:mm A')
+                    : ''
+                }
+                label="Closing time"
+                placeholder="Enter closing time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('closingTime')}
+                onBlur={handleBlur('closingTime')}
+                errorText={errors.closingTime}
+                touched={touched.closingTime}
+                onClear={() => {
+                  handleChange('closingTime')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('closingTime')(date);
+                }}
+              />
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -319,11 +353,11 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                   placeholder="Enter capacity"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.capacity}
+                  keyboardType="numeric"
                   onChangeText={handleChange('capacity')}
                   onBlur={handleBlur('capacity')}
                   errorText={errors.capacity}
                   touched={touched.capacity}
-                  keyboardType="decimal-pad"
                 />
               </View>
               <View>
@@ -335,9 +369,9 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                   value={values.bars}
                   onChangeText={handleChange('bars')}
                   onBlur={handleBlur('bars')}
+                  keyboardType="numeric"
                   errorText={errors.bars}
                   touched={touched.bars}
-                  keyboardType="decimal-pad"
                 />
               </View>
               <View>
@@ -347,18 +381,18 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
                   placeholder="Enter dance floors count"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.danceFloor}
+                  keyboardType="numeric"
                   onChangeText={handleChange('danceFloor')}
                   onBlur={handleBlur('danceFloor')}
                   errorText={errors.danceFloor}
                   touched={touched.danceFloor}
-                  keyboardType="decimal-pad"
                 />
               </View>
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Resident dj"
-                  placeholder="Enter dance floors count"
+                  placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.residentDj}
                   onChangeText={handleChange('residentDj')}
@@ -471,18 +505,12 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
               </View>
               <View>
                 <TButton
-                  title="Update"
+                  title="Create venue"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={() => {
                     handleSubmit();
                   }}
-                />
-                <TButton
-                  title="Delete"
-                  titleStyle={tw`font-RobotoBold text-red-500 text-base`}
-                  containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
-                  onPress={() => navigation?.goBack()}
                 />
               </View>
             </View>
@@ -493,4 +521,4 @@ const VenuesEdit = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default VenuesEdit;
+export default VenueEdit;

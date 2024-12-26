@@ -4,6 +4,7 @@ import {IVenue, getVenue} from '../../firebase/database/venues.doc';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
 
+import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
 import {PageControl} from 'react-native-ui-lib';
 import Video from 'react-native-video';
@@ -13,7 +14,6 @@ import TButton from '../../components/buttons/TButton';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
-import venuesD from './vanues_d.json';
 
 const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const [venue, setVenue] = useState<IVenue>();
@@ -79,7 +79,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
         {/* PageControl to show the current page */}
         <PageControl
-          numOfPages={[venue?.image, venue?.video]}
+          numOfPages={venue?.image && venue?.video ? 2 : 1}
           currentPage={currentPage} // Bind current page from state
           color={PrimaryColor}
           inactiveColor="white"
@@ -94,28 +94,24 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
         <View style={tw`px-4 mb-1 mt-4 gap-3`}>
           <Text style={tw`text-white50 font-RobotoBlack text-base `}>
-            {venuesD.venues_details.title}
+            {venue?.name}
           </Text>
 
           <View style={tw`gap-3 my-1`}>
             <View style={tw`flex-row gap-2 items-center`}>
               <SvgXml xml={IconLocationV2Cyan} />
-              <Text style={tw`text-white50 text-sm`}>
-                {venuesD.venues_details.location}
-              </Text>
+              <Text style={tw`text-white50 text-sm`}>{venue?.location}</Text>
             </View>
             <View style={tw`flex-row gap-2 items-center`}>
               <SvgXml xml={IconClockCyan} />
               <Text style={tw`text-white50 text-sm`}>
-                {venuesD.venues_details.time.start} -{' '}
-                {venuesD.venues_details.time.end}
+                {moment(venue?.openingTime).format('LT')} -{' '}
+                {moment(venue?.closingTime).format('LT')}
               </Text>
             </View>
           </View>
 
-          <Text style={tw`text-white60`}>
-            {venuesD.venues_details.describe}
-          </Text>
+          <Text style={tw`text-white60`}>{venue?.description}</Text>
         </View>
         {/*=================== Accounts parts =============== */}
         <View style={tw`px-4 gap-5 mt-5`}>
@@ -124,7 +120,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               Nightclub Manager:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venuesD.venues_details.nightclub_manager}
+              {venue?.nightclubManager}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -132,21 +128,23 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               Capacity:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venuesD.venues_details.capacity}
+              {venue?.capacity}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Bars:
             </Text>
-            <Text style={tw`text-white60 text-base font-RobotoMedium`}>3</Text>
+            <Text style={tw`text-white60 text-base font-RobotoMedium`}>
+              {venue?.bars}
+            </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Dancefloors:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venuesD.venues_details.bars}
+              {venue?.danceFloor}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -154,7 +152,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               Resident dj:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venuesD.venues_details.resident_dj}
+              {venue?.residentDj}
             </Text>
           </View>
         </View>
