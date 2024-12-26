@@ -35,7 +35,7 @@ const IButton = ({
         containerStyle,
       ]}>
       {isLoading ? (
-        <ActivityIndicator color={loadingColor ? loadingColor : ''} />
+        <ActivityIndicator color={loadingColor ? loadingColor : 'white'} />
       ) : (
         <>
           {icon ? (

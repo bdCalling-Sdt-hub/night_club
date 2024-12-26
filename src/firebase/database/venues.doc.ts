@@ -19,9 +19,7 @@ export interface IVenue {
   createdBy: string;
 }
 
-export const addVenue = async (
-  venue: Omit<IVenue, 'createdAt' | 'updatedAt' | 'id'>,
-) => {
+export const addVenue = async (venue: IVenue) => {
   try {
     const venueRef = venuesCollection.doc(); // Auto-generate ID
     const id = venueRef.id;
@@ -37,6 +35,42 @@ export const addVenue = async (
     console.log('Venue added successfully:', venueData);
   } catch (error) {
     console.error('Error adding venue:', error);
+  }
+};
+
+export const deleteVenue = async (id: string) => {
+  try {
+    const venueRef = venuesCollection.doc(id);
+    await venueRef.delete();
+    console.log('Venue deleted successfully');
+  } catch (error) {
+    console.error('Error deleting venue:', error);
+  }
+};
+
+export const getVenues = async () => {
+  try {
+    const venuesSnapshot = await venuesCollection.get();
+    const venues: IVenue[] = [];
+    venuesSnapshot.forEach(doc => {
+      const data = doc.data() as IVenue;
+      venues.push(data);
+    });
+    return venues;
+  } catch (error) {
+    console.error('Error getting venues:', error);
+    return [];
+  }
+};
+
+export const getVenue = async (id: string) => {
+  try {
+    const venueSnapshot = await venuesCollection.doc(id).get();
+    const venue = venueSnapshot.data() as IVenue;
+    return venue;
+  } catch (error) {
+    console.error('Error getting venue:', error);
+    return null;
   }
 };
 

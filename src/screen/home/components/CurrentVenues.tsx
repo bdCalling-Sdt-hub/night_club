@@ -1,19 +1,31 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {IVenue, getVenues} from '../../../firebase/database/venues.doc';
 import {
   IconBuildingCyan,
   IconClockCyan,
   IconLocationV2Cyan,
 } from '../../../icons/icons';
 
+import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
-import data from './venues.json';
 
 const CurrentVenues = ({navigation}: NavigProps<null>) => {
+  const [data, setData] = React.useState<Array<IVenue>>();
+
+  const handlerGetVenues = async () => {
+    const data = await getVenues();
+    setData(data);
+  };
+
+  React.useEffect(() => {
+    handlerGetVenues();
+  }, []);
+
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
@@ -25,30 +37,33 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
           component={
             <TouchableOpacity
               onPress={() => {
-                navigation?.navigate('VenuesDetails');
+                navigation?.navigate('VenuesDetails', {id: item.id});
               }}
               style={tw`px-2 `}>
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
             </TouchableOpacity>
           }>
           <Card.Image
-            source={item.image}
+            source={{uri: item?.image}}
             imageStyle={tw`h-16 w-16 rounded-lg`}
           />
           <Card.Details
             data={[
               {
-                title: item.title,
+                title: item?.name,
                 icons: IconBuildingCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: item.location.address,
+                title: item?.location,
                 icons: IconLocationV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
               {
-                title: item.time.start + ' - ' + item.time.end,
+                title:
+                  moment(item?.openingTime).format('hh:mm A') +
+                  ' - ' +
+                  moment(item?.closingTime).format('hh:mm A'),
                 icons: IconClockCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },

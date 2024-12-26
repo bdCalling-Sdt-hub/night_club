@@ -16,6 +16,7 @@ import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -37,33 +38,40 @@ interface createProps {
 }
 
 const VenuesEdit = ({navigation}: NavigProps<null>) => {
-  const handleVideoUpdate = async () => {
-    // console.log(values);
-
-    try {
-      const Video = await useMediaPicker({
-        option: 'library',
-        mediaType: 'video',
-        selectionLimit: 1,
-      });
-
-      return Video[0];
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
+  const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const handleImageUpdate = async () => {
-    // console.log(values);
-
+    setImageUpdateLoad(true);
     const image = await useMediaPicker({
-      option: 'library',
       mediaType: 'photo',
       selectionLimit: 1,
+      option: 'library',
     });
 
-    return image[0];
-  };
+    if (!image) {
+      return;
+    }
 
+    const imageUrl = await uploadFileToFirebase(image[0]);
+    setImageUpdateLoad(false);
+    return imageUrl;
+  };
+  const handleVideoUpdate = async () => {
+    setVideoUpdateLoad(true);
+    const video = await useMediaPicker({
+      mediaType: 'video',
+      selectionLimit: 1,
+      option: 'library',
+    });
+
+    if (!video) {
+      return;
+    }
+
+    const videoUrl = await uploadFileToFirebase(video[0]);
+    setVideoUpdateLoad(false);
+    return videoUrl;
+  };
   const handleValidate = (values: any) => {
     const errors: any = {};
 

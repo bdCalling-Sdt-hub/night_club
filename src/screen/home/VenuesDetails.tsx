@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
+import {IVenue, getVenue} from '../../firebase/database/venues.doc';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
 
@@ -14,7 +15,8 @@ import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 import venuesD from './vanues_d.json';
 
-const VenuesDetails = ({navigation}: NavigProps<null>) => {
+const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
+  const [venue, setVenue] = useState<IVenue>();
   const [currentPage, setCurrentPage] = useState(0); // Track current page
 
   // Handle scroll and update the current page
@@ -23,6 +25,16 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
     const page = Math.floor(contentOffsetX / (height * 0.4)); // Adjust page width based on height
     setCurrentPage(page); // Update current page
   };
+
+  React.useEffect(() => {
+    if (route?.params?.id) {
+      getVenue(route?.params?.id).then(res => {
+        setVenue(res);
+      });
+    }
+  }, [route?.params?.id]);
+
+  // console.log(venues);
 
   return (
     <Background style={tw`flex-1`}>
@@ -41,23 +53,27 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           scrollEventThrottle={16} // Throttle scroll for better performance
           keyboardShouldPersistTaps="always">
           <View style={tw`mx-4 my-2`}>
-            <Video
-              muted={false}
-              // controls
-              repeat
-              style={tw`aspect-video h-[${
-                height * 0.058
-              }] self-center rounded-lg overflow-hidden`}
-              source={venuesD.video}
-            />
+            {venue?.video && (
+              <Video
+                muted={false}
+                // controls
+                repeat
+                style={tw`aspect-video h-[${
+                  height * 0.058
+                }] self-center rounded-lg overflow-hidden`}
+                source={{uri: venue?.video}}
+              />
+            )}
           </View>
           <View style={tw`mx-4 my-2`}>
-            <AniImage
-              imageStyle={tw`aspect-video h-[${
-                height * 0.058
-              }] self-center rounded-lg overflow-hidden`}
-              source={venuesD.image}
-            />
+            {venue?.image && (
+              <AniImage
+                imageStyle={tw`aspect-video h-[${
+                  height * 0.058
+                }] self-center rounded-lg overflow-hidden`}
+                source={{uri: venue?.image}}
+              />
+            )}
           </View>
         </ScrollView>
 

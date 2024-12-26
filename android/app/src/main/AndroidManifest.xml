@@ -7,14 +7,17 @@
 
   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher_monochrome" android:roundIcon="@mipmap/ic_launcher" android:allowBackup="false" android:theme="@style/AppTheme" android:supportsRtl="true" android:usesCleartextTraffic="true">
     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|screenSize|smallestScreenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:exported="true">
+      <!-- this is the deep link  -->
       <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.DEFAULT" />
         <action android:name="android.intent.action.VIEW" />
-        <category android:name="android.intent.category.LAUNCHER" />
+        <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <data android:scheme="https" android:host="pushnotifiation-d1bcb.web.app" />
-
+      </intent-filter>
+      <!-- Main launcher activity -->
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
       </intent-filter>
     </activity>
   </application>
