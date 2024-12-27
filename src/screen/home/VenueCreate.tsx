@@ -1,47 +1,41 @@
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {IVenue, addVenue} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import moment from 'moment';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import Video from 'react-native-video';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {addVenue} from '../../firebase/database/venues.doc';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
-import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
+import Video from 'react-native-video';
+import moment from 'moment';
 import tw from '../../lib/tailwind';
-import Background from '../components/Background';
-
-interface createProps {
-  name: string;
-  location: string;
-  description: string;
-  image: any;
-  video?: any;
-  nightclubManager?: string;
-  openingTime: string;
-  closingTime: string;
-  capacity: string;
-  bars: string;
-  danceFloor: string;
-  residentDj: string;
-}
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import {useAuth} from '../../context/AuthProvider';
+import {useMediaPicker} from '../../hook/useMediaPicker';
+import {useToast} from '../../components/modals/Toaster';
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
+  const {userId} = useAuth();
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
@@ -147,18 +141,26 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             nightclubManager: '',
             residentDj: '',
             status: '',
+            createdBy: '',
           }}
           onSubmit={(values, {resetForm}) => {
+            if (userId) {
+              values.createdBy = userId;
+            }
+
             addVenue(values).then(() => {
-              resetForm();
+              // resetForm();
               showToast({
                 title: 'success',
                 content: 'Venue created successfully',
-                onPress: closeToast,
+                onPress: () => {
+                  navigation?.goBack();
+                  closeToast();
+                },
               });
             });
           }}
-          validate={(values: createProps) => handleValidate(values)}>
+          validate={(values: IVenue) => handleValidate(values)}>
           {({
             handleChange,
             handleBlur,
@@ -179,6 +181,9 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                       <Video
                         muted={false}
                         // controls
+                        renderLoader={() => (
+                          <ActivityIndicator color="white" size="small" />
+                        )}
                         repeat
                         resizeMode="cover"
                         style={tw`w-[96%] h-24 self-center rounded-lg overflow-hidden`}

@@ -1,29 +1,36 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
-import {IVenue, getVenues} from '../../../firebase/database/venues.doc';
 import {
   IconBuildingCyan,
   IconClockCyan,
   IconLocationV2Cyan,
 } from '../../../icons/icons';
 
-import moment from 'moment';
-import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {IVenue} from '../../../firebase/database/venues.doc';
 import {NavigProps} from '../../../interfaces/NaviProps';
-import tw from '../../../lib/tailwind';
+import React from 'react';
+import firestore from '@react-native-firebase/firestore';
 import {height} from '../../../utils/utils';
+import moment from 'moment';
+import tw from '../../../lib/tailwind';
 
 const CurrentVenues = ({navigation}: NavigProps<null>) => {
   const [data, setData] = React.useState<Array<IVenue>>();
 
-  const handlerGetVenues = async () => {
-    const data = await getVenues();
-    setData(data);
-  };
-
   React.useEffect(() => {
-    handlerGetVenues();
+    const unsubscribe = firestore()
+      .collection('Venues') // Your Firestore collection name
+      .onSnapshot(snapshot => {
+        const venues = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as IVenue[];
+        setData(venues);
+      });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
   }, []);
 
   return (

@@ -150,7 +150,7 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
                   modalContent?.buttonStyle,
                 ]}>
                 <TouchableOpacity
-                  style={tw` h-10 justify-center items-center`}
+                  style={tw` w-full h-10 justify-center items-center`}
                   activeOpacity={0.5}
                   onPress={modalContent?.onPress}>
                   <Text

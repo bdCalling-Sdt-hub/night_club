@@ -1,22 +1,22 @@
-import React, {useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
 import {IVenue, getVenue} from '../../firebase/database/venues.doc';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 
-import moment from 'moment';
-import {SvgXml} from 'react-native-svg';
-import {PageControl} from 'react-native-ui-lib';
-import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import TButton from '../../components/buttons/TButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {PageControl} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import Video from 'react-native-video';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 
 const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
-  const [venue, setVenue] = useState<IVenue>();
+  const [venue, setVenue] = useState<IVenue | null>();
   const [currentPage, setCurrentPage] = useState(0); // Track current page
 
   // Handle scroll and update the current page
@@ -49,6 +49,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         <ScrollView
           pagingEnabled
           horizontal
+          showsHorizontalScrollIndicator={false}
           onScroll={handleScroll} // Handle scroll to update page
           scrollEventThrottle={16} // Throttle scroll for better performance
           keyboardShouldPersistTaps="always">

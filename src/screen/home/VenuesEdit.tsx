@@ -1,30 +1,30 @@
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {IVenue, addVenue} from '../../firebase/database/venues.doc';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {IVenue, updateVenue} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import moment from 'moment';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import Video from 'react-native-video';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
+import Video from 'react-native-video';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 interface createProps {
   name: string;
@@ -42,6 +42,7 @@ interface createProps {
 }
 
 const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
+  const [loading, setLoading] = React.useState(false);
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
@@ -132,14 +133,29 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
         <Formik
           initialValues={route?.params?.item}
           onSubmit={(values, {resetForm}) => {
-            addVenue(values).then(() => {
-              resetForm();
-              showToast({
-                title: 'success',
-                content: 'Venue created successfully',
-                onPress: closeToast,
+            setLoading(true);
+            updateVenue(values)
+              .then(() => {
+                setLoading(false);
+                showToast({
+                  title: 'success',
+                  content: 'Venue Update successfully',
+                  onPress: () => {
+                    navigation?.goBack();
+                    closeToast();
+                  },
+                });
+              })
+              .catch(err => {
+                setLoading(false);
+                showToast({
+                  title: 'error',
+                  content: err,
+                  onPress: () => {
+                    closeToast();
+                  },
+                });
               });
-            });
           }}
           validate={(values: createProps) => handleValidate(values)}>
           {({
@@ -488,7 +504,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               </View>
               <View>
                 <TButton
-                  title="Create venue"
+                  isLoading={loading}
+                  title="Update venue"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={() => {

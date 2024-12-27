@@ -1,41 +1,28 @@
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
+  IconCalendarGay,
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import moment from 'moment';
+import IButton from '../../components/buttons/IButton';
+import {IEvent} from '../../firebase/database/events.doc';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
+import moment from 'moment';
 import tw from '../../lib/tailwind';
-import Background from '../components/Background';
-
-interface createProps {
-  name: string;
-  description: string;
-  image: any;
-  venue: string;
-  date: string;
-  nightclub_manager?: string;
-  start_time: string;
-  end_time: string;
-  capacity: string;
-  entry_fee: string;
-  free_entry: string;
-  resident_dj: string;
-}
+import {useMediaPicker} from '../../hook/useMediaPicker';
 
 const EventCreate = ({navigation}: NavigProps<null>) => {
   const [open, setOpen] = React.useState({
@@ -55,7 +42,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     return image[0];
   };
 
-  const handleValidate = (values: any) => {
+  const handleValidate = (values: IEvent) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -82,11 +69,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     if (!values.capacity) {
       errors.capacity = 'Required';
     }
-    if (!values.entry_fee) {
+    if (!values.entryFee) {
       errors.entry_fee = 'Required';
     }
 
-    if (!values.resident_dj) {
+    if (!values.residentDj) {
       errors.resident_dj = 'Required';
     }
 
@@ -109,18 +96,17 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             image: '',
             venue: '',
             date: '',
-            nightclub_manager: '',
             start_time: '',
             end_time: '',
             capacity: '',
-            entry_fee: '',
-            free_entry: '',
-            resident_dj: '',
+            entryFee: '',
+            residentDj: '',
+            createdBy: '',
           }}
           onSubmit={values => {
             console.log(values);
           }}
-          validate={(values: createProps) => handleValidate(values)}>
+          validate={(values: IEvent) => handleValidate(values)}>
           {({
             handleChange,
             handleBlur,
@@ -262,19 +248,31 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   touched={touched.description}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Event date"
-                  placeholder="Enter event date name"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.date}
-                  onChangeText={handleChange('date')}
-                  onBlur={handleBlur('date')}
-                  errorText={errors.date}
-                  touched={touched.date}
-                />
-              </View>
+
+              <DateTimePicker
+                value={
+                  values.date
+                    ? moment(values.date || new Date()).format('d MMMM, YYYY')
+                    : ''
+                }
+                dateProps={{
+                  mode: 'date',
+                }}
+                svgSecondIcon={!values?.date && IconCalendarGay}
+                label="Event date"
+                placeholder="Enter event date name"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('date')}
+                onBlur={handleBlur('date')}
+                errorText={errors.date}
+                touched={touched.date}
+                onClear={() => {
+                  handleChange('date')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('date')(date);
+                }}
+              />
               <DateTimePicker
                 value={
                   values.start_time
@@ -336,11 +334,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   label="Entry fee"
                   placeholder="Enter entry fee"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.entry_fee}
+                  value={values.entryFee}
                   onChangeText={handleChange('entry_fee')}
                   onBlur={handleBlur('entry_fee')}
-                  errorText={errors.entry_fee}
-                  touched={touched.entry_fee}
+                  errorText={errors.entryFee}
+                  touched={touched.entryFee}
                   keyboardType="decimal-pad"
                 />
               </View>
@@ -351,11 +349,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   label="Resident dj"
                   placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.resident_dj}
+                  value={values.residentDj}
                   onChangeText={handleChange('resident_dj')}
                   onBlur={handleBlur('resident_dj')}
-                  errorText={errors.resident_dj}
-                  touched={touched.resident_dj}
+                  errorText={errors.residentDj}
+                  touched={touched.residentDj}
                 />
               </View>
 

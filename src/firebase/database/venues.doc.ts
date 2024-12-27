@@ -17,6 +17,7 @@ export interface IVenue {
   danceFloor: string;
   residentDj: string;
   createdBy: string;
+  status: string;
 }
 
 export const addVenue = async (venue: IVenue) => {
@@ -42,7 +43,7 @@ export const deleteVenue = async (id: string) => {
   try {
     const venueRef = venuesCollection.doc(id);
     await venueRef.delete();
-    console.log('Venue deleted successfully');
+    // console.log('Venue deleted successfully');
   } catch (error) {
     console.error('Error deleting venue:', error);
   }
@@ -74,9 +75,14 @@ export const getVenue = async (id: string) => {
   }
 };
 
-export const updateVenue = async (id: string, updates: Partial<IVenue>) => {
+export const updateVenue = async (updates: Partial<IVenue>) => {
   try {
-    const venueRef = venuesCollection.doc(id);
+    const venueRef = venuesCollection.doc(updates.id);
+    const venueSnapshot = await venueRef.get();
+    if (!venueSnapshot.exists) {
+      console.log('Venue not found');
+      return;
+    }
 
     const updatedData = {
       ...updates,
@@ -84,7 +90,7 @@ export const updateVenue = async (id: string, updates: Partial<IVenue>) => {
     };
 
     await venueRef.update(updatedData);
-    console.log('Venue updated successfully:', updatedData);
+    // console.log('Venue updated successfully:', updatedData);
   } catch (error) {
     console.error('Error updating venue:', error);
   }
