@@ -5,15 +5,33 @@ import {
   IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
 
+import firestore from '@react-native-firebase/firestore';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {IEvent} from '../../../firebase/database/events.doc';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
-import data from './events.json';
 
 const UpcomingEvents = ({navigation}: NavigProps<null>) => {
+  const [data, setData] = React.useState<Array<IEvent>>();
+
+  React.useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('Events') // Your Firestore collection name
+      .onSnapshot(snapshot => {
+        const events = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as IEvent[];
+        setData(events);
+      });
+
+    // Cleanup the listener on component unmount
+    return () => unsubscribe();
+  }, []);
+
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
@@ -32,18 +50,18 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
             </TouchableOpacity>
           }>
           <Card.Image
-            source={item.image}
+            source={{uri: item.image}}
             imageStyle={tw`h-14 w-14 rounded-lg`}
           />
           <Card.Details
             data={[
               {
-                title: item.title,
+                title: item.name,
                 icons: IconSmallCalendarCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: item.people.toString(),
+                title: '55 people',
                 icons: IconMultiUserCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },

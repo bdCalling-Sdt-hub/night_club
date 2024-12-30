@@ -1,34 +1,40 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IEvent, createEvents} from '../../firebase/database/events.doc';
 import {
   IconCalendarGay,
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import IButton from '../../components/buttons/IButton';
-import {IEvent} from '../../firebase/database/events.doc';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {eventsCollection} from '../../firebase/database/collections';
+import {IVenue} from '../../firebase/database/venues.doc';
 import {useMediaPicker} from '../../hook/useMediaPicker';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const EventCreate = ({navigation}: NavigProps<null>) => {
+  const {showToast, closeToast} = useToast();
   const [open, setOpen] = React.useState({
     openTime: false,
     closeTime: false,
   });
+
+  const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
 
   const handleImageUpdate = async () => {
     // console.log(values);
@@ -39,7 +45,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
       selectionLimit: 1,
     });
 
-    return image[0];
+    return image![0];
   };
 
   const handleValidate = (values: IEvent) => {
@@ -69,16 +75,26 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     if (!values.capacity) {
       errors.capacity = 'Required';
     }
-    if (!values.entryFee) {
+    if (!values.entry_fee) {
       errors.entry_fee = 'Required';
     }
 
-    if (!values.residentDj) {
+    if (!values.resident_dj) {
       errors.resident_dj = 'Required';
     }
 
     return errors;
   };
+
+  React.useEffect(() => {
+    const venues = async () => {
+      const venues = await eventsCollection.get();
+      setAllVenues(venues.docs.map(doc => doc.data() as IVenue));
+    };
+    venues();
+  }, []);
+
+  // console.log(allVenues);
 
   return (
     <Background style={tw`flex-1`}>
@@ -99,12 +115,22 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             start_time: '',
             end_time: '',
             capacity: '',
-            entryFee: '',
-            residentDj: '',
+            entry_fee: '',
+            resident_dj: '',
             createdBy: '',
           }}
           onSubmit={values => {
             console.log(values);
+            createEvents(values).then(() => {
+              showToast({
+                title: 'success',
+                content: 'Venue created successfully',
+                onPress: () => {
+                  navigation?.goBack();
+                  closeToast();
+                },
+              });
+            });
           }}
           validate={(values: IEvent) => handleValidate(values)}>
           {({
@@ -145,7 +171,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                         // console.log('pressed');
                         // console.log(image);
                         // handleBlur('image');
-                        image && handleChange('image')(image?.uri);
+                        image && handleChange('image')(image?.uri || '');
                       }}
                       containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
@@ -186,7 +212,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -201,18 +227,12 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     );
                   }}
                   fieldType={Picker.fieldTypes.filter}
-                  items={[
-                    {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
-                    {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
-                    {label: 'Oceanview Club', value: 'Oceanview Club'},
-                    {label: 'The Pulse Arena', value: 'The Pulse Arena'},
-                    {label: 'Neon District', value: 'Neon District'},
-                    {label: 'Electric Gardens', value: 'Electric Gardens'},
-                    {label: 'The Vibe Room', value: 'The Vibe Room'},
-                    {label: 'Sunset Terrace', value: 'Sunset Terrace'},
-                    {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
-                    {label: 'Majestic Hall', value: 'Majestic Hall'},
-                  ]}
+                  items={allVenues?.map(item => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -279,8 +299,8 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     ? moment(values.start_time).format('hh:mm A')
                     : ''
                 }
-                label="Opening time"
-                placeholder="Please select open time"
+                label="Start time"
+                placeholder="Please select start time"
                 containerStyle={tw`border-0 h-12 rounded-lg`}
                 onChangeText={handleChange('start_time')}
                 onBlur={handleBlur('start_time')}
@@ -299,8 +319,8 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     ? moment(values.end_time).format('hh:mm A')
                     : ''
                 }
-                label="Closing time"
-                placeholder="Please select close time"
+                label="End time"
+                placeholder="Please select end time"
                 containerStyle={tw`border-0 h-12 rounded-lg`}
                 onChangeText={handleChange('end_time')}
                 onBlur={handleBlur('end_time')}
@@ -334,11 +354,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   label="Entry fee"
                   placeholder="Enter entry fee"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.entryFee}
+                  value={values.entry_fee}
                   onChangeText={handleChange('entry_fee')}
                   onBlur={handleBlur('entry_fee')}
-                  errorText={errors.entryFee}
-                  touched={touched.entryFee}
+                  errorText={errors.entry_fee}
+                  touched={touched.entry_fee}
                   keyboardType="decimal-pad"
                 />
               </View>
@@ -349,28 +369,22 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   label="Resident dj"
                   placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.residentDj}
+                  value={values.resident_dj}
                   onChangeText={handleChange('resident_dj')}
                   onBlur={handleBlur('resident_dj')}
-                  errorText={errors.residentDj}
-                  touched={touched.residentDj}
+                  errorText={errors.resident_dj}
+                  touched={touched.resident_dj}
                 />
               </View>
 
               <View>
                 <TButton
-                  title="Update"
+                  title="Create event"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={() => {
                     handleSubmit();
                   }}
-                />
-                <TButton
-                  title="Delete"
-                  titleStyle={tw`font-RobotoBold text-red-500 text-base`}
-                  containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
-                  onPress={() => navigation?.goBack()}
                 />
               </View>
             </View>
