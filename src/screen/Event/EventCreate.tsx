@@ -8,6 +8,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -20,8 +21,8 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
-import {eventsCollection} from '../../firebase/database/collections';
 import {IVenue} from '../../firebase/database/venues.doc';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -34,18 +35,24 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     closeTime: false,
   });
 
+  const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
 
   const handleImageUpdate = async () => {
-    // console.log(values);
-
+    setImageUpdateLoad(true);
     const image = await useMediaPicker({
-      option: 'library',
       mediaType: 'photo',
       selectionLimit: 1,
+      option: 'library',
     });
+    if (!image) {
+      setImageUpdateLoad(false);
+      return;
+    }
 
-    return image![0];
+    const imageUrl = await uploadFileToFirebase(image[0]);
+    setImageUpdateLoad(false);
+    return imageUrl;
   };
 
   const handleValidate = (values: IEvent) => {
@@ -88,7 +95,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
 
   React.useEffect(() => {
     const venues = async () => {
-      const venues = await eventsCollection.get();
+      const venues = await firestore().collection('Venues').get();
       setAllVenues(venues.docs.map(doc => doc.data() as IVenue));
     };
     venues();
@@ -120,11 +127,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             createdBy: '',
           }}
           onSubmit={values => {
-            console.log(values);
+            // console.log(values);
             createEvents(values).then(() => {
               showToast({
                 title: 'success',
-                content: 'Venue created successfully',
+                content: 'Event created successfully',
                 onPress: () => {
                   navigation?.goBack();
                   closeToast();
@@ -144,7 +151,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             <View style={tw`gap-4 `}>
               <View style={tw` bg-secondary rounded-lg px-3`}>
                 <Text style={tw`text-white font-RobotoBold text-sm py-2`}>
-                  Add venue image
+                  Add event image
                 </Text>
                 <View
                   style={tw`border border-white60 h-20 rounded-lg border-dashed justify-center items-center my-3`}>
@@ -166,12 +173,13 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     </View>
                   ) : (
                     <IwtButton
+                      isLoading={imageUpdateLoad}
                       onPress={async () => {
                         const image = await handleImageUpdate();
                         // console.log('pressed');
                         // console.log(image);
                         // handleBlur('image');
-                        image && handleChange('image')(image?.uri || '');
+                        image && handleChange('image')(image);
                       }}
                       containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
@@ -197,7 +205,9 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.venue}
+                      value={
+                        allVenues?.find(item => item.id === values.venue)?.name
+                      }
                       label="Venue"
                       placeholder="Select venue"
                       containerStyle={tw`h-12 border-0 rounded-lg`}

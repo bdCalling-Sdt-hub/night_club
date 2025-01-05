@@ -6,33 +6,33 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {IVenue, addVenue} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
+import {Picker} from 'react-native-ui-lib';
 import Video from 'react-native-video';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
-import {useAuth} from '../../context/AuthProvider';
-import {useMediaPicker} from '../../hook/useMediaPicker';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import {useMediaPicker} from '../../hook/useMediaPicker';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
   const {userId} = useAuth();
@@ -180,11 +180,11 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                     <View style={tw`flex-row justify-between items-center`}>
                       <Video
                         muted={false}
-                        // controls
                         renderLoader={() => (
                           <ActivityIndicator color="white" size="small" />
                         )}
                         repeat
+                        playInBackground
                         resizeMode="cover"
                         style={tw`w-[96%] h-24 self-center rounded-lg overflow-hidden`}
                         source={{uri: values.video}}

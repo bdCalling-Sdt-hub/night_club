@@ -1,24 +1,26 @@
-import {IVenue, getVenue} from '../../firebase/database/venues.doc';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
-import React, {useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
 
+import firestore from '@react-native-firebase/firestore';
+import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment';
+import {SvgXml} from 'react-native-svg';
+import {PageControl} from 'react-native-ui-lib';
+import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PageControl} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import Video from 'react-native-video';
-import moment from 'moment';
+import {IVenue} from '../../firebase/database/venues.doc';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const [venue, setVenue] = useState<IVenue | null>();
   const [currentPage, setCurrentPage] = useState(0); // Track current page
-
+  const [paused, setPaused] = useState(true);
   // Handle scroll and update the current page
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -26,15 +28,30 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
     setCurrentPage(page); // Update current page
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (route?.params?.id) {
-      getVenue(route?.params?.id).then(res => {
-        setVenue(res);
-      });
+      firestore()
+        .collection('Venues')
+        .doc(route?.params?.id)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            setVenue(doc.data() as IVenue);
+          }
+        });
     }
   }, [route?.params?.id]);
 
   // console.log(venues);
+
+  useFocusEffect(() => {
+    if (venue?.video) {
+      setPaused(false);
+    }
+    return () => {
+      setPaused(true);
+    };
+  });
 
   return (
     <Background style={tw`flex-1`}>
@@ -56,9 +73,23 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
           <View style={tw`mx-4 my-2`}>
             {venue?.video && (
               <Video
-                muted={false}
+                // muted={false}
                 // controls
+                controls
+                // paused
+                resizeMode="cover"
+                // onEnd={() => setPaused(true)} // Optional: Pause video on end
                 repeat
+                renderLoader={() => {
+                  return (
+                    <View style={tw`flex-1 justify-center items-center`}>
+                      <Text
+                        style={tw`text-white50 font-RobotoBlack text-base `}>
+                        Loading...
+                      </Text>
+                    </View>
+                  );
+                }}
                 style={tw`aspect-video h-[${
                   height * 0.058
                 }] self-center rounded-lg overflow-hidden`}

@@ -1,30 +1,35 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
-import {IVenue, updateVenue} from '../../firebase/database/venues.doc';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  IVenue,
+  deleteVenue,
+  updateVenue,
+} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import {useFocusEffect} from '@react-navigation/native';
 import {Formik} from 'formik';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import Video from 'react-native-video';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import VideoThumbnail from './components/VideoThumbnail';
 
 interface createProps {
   name: string;
@@ -43,6 +48,7 @@ interface createProps {
 
 const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const [loading, setLoading] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(true);
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
@@ -78,6 +84,33 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     setVideoUpdateLoad(false);
     return videoUrl;
   };
+
+  const handleDeleteVenue = () => {
+    setLoading(true);
+    deleteVenue(route?.params?.item?.id as string)
+      .then(() => {
+        setLoading(false);
+        showToast({
+          title: 'success',
+          content: 'Venue Delete successfully',
+          onPress: () => {
+            (navigation as any)?.replace('Home');
+            closeToast();
+          },
+        });
+      })
+      .catch(err => {
+        setLoading(false);
+        showToast({
+          title: 'error',
+          content: err,
+          onPress: () => {
+            closeToast();
+          },
+        });
+      });
+  };
+
   const handleValidate = (values: any) => {
     const errors: any = {};
 
@@ -124,9 +157,26 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     return errors;
   };
 
+  useFocusEffect(() => {
+    if (route?.params?.item?.video) {
+      setIsPlaying(false);
+    }
+    return () => {
+      setIsPlaying(true);
+    };
+  });
+
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit Venue" onPress={() => navigation?.goBack()} />
+      <BackWithTitle
+        title="Edit Venue"
+        onPress={
+          () => navigation.goBack()
+          // (navigation as any)?.replace('VenuesDetails', {
+          //   id: route?.params?.item?.id,
+          // })
+        }
+      />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -175,14 +225,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                   style={tw`border border-white60 h-28 rounded-lg border-dashed justify-center items-center my-3`}>
                   {values.video ? (
                     <View style={tw`flex-row justify-between items-center`}>
-                      <Video
-                        muted={false}
-                        // controls
-                        repeat
-                        resizeMode="cover"
-                        style={tw`w-[96%] h-24 self-center rounded-lg overflow-hidden`}
-                        source={{uri: values.video}}
-                      />
+                      <VideoThumbnail videoUri={values.video} />
                       <IButton
                         onPress={() => {
                           handleChange('video')('');
@@ -503,15 +546,22 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                 />
               </View>
               <View>
-                <TButton
-                  isLoading={loading}
-                  title="Update venue"
-                  titleStyle={tw`font-RobotoBold text-base`}
-                  containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
-                  onPress={() => {
-                    handleSubmit();
-                  }}
-                />
+                <View>
+                  <TButton
+                    title="Update"
+                    titleStyle={tw`font-RobotoBold text-base`}
+                    containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
+                    onPress={() => {
+                      handleSubmit();
+                    }}
+                  />
+                  <TButton
+                    title="Delete"
+                    titleStyle={tw`font-RobotoBold text-red-500 text-base`}
+                    containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
+                    onPress={handleDeleteVenue}
+                  />
+                </View>
               </View>
             </View>
           )}

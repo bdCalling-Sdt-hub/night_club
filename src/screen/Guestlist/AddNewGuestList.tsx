@@ -1,35 +1,60 @@
 import {FlatList, Text, View} from 'react-native';
+import {
+  IGuestsList,
+  createGuestList,
+} from '../../firebase/database/guestsList.doc';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import InputText from '../../components/inputs/InputText';
-import {NavigProps} from '../../interfaces/NaviProps';
+import firestore from '@react-native-firebase/firestore';
 import React from 'react';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
+import InputText from '../../components/inputs/InputText';
+import {useToast} from '../../components/modals/Toaster';
+import {IconTrashGray} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const AddNewGuestList = ({navigation}: NavigProps<null>) => {
+  const {closeToast, showToast} = useToast();
   const [search, setSearch] = React.useState('');
   const [guestList, setGuestList] = React.useState('');
-  const [guestListAvailable, setGuestListAvailable] = React.useState([
-    {label: 'Guest List 1', value: 'Guest List 1'},
-    {label: 'Guest List 2', value: 'Guest List 2'},
-    {label: 'Guest List 3', value: 'Guest List 3'},
-    {label: 'Guest List 4', value: 'Guest List 4'},
-    {label: 'Guest List 5', value: 'Guest List 5'},
-    {label: 'Guest List 6', value: 'Guest List 6'},
-    {label: 'Guest List 7', value: 'Guest List 7'},
-    {label: 'Guest List 8', value: 'Guest List 8'},
-  ]);
+  const [guestListAvailable, setGuestListAvailable] = React.useState<
+    Array<IGuestsList>
+  >([]);
 
   const handleGuestList = () => {
-    if (!guestList) return;
-    setGuestListAvailable([
-      ...guestListAvailable,
-      {label: guestList, value: guestList},
-    ]);
-    setGuestList('');
+    if (guestList) {
+      setGuestList('');
+      createGuestList({name: guestList}).then(() => {});
+    } else {
+      showToast({
+        title: 'Warning',
+        content: 'Please enter guest list name',
+        onPress: () => {
+          closeToast();
+        },
+      });
+    }
   };
+
+  React.useEffect(() => {
+    const unsubscribe = firestore()
+      .collection('GuestsList') // Your Firestore collection name
+      .onSnapshot(snapshot => {
+        const guestList = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as any;
+        setGuestListAvailable(guestList);
+      });
+
+    return () => unsubscribe();
+  }, []);
+
+  // console.log(guestListAvailable);
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithTitle
@@ -60,10 +85,17 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
         data={guestListAvailable}
         renderItem={({item, index}) => (
           <View
-            style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+            style={tw`flex-row justify-between mt-1 pb-2 mx-[4%] border-b border-b-gray-800 `}>
             <Text style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-              {item.value}
+              {item.name}
             </Text>
+            <IButton
+              svg={IconTrashGray}
+              onPress={() => {
+                firestore().collection('GuestsList').doc(item.id).delete();
+              }}
+              containerStyle={tw`w-10 h-10 bg-red-500 text-white`}
+            />
           </View>
         )}
       />

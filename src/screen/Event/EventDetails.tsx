@@ -1,30 +1,29 @@
-import React, {useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import {firebase} from '@react-native-firebase/auth';
+import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment';
+import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import {useToast} from '../../components/modals/Toaster';
+import {IEvent} from '../../firebase/database/events.doc';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {height} from '../../utils/utils';
 import Background from '../components/Background';
-import EventD from './event_d.json';
 
-const VenuesDetails = ({navigation}: NavigProps<null>) => {
+const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const {closeToast, showToast} = useToast();
-  const [currentPage, setCurrentPage] = useState(0); // Track current page
+
+  const [event, setEvent] = React.useState<IEvent>();
 
   // Handle scroll and update the current page
-  const handleScroll = (event: any) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const page = Math.floor(contentOffsetX / (height * 0.4)); // Adjust page width based on height
-    setCurrentPage(page); // Update current page
-  };
 
   const handleShearPress = () => {
     showToast({
@@ -41,10 +40,31 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
     });
   };
 
+  // console.log('route', route?.params?.id);
+
+  useFocusEffect(() => {
+    if (route?.params?.id) {
+      firebase
+        .firestore()
+        .collection('Events')
+        .doc(route?.params?.id)
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            setEvent(doc.data() as IEvent);
+          } else {
+            console.log('No such document!');
+          }
+        });
+    }
+  });
+
+  // console.log(event);
+
   return (
     <Background style={tw`flex-1`}>
       <BackWithComponent
-        title={EventD.name}
+        title={event?.name}
         onPress={() => navigation?.goBack()}
         ComponentBtn={
           <IButton
@@ -60,13 +80,15 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
         {/*================= View or image part ==================  */}
 
         <View style={tw`mx-4 my-2`}>
-          <AniImage
-            imageStyle={tw`w-full h-[${
-              height * 0.04
-            }] self-center rounded-lg overflow-hidden `}
-            source={EventD.image}
-            containerStyle={tw`opacity-60`}
-          />
+          {event?.image && (
+            <AniImage
+              imageStyle={tw`w-full h-[${
+                height * 0.04
+              }] self-center rounded-lg overflow-hidden `}
+              source={{uri: event?.image}}
+              containerStyle={tw`opacity-60`}
+            />
+          )}
         </View>
 
         <View
@@ -79,14 +101,14 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
             Total RSVP guests
           </Text>
           <Text style={tw`text-white50 text-base font-RobotoBold`}>
-            {EventD.guestlist.current_guest_count}
+            {event?.capacity}
           </Text>
         </View>
 
         {/*============================ Clubs Details parts here ==================== */}
 
         <View style={tw`px-4 mb-1 mt-4 gap-3`}>
-          <Text style={tw`text-white60`}>{EventD.description}</Text>
+          <Text style={tw`text-white60`}>{event?.description}</Text>
         </View>
         {/*=================== Accounts parts =============== */}
         <View style={tw`px-4 gap-5 mt-5`}>
@@ -95,31 +117,35 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
               Date:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.date}
+              {moment(event?.date).format('DD/MM/YYYY')}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
               Start time:
             </Text>
-            <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.start_time}
-            </Text>
+            {event?.start_time && (
+              <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
+                {moment(event?.start_time).format('hh:mm A')}
+              </Text>
+            )}
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
               End time:
             </Text>
-            <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.end_time}
-            </Text>
+            {event?.end_time && (
+              <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
+                {moment(event?.end_time).format('hh:mm A')}
+              </Text>
+            )}
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
               Capacity:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.capacity}
+              {event?.capacity}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -127,7 +153,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
               Entry fee:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.entry_fees}
+              {event?.entry_fee}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -135,7 +161,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
               Booked DJs:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.booked_djs}
+              {event?.resident_dj}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -143,7 +169,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
               Free entry:
             </Text>
             <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {EventD.guestlist.free_entries}
+              {event?.entry_fee === 'Free' ? 'Yes' : 'No'}
             </Text>
           </View>
         </View>
@@ -160,7 +186,7 @@ const VenuesDetails = ({navigation}: NavigProps<null>) => {
           />
           <TButton
             onPress={() => {
-              navigation?.navigate('EventEdit');
+              navigation?.navigate('EventEdit', {item: event});
             }}
             title="Edit"
             titleStyle={tw`text-base text-primary font-RobotoBold`}

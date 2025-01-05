@@ -6,6 +6,7 @@ import {
 } from '../../../icons/icons';
 
 import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
@@ -43,7 +44,7 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
           component={
             <TouchableOpacity
               onPress={() => {
-                navigation?.navigate('EventDetails');
+                navigation?.navigate('EventDetails', {id: item.id});
               }}
               style={tw`px-2 `}>
               <Text style={tw`text-primary font-RobotoBlack`}>View</Text>
@@ -66,7 +67,7 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
               {
-                title: item.date,
+                title: moment(item.date).format('MMM DD, YYYY'),
                 icons: IconSmallCalendarV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },

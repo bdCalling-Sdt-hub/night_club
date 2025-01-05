@@ -1,28 +1,50 @@
 import {FlatList, Text, View} from 'react-native';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import InputText from '../../components/inputs/InputText';
-import {NavigProps} from '../../interfaces/NaviProps';
+import firestore from '@react-native-firebase/firestore';
 import React from 'react';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
+import InputText from '../../components/inputs/InputText';
+import {useToast} from '../../components/modals/Toaster';
+import {createTags} from '../../firebase/database/tags.doc';
+import {IconTrashGray} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const AddNewTag = ({navigation}: NavigProps<null>) => {
+  const {closeToast, showToast} = useToast();
   const [newTag, setNewTag] = React.useState('');
-  const [tags, setTags] = React.useState([
-    {label: 'VIP', value: 'VIP'},
-    {label: 'PREMIUM', value: 'PREMIUM'},
-    {label: 'GOLD', value: 'GOLD'},
-    {label: 'SILVER', value: 'SILVER'},
-    {label: 'BRONZE', value: 'BRONZE'},
-  ]);
+  const [tags, setTags] = React.useState<Array<Itag>>([]);
 
   const handleNewTag = () => {
-    if (!newTag) return;
-    setTags([...tags, {label: newTag, value: newTag}]);
-    setNewTag('');
+    if (!newTag) {
+      showToast({
+        title: 'Warning',
+        content: 'Please enter tag',
+        onPress: () => {
+          closeToast();
+        },
+      });
+    } else {
+      setNewTag('');
+      createTags({name: newTag}).then(() => {});
+    }
   };
+
+  React.useEffect(() => {
+    firestore()
+      .collection('Tags')
+      .onSnapshot(querySnapshot => {
+        const tags = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          name: doc.data().name,
+        }));
+        setTags(tags);
+      });
+  }, []);
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithTitle onPress={() => navigation.goBack()} title="Add new tag" />
@@ -48,10 +70,17 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
         data={tags}
         renderItem={({item, index}) => (
           <View
-            style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+            style={tw`flex-row justify-between mt-1 pb-2 mx-[4%] border-b border-b-gray-800 `}>
             <Text style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-              {item.value}
+              {item.name}
             </Text>
+            <IButton
+              svg={IconTrashGray}
+              onPress={() => {
+                firestore().collection('Tags').doc(item.id).delete();
+              }}
+              containerStyle={tw`w-10 h-10 bg-red-500 text-white`}
+            />
           </View>
         )}
       />

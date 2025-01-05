@@ -35,7 +35,7 @@ export const createEvents = async (data: IEvent) => {
   };
 
   await eventRef.set(eventData);
-  console.log('Event added successfully:', eventData);
+  // console.log('Event added successfully:', eventData);
 
   // when event is created, add a new document in the events collection
 

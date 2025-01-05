@@ -1,12 +1,15 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
+  IconCalendarGay,
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
@@ -14,40 +17,62 @@ import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {IEvent} from '../../firebase/database/events.doc';
+import {IVenue} from '../../firebase/database/venues.doc';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
-interface createProps {
-  name: string;
-  description: string;
-  image: any;
-  venue: string;
-  date: string;
-  nightclub_manager?: string;
-  start_time: string;
-  end_time: string;
-  capacity: string;
-  entry_fee: string;
-  resident_dj: string;
-}
+const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
+  const {showToast, closeToast} = useToast();
+  const [open, setOpen] = React.useState({
+    openTime: false,
+    closeTime: false,
+  });
 
-const EventEdit = ({navigation}: NavigProps<null>) => {
+  const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
+  const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+
   const handleImageUpdate = async () => {
-    // console.log(values);
-
+    setImageUpdateLoad(true);
     const image = await useMediaPicker({
-      option: 'library',
       mediaType: 'photo',
       selectionLimit: 1,
+      option: 'library',
     });
+    if (!image) {
+      setImageUpdateLoad(false);
+      return;
+    }
 
-    return image[0];
+    const imageUrl = await uploadFileToFirebase(image[0]);
+    setImageUpdateLoad(false);
+    return imageUrl;
   };
 
-  const handleValidate = (values: any) => {
+  const handleDeleteEvent = () => {
+    firestore()
+      .collection('Events')
+      .doc(route?.params?.item.id)
+      .delete()
+      .then(() => {
+        showToast({
+          title: 'success',
+          content: 'Event deleted successfully',
+          onPress: () => {
+            navigation?.canGoBack(2) && navigation?.goBack();
+            closeToast();
+          },
+        });
+      });
+  };
+
+  const handleValidate = (values: IEvent) => {
     const errors: any = {};
 
     if (!values.name) {
@@ -85,31 +110,42 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
     return errors;
   };
 
+  React.useEffect(() => {
+    const venues = async () => {
+      const venues = await firestore().collection('Venues').get();
+      setAllVenues(venues.docs.map(doc => doc.data() as IVenue));
+    };
+    venues();
+  }, []);
+
+  // console.log(allVenues);
+
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit" onPress={() => navigation?.goBack()} />
+      <BackWithTitle title="Edit event" onPress={() => navigation?.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
-          initialValues={{
-            name: '',
-            description: '',
-            image: '',
-            venue: '',
-            date: '',
-            nightclub_manager: '',
-            start_time: '',
-            end_time: '',
-            capacity: '',
-            entry_fee: '',
-            free_entry: '',
-            resident_dj: '',
-          }}
+          initialValues={route?.params?.item}
           onSubmit={values => {
-            console.log(values);
+            // console.log(values);
+            firestore()
+              .collection('Events')
+              .doc(values.id)
+              .update(values)
+              .then(() => {
+                showToast({
+                  title: 'success',
+                  content: 'Event updated successfully',
+                  onPress: () => {
+                    navigation?.goBack();
+                    closeToast();
+                  },
+                });
+              });
           }}
-          validate={(values: createProps) => handleValidate(values)}>
+          validate={(values: IEvent) => handleValidate(values)}>
           {({
             handleChange,
             handleBlur,
@@ -121,7 +157,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
             <View style={tw`gap-4 `}>
               <View style={tw` bg-secondary rounded-lg px-3`}>
                 <Text style={tw`text-white font-RobotoBold text-sm py-2`}>
-                  Add venue image
+                  Add event image
                 </Text>
                 <View
                   style={tw`border border-white60 h-20 rounded-lg border-dashed justify-center items-center my-3`}>
@@ -143,12 +179,13 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                     </View>
                   ) : (
                     <IwtButton
+                      isLoading={imageUpdateLoad}
                       onPress={async () => {
                         const image = await handleImageUpdate();
                         // console.log('pressed');
                         // console.log(image);
                         // handleBlur('image');
-                        image && handleChange('image')(image?.uri);
+                        image && handleChange('image')(image);
                       }}
                       containerStyle={tw`bg-transparent border border-primary  w-48 h-10 p-0 justify-center items-center rounded-lg gap-5`}
                       svg={IconPlusGray}
@@ -169,11 +206,14 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                   value={values.venue}
                   onChange={handleChange('venue')}
                   onBlur={handleBlur('venue')}
+                  shouldRasterizeIOS
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.venue}
+                      value={
+                        allVenues?.find(item => item.id === values.venue)?.name
+                      }
                       label="Venue"
                       placeholder="Select venue"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -188,7 +228,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -203,19 +243,12 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                     );
                   }}
                   fieldType={Picker.fieldTypes.filter}
-                  paddingH
-                  items={[
-                    {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
-                    {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
-                    {label: 'Oceanview Club', value: 'Oceanview Club'},
-                    {label: 'The Pulse Arena', value: 'The Pulse Arena'},
-                    {label: 'Neon District', value: 'Neon District'},
-                    {label: 'Electric Gardens', value: 'Electric Gardens'},
-                    {label: 'The Vibe Room', value: 'The Vibe Room'},
-                    {label: 'Sunset Terrace', value: 'Sunset Terrace'},
-                    {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
-                    {label: 'Majestic Hall', value: 'Majestic Hall'},
-                  ]}
+                  items={allVenues?.map(item => {
+                    return {
+                      label: item.name,
+                      value: item.id,
+                    };
+                  })}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -226,7 +259,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Event name"
-                  placeholder="Enter Event full name"
+                  placeholder="Enter event full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.name}
                   onChangeText={handleChange('name')}
@@ -239,7 +272,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Event description"
-                  placeholder="Describe Event information"
+                  placeholder="Describe event information"
                   multiline
                   containerStyle={tw`border-0 h-24 rounded-lg`}
                   textAlignVertical="top"
@@ -251,45 +284,72 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                   touched={touched.description}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Event date"
-                  placeholder="Enter Event date name"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.date}
-                  onChangeText={handleChange('date')}
-                  onBlur={handleBlur('date')}
-                  errorText={errors.date}
-                  touched={touched.date}
-                />
-              </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Opening time"
-                  placeholder="Enter opening time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.start_time}
-                  onChangeText={handleChange('start_time')}
-                  onBlur={handleBlur('start_time')}
-                  errorText={errors.start_time}
-                  touched={touched.start_time}
-                />
-              </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Closing time"
-                  placeholder="Enter closing time"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.end_time}
-                  onChangeText={handleChange('end_time')}
-                  onBlur={handleBlur('end_time')}
-                  errorText={errors.end_time}
-                  touched={touched.end_time}
-                />
-              </View>
+
+              <DateTimePicker
+                value={
+                  values.date
+                    ? moment(values.date || new Date()).format('d MMMM, YYYY')
+                    : ''
+                }
+                dateProps={{
+                  mode: 'date',
+                }}
+                svgSecondIcon={!values?.date && IconCalendarGay}
+                label="Event date"
+                placeholder="Enter event date name"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('date')}
+                onBlur={handleBlur('date')}
+                errorText={errors.date}
+                touched={touched.date}
+                onClear={() => {
+                  handleChange('date')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('date')(date);
+                }}
+              />
+              <DateTimePicker
+                value={
+                  values.start_time
+                    ? moment(values.start_time).format('hh:mm A')
+                    : ''
+                }
+                label="Start time"
+                placeholder="Please select start time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('start_time')}
+                onBlur={handleBlur('start_time')}
+                errorText={errors.start_time}
+                touched={touched.start_time}
+                onClear={() => {
+                  handleChange('start_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('start_time')(date);
+                }}
+              />
+              <DateTimePicker
+                value={
+                  values.end_time
+                    ? moment(values.end_time).format('hh:mm A')
+                    : ''
+                }
+                label="End time"
+                placeholder="Please select end time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('end_time')}
+                onBlur={handleBlur('end_time')}
+                errorText={errors.end_time}
+                touched={touched.end_time}
+                onClear={() => {
+                  handleChange('end_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('end_time')(date);
+                }}
+              />
+
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -323,7 +383,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Resident dj"
-                  placeholder="Enter Resident dj"
+                  placeholder="Enter resident dj"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={values.resident_dj}
                   onChangeText={handleChange('resident_dj')}
@@ -346,7 +406,7 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
                   title="Delete"
                   titleStyle={tw`font-RobotoBold text-red-500 text-base`}
                   containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
-                  onPress={() => navigation?.goBack()}
+                  onPress={handleDeleteEvent}
                 />
               </View>
             </View>
@@ -357,4 +417,4 @@ const EventEdit = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default EventEdit;
+export default EventCreate;
