@@ -6,6 +6,8 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {firebase} from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -18,6 +20,8 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {IGuestsList} from '../../firebase/database/guestsList.doc';
+import {ITags} from '../../firebase/database/tags.doc';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -35,35 +39,24 @@ interface createProps {
 }
 
 const AddNewGuest = ({navigation}: NavigProps<null>) => {
+  // get current user
+  const currentUser = firebase.auth().currentUser;
+  // console.log(currentUser);
   const [extraFields, setExtraFields] = React.useState({
     note: '',
     email: '',
   });
-  const [newTag, setNewTag] = React.useState('');
-  const [guestList, setGuestList] = React.useState('');
+
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState({
     free_entry_time: false,
     free_entry_end_time: false,
   });
 
-  const [tags, setTags] = React.useState([
-    {label: 'VIP', value: 'VIP'},
-    {label: 'PREMIUM', value: 'PREMIUM'},
-    {label: 'GOLD', value: 'GOLD'},
-    {label: 'SILVER', value: 'SILVER'},
-    {label: 'BRONZE', value: 'BRONZE'},
-  ]);
-  const [guestListAvailable, setGuestListAvailable] = React.useState([
-    {label: 'Guest List 1', value: 'Guest List 1'},
-    {label: 'Guest List 2', value: 'Guest List 2'},
-    {label: 'Guest List 3', value: 'Guest List 3'},
-    {label: 'Guest List 4', value: 'Guest List 4'},
-    {label: 'Guest List 5', value: 'Guest List 5'},
-    {label: 'Guest List 6', value: 'Guest List 6'},
-    {label: 'Guest List 7', value: 'Guest List 7'},
-    {label: 'Guest List 8', value: 'Guest List 8'},
-  ]);
+  const [tags, setTags] = React.useState<Array<ITags> | []>([]);
+  const [guestListAvailable, setGuestListAvailable] = React.useState<
+    Array<IGuestsList> | []
+  >([]);
 
   const handleValidate = (values: createProps) => {
     const errors: any = {};
@@ -98,6 +91,24 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
 
     return errors;
   };
+
+  React.useEffect(() => {
+    firestore()
+      .collection('Tags')
+      .get()
+      .then(querySnapshot => {
+        const tags: any = querySnapshot.docs.map(doc => doc.data());
+        setTags(tags);
+      });
+
+    firestore()
+      .collection('GuestsList')
+      .get()
+      .then(querySnapshot => {
+        const guestList: any = querySnapshot.docs.map(doc => doc.data());
+        setGuestListAvailable(guestList);
+      });
+  }, []);
 
   return (
     <Background style={tw`flex-1`}>
@@ -157,7 +168,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.tag}
+                      value={tags.find(item => item.id === values.tag)?.name}
                       label="Tag"
                       placeholder="Select tag"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -172,7 +183,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items.label}
                         </Text>
                       </View>
                     );
@@ -190,7 +201,10 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={tags}
+                  items={tags?.map((item: any) => ({
+                    label: item.name,
+                    value: item.id,
+                  }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -364,7 +378,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   label="Added By"
                   placeholder="Enter your name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={'Alexzander'}
+                  value={currentUser?.displayName}
                   editable={false}
                   onChangeText={handleChange('added_by')}
                   onBlur={handleBlur('added_by')}
@@ -382,7 +396,11 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.guest_list}
+                      value={
+                        guestListAvailable?.find(
+                          item => item.id === values.guest_list,
+                        )?.name
+                      }
                       label="Add to guest list"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -397,7 +415,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -415,7 +433,10 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={guestListAvailable}
+                  items={guestListAvailable?.map(item => ({
+                    label: item.name,
+                    value: item.id,
+                  }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}

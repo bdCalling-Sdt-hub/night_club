@@ -1,4 +1,5 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconCompanyGray,
@@ -8,23 +9,22 @@ import {
   IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {updateProfile} from '@react-native-firebase/auth';
 import {Formik} from 'formik';
-import {IUser} from '../../firebase/interface';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import countries from './countries.json';
-import {createUser} from '../../firebase/database/user.doc';
-import tw from '../../lib/tailwind';
-import {useAuth} from '../../context/AuthProvider';
-import {useFireAuth} from '../../firebase/useFireAuth';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {IUser} from '../../firebase/interface';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import countries from './countries.json';
 
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
@@ -46,14 +46,22 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
       setLoading(true);
       // Sign up the user using your custom function
       const res = await SignUpWithEmailPass(data.email, data.password);
+
       if (res?.user?.uid) {
-        data.role = 'super-owner';
-        delete data.password;
-        await createUser(res.user?.uid, data);
-        // console.log('User created successfully in Firestore.');
+        // Update displayName and photoURL
+        await updateProfile(res.user, {
+          displayName: data.displayName,
+          photoURL: data.photoURL,
+        });
+
+        console.log('User profile updated:', res.user.displayName);
+
+        // Add other attributes like role (in Firestore or as custom claims)
       }
       if (res.user?.email) {
-        handleVerifyEmail(res.user.email)
+        data.role == 'super-owner';
+        console.log(data);
+        handleVerifyEmail(data)
           .then(res => {
             // console.log(res);
             // reset form data
@@ -61,6 +69,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             if (res.success) {
               (navigation as any)?.replace('SendMailSuccess');
             } else {
+              console.log(res);
               showToast({
                 title: 'Wrong',
                 content: res?.message,
@@ -139,7 +148,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
               email?: string;
               displayName?: string;
               password?: string;
-
               phoneNumber?: string;
             } = {};
 

@@ -1,8 +1,8 @@
 import firestore from '@react-native-firebase/firestore';
 import {tagsCollection} from './collections';
-export interface IGuest {
+export interface ITags {
   id?: string;
-  name: string;
+  name?: string;
   createdAt?: any;
   updatedAt?: any;
 }
@@ -12,7 +12,7 @@ export const createTags = async (data: any) => {
   const tagRef = tagsCollection.doc(); // Auto-generate ID
   const id = tagRef.id;
 
-  const tagData: IGuest = {
+  const tagData: ITags = {
     ...data,
     id: id,
     createdAt: firestore.FieldValue.serverTimestamp() as any, // Auto-generate timestamp

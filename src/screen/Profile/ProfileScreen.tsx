@@ -7,6 +7,7 @@ import {
   IconSmallSettingCyan,
 } from '../../icons/icons';
 
+import {firebase} from '@react-native-firebase/auth';
 import {DrawerActions} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -21,6 +22,7 @@ import {BaseColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
+  const currentUser = firebase.auth().currentUser;
   const [selectVenue, setSelectVenue] = React.useState('Select venue');
   const [selectEvent, setSelectEvent] = React.useState('Select event');
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
@@ -42,17 +44,21 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
         {/* //profile sections */}
         <View style={tw`gap-4 justify-center items-center`}>
           <AniImage
-            imageStyle={tw`w-32 h-32 rounded-full`}
-            source={{
-              uri: 'https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg',
-            }}
+            imageStyle={tw`w-32 h-32  rounded-full`}
+            source={
+              currentUser?.photoURL
+                ? {
+                    uri: currentUser?.photoURL,
+                  }
+                : require('../../assets/images/profile/profile1.webp')
+            }
           />
           <View style={tw`gap-1 justify-center items-center`}>
             <Text style={tw`text-2xl text-white200 font-RobotoBold`}>
-              Endrick Joseph
+              {currentUser?.displayName}
             </Text>
             <Text style={tw`text-sm text-white400 font-RobotoRegular`}>
-              Owner
+              {currentUser?.role}
             </Text>
           </View>
         </View>

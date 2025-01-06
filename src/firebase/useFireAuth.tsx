@@ -11,7 +11,7 @@ export const useFireAuth = () => {
     }
   };
 
-  const handleVerifyEmail = async (email: string) => {
+  const handleVerifyEmail = async (data: any) => {
     try {
       const res = await fetch(
         'https://us-central1-pushnotifiation-d1bcb.cloudfunctions.net/send_email_verification',
@@ -20,13 +20,11 @@ export const useFireAuth = () => {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            email: email,
-          }),
+          body: data,
         },
       );
-      const data = await res.json();
-      return data;
+      const resData = await res.json();
+      return resData;
     } catch (error) {
       return error;
     }
