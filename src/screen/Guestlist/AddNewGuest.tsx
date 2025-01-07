@@ -1,33 +1,35 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {firebase} from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import {Formik} from 'formik';
-import moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-native-date-picker';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputText from '../../components/inputs/InputText';
-import InputTextWL from '../../components/inputs/InputTextWL';
+import {Formik} from 'formik';
 import {IGuestsList} from '../../firebase/database/guestsList.doc';
 import {ITags} from '../../firebase/database/tags.doc';
+import InputText from '../../components/inputs/InputText';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
 import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import {createGuest} from '../../firebase/database/guests.doc';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
 import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useAuth} from '../../context/AuthProvider';
+import {useToast} from '../../components/modals/Toaster';
 
 interface createProps {
-  name: string;
+  fullName: string;
   people: string;
   entry_fee: string;
   free_entry: string;
@@ -40,7 +42,8 @@ interface createProps {
 
 const AddNewGuest = ({navigation}: NavigProps<null>) => {
   // get current user
-  const currentUser = firebase.auth().currentUser;
+  const {user} = useAuth();
+  const {closeToast, showToast} = useToast();
   // console.log(currentUser);
   const [extraFields, setExtraFields] = React.useState({
     note: '',
@@ -61,7 +64,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
   const handleValidate = (values: createProps) => {
     const errors: any = {};
 
-    if (!values.name) {
+    if (!values.fullName) {
       errors.name = 'Name is required';
     }
     if (!values.people) {
@@ -121,19 +124,29 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
           initialValues={{
-            name: '',
+            fullName: '',
             people: '',
             entry_fee: '',
             free_entry: '',
             free_entry_time: '',
             email: '',
             note: '',
-            added_by: '',
+            added_by: user?.user_id,
             guest_list: '',
             tag: '',
           }}
           onSubmit={values => {
-            console.log(values);
+            // console.log(values);
+            createGuest(values).then(() => {
+              showToast({
+                title: 'Success',
+                content: 'Guest added successfully',
+                onPress() {
+                  closeToast();
+                  navigation?.goBack();
+                },
+              });
+            });
           }}
           validate={(values: createProps) => handleValidate(values)}>
           {({
@@ -151,11 +164,11 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   label="First name & Last name"
                   placeholder="Enter  full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.name}
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  errorText={errors.name}
-                  touched={touched.name}
+                  value={values.fullName}
+                  onChangeText={handleChange('fullName')}
+                  onBlur={handleBlur('fullName')}
+                  errorText={errors.fullName}
+                  touched={touched.fullName}
                 />
               </View>
               <View style={tw`bg-base `}>
@@ -168,7 +181,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={tags.find(item => item.id === values.tag)?.name}
+                      value={values.tag}
                       label="Tag"
                       placeholder="Select tag"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -183,7 +196,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {items.label}
+                          {value}
                         </Text>
                       </View>
                     );
@@ -203,7 +216,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   paddingH
                   items={tags?.map((item: any) => ({
                     label: item.name,
-                    value: item.id,
+                    value: item.name,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
@@ -378,7 +391,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   label="Added By"
                   placeholder="Enter your name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={currentUser?.displayName}
+                  value={user?.name}
                   editable={false}
                   onChangeText={handleChange('added_by')}
                   onBlur={handleBlur('added_by')}
@@ -396,11 +409,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={
-                        guestListAvailable?.find(
-                          item => item.id === values.guest_list,
-                        )?.name
-                      }
+                      value={values.guest_list}
                       label="Add to guest list"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -415,7 +424,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {items?.label}
+                          {value}
                         </Text>
                       </View>
                     );
@@ -435,7 +444,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                   paddingH
                   items={guestListAvailable?.map(item => ({
                     label: item.name,
-                    value: item.id,
+                    value: item.name,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
@@ -459,7 +468,7 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
                     label="Email (optional)"
                     placeholder="Enter your email"
                     containerStyle={tw`border-0 h-12 rounded-lg`}
-                    value={values.email}
+                    value={values?.email}
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                   />

@@ -33,3 +33,17 @@ export const deleteGuestList = async (id: string) => {
     console.error('Error deleting Guest List:', error);
   }
 };
+
+// gets all Guest List
+export const getGuestList = async () => {
+  try {
+    const guestListSnapshot = await guestsListCollection.get();
+    const guestList = guestListSnapshot.docs.map(
+      doc => doc.data() as IGuestsList,
+    );
+    return guestList;
+  } catch (error) {
+    console.error('Error getting Guest List:', error);
+    return [];
+  }
+};

@@ -2,8 +2,26 @@ import {IUser} from '../firebase/interface';
 import React from 'react';
 import auth from '@react-native-firebase/auth';
 
+interface firebaseClaimUser {
+  aud: string;
+  auth_time: number;
+  company: string;
+  email: string;
+  email_verified: boolean;
+  exp: number;
+  firebase: {identities: {email: Array<string>}; sign_in_provider: string};
+  photoURL: string;
+  iat: number;
+  iss: string;
+  name: string;
+  phoneNumber: string;
+  role: 'super-owner' | 'owner' | 'manager' | 'promoters' | 'guard';
+  sub: string;
+  user_id: string;
+}
+
 interface AuthContextProps {
-  user: IUser | undefined;
+  user: firebaseClaimUser | undefined;
   setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
   initialLoading: boolean;
   setInitialLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -24,7 +42,7 @@ export const useAuth = () => {
 };
 
 const AuthProvider = ({children}: {children: React.ReactNode}) => {
-  const [user, setUser] = React.useState<IUser | undefined>();
+  const [user, setUser] = React.useState<any | undefined>();
   const [userId, setUserId] = React.useState<string | undefined>();
   const [initialLoading, setInitialLoading] = React.useState(true);
   const logUserClaims = async () => {
@@ -35,6 +53,18 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       // const idTokenResult = await currentUser.getIdTokenResult();
       // console.log('Custom Claims:', currentUser);
       setUserId(currentUser.uid);
+
+      // Fetch the refreshed token with claims
+      currentUser?.getIdToken(true).then(idToken => {
+        currentUser?.getIdTokenResult().then(idTokenResult => {
+          idTokenResult?.claims &&
+            setUser({
+              ...idTokenResult.claims,
+              photoURL: currentUser.photoURL,
+            }); // This should now include the custom claims
+        });
+      });
+
       // const user = await getUser(currentUser.uid);
       // user &&
       //   setUser({
@@ -53,6 +83,7 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       console.log('No user logged in');
     }
   };
+
   React.useEffect(() => {
     logUserClaims();
   }, []);

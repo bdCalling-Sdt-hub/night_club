@@ -1,33 +1,37 @@
-import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
+import {Text, TouchableOpacity, View} from 'react-native';
 
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
-import OptionSelect from '../../components/cards/OptionSelect';
-import SearchCard from '../../components/cards/SearchCard';
-import {useToast} from '../../components/modals/Toaster';
-import {useImportFile} from '../../hook/useImportFile';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import {BaseColor} from '../../utils/utils';
-import Background from '../components/Background';
 import AllGuest from './components/AllGuest';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import Background from '../components/Background';
+import {BaseColor} from '../../utils/utils';
+import {IGuest} from '../../firebase/database/guests.doc';
+import {ITags} from '../../firebase/database/tags.doc';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import OptionSelect from '../../components/cards/OptionSelect';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
 import SavedGuestList from './components/SavedGuestList';
+import SearchCard from '../../components/cards/SearchCard';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
 import data from './guest.json';
+import tw from '../../lib/tailwind';
+import {useImportFile} from '../../hook/useImportFile';
+import {useToast} from '../../components/modals/Toaster';
 
 const GuestListScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
 
   const [addedBy, setAddedBy] = React.useState('Added by');
   const [tags, setTags] = React.useState('Tags');
+  const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
+  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
   const [search, setSearch] = React.useState('');
 

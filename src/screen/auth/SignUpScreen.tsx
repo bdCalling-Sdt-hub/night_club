@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
   IconCloseGray,
   IconCompanyGray,
@@ -9,22 +8,23 @@ import {
   IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {updateProfile} from '@react-native-firebase/auth';
 import {Formik} from 'formik';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import TButton from '../../components/buttons/TButton';
+import {IUser} from '../../firebase/interface';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import {IUser} from '../../firebase/interface';
-import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
+import {Picker} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
 import countries from './countries.json';
+import tw from '../../lib/tailwind';
+import {updateProfile} from '@react-native-firebase/auth';
+import {useAuth} from '../../context/AuthProvider';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {useToast} from '../../components/modals/Toaster';
 
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
@@ -54,12 +54,13 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
           photoURL: data.photoURL,
         });
 
-        console.log('User profile updated:', res.user.displayName);
+        // console.log('User profile updated:', res.user);
 
         // Add other attributes like role (in Firestore or as custom claims)
       }
       if (res.user?.email) {
-        data.role == 'super-owner';
+        // added role to manually
+        data.role = 'super-owner';
         console.log(data);
         handleVerifyEmail(data)
           .then(res => {

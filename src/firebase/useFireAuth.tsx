@@ -14,13 +14,14 @@ export const useFireAuth = () => {
   const handleVerifyEmail = async (data: any) => {
     try {
       const res = await fetch(
-        'https://us-central1-pushnotifiation-d1bcb.cloudfunctions.net/send_email_verification',
+        // 'https://us-central1-pushnotifiation-d1bcb.cloudfunctions.net/send_email_verification',
+        'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/send_email_verification',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: data,
+          body: JSON.stringify(data),
         },
       );
       const resData = await res.json();
@@ -57,12 +58,13 @@ export const useFireAuth = () => {
     }
   };
   // ================  update user ===================
-  const UpdateUser = async (name: string, image: string) => {
+  const UpdateCurrentUser = async (name: string, image: string) => {
     try {
       await auth().currentUser?.updateProfile({
         displayName: name,
         photoURL: image,
       });
+      return true;
     } catch (error) {
       throw error;
     }
@@ -104,7 +106,7 @@ export const useFireAuth = () => {
     displayImage,
     updateUserName,
     SignUpWithEmailPass,
-    UpdateUser,
+    UpdateCurrentUser,
     handleResetPassword,
     handleVerifyEmail,
   };

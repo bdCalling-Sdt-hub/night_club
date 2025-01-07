@@ -22,3 +22,15 @@ export const createTags = async (data: any) => {
   await tagRef.set(tagData);
   // console.log('Tag added successfully:', tagData);
 };
+
+// get add tagss
+export const getTags = async () => {
+  try {
+    const tagsSnapshot = await tagsCollection.get();
+    const tags = tagsSnapshot.docs.map(doc => doc.data() as ITags);
+    return tags;
+  } catch (error) {
+    console.error('Error getting tags:', error);
+    return [];
+  }
+};

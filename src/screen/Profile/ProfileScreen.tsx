@@ -1,4 +1,3 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -6,27 +5,29 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {firebase} from '@react-native-firebase/auth';
-import {DrawerActions} from '@react-navigation/native';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import IwtButton from '../../components/buttons/IwtButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import {BaseColor} from '../../utils/utils';
 import Background from '../components/Background';
+import {BaseColor} from '../../utils/utils';
+import {DrawerActions} from '@react-navigation/native';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import tw from '../../lib/tailwind';
+import {useAuth} from '../../context/AuthProvider';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
-  const currentUser = firebase.auth().currentUser;
+  const {user, setUser} = useAuth();
   const [selectVenue, setSelectVenue] = React.useState('Select venue');
   const [selectEvent, setSelectEvent] = React.useState('Select event');
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithComponent
@@ -46,19 +47,19 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           <AniImage
             imageStyle={tw`w-32 h-32  rounded-full`}
             source={
-              currentUser?.photoURL
+              user?.photoURL
                 ? {
-                    uri: currentUser?.photoURL,
+                    uri: user?.photoURL,
                   }
                 : require('../../assets/images/profile/profile1.webp')
             }
           />
           <View style={tw`gap-1 justify-center items-center`}>
             <Text style={tw`text-2xl text-white200 font-RobotoBold`}>
-              {currentUser?.displayName}
+              {user?.name}
             </Text>
             <Text style={tw`text-sm text-white400 font-RobotoRegular`}>
-              {currentUser?.role}
+              {user?.role}
             </Text>
           </View>
         </View>

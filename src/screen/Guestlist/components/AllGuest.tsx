@@ -1,49 +1,65 @@
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {PrimaryColor, height} from '../../../utils/utils';
 
-import React from 'react';
+import Card from '../../../components/cards/Card';
 import {Checkbox} from 'react-native-ui-lib';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import IButton from '../../../components/buttons/IButton';
-import Or from '../../../components/buttons/Or';
-import TButton from '../../../components/buttons/TButton';
-import Card from '../../../components/cards/Card';
-import NormalModal from '../../../components/modals/NormalModal';
+import {IGuest} from '../../../firebase/database/guests.doc';
+import {IGuestsList} from '../../../firebase/database/guestsList.doc';
 import {IconBigPlusCyan} from '../../../icons/icons';
+import NormalModal from '../../../components/modals/NormalModal';
+import Or from '../../../components/buttons/Or';
+import React from 'react';
+import TButton from '../../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
 import tw from '../../../lib/tailwind';
-import data from '../guest.json';
 
 interface Props {
   navigation: any;
 }
 const AllGuest = ({navigation}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState([]);
-  const [selectGuestList, setSelectGuestList] = React.useState(null);
-
+  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
+  const [selectGuestList, setSelectGuestList] = React.useState<string>();
   const [addToGuests, setAddToGuests] = React.useState(false);
 
-  const [guestListAvailable, setGuestListAvailable] = React.useState([
-    {label: 'Guest List 1', value: 'Guest List 1'},
-    {label: 'Guest List 2', value: 'Guest List 2'},
-    {label: 'Guest List 3', value: 'Guest List 3'},
-    {label: 'Guest List 4', value: 'Guest List 4'},
-    {label: 'Guest List 5', value: 'Guest List 5'},
-    {label: 'Guest List 6', value: 'Guest List 6'},
-    {label: 'Guest List 7', value: 'Guest List 7'},
-    {label: 'Guest List 8', value: 'Guest List 8'},
-  ]);
+  const [guestListAvailable, setGuestListAvailable] = React.useState<
+    Array<IGuestsList>
+  >([]);
+
+  React.useEffect(() => {
+    //get all guest
+    firestore()
+      .collection('Guests')
+      .get()
+      .then(querySnapshot => {
+        const guests: any = querySnapshot.docs.map(doc => doc.data());
+        setGuestListData(guests);
+      });
+
+    //get All Guest List
+    firestore()
+      .collection('GuestsList')
+      .get()
+      .then(querySnapshot => {
+        const guestList: any = querySnapshot.docs.map(doc => doc.data());
+        setGuestListAvailable(guestList);
+      });
+  }, []);
+
   return (
     <>
       <FlatList
         contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
-        data={data.guest}
+        data={guestListData}
         ListEmptyComponent={
           <EmptyCard hight={height * 0.6} title="No Venues" />
         }
         renderItem={({item, index}) => (
           <Card
             onPress={() => {
-              navigation?.navigate('GuestEdit');
+              navigation?.navigate('GuestEdit', item);
             }}
             containerStyle={tw` flex-row gap-3 items-center`}
             component={
@@ -61,16 +77,18 @@ const AllGuest = ({navigation}: Props) => {
                   borderRadius={2}
                   size={15}
                   // iconColor="#000000"
-                  value={selectGuest?.includes(item)}
+                  value={selectGuest?.includes(item.id)}
                   onValueChange={() => {
                     if (selectGuest?.length > 0) {
-                      if (selectGuest?.includes(item)) {
-                        setSelectGuest(selectGuest?.filter(i => i !== item));
+                      if (selectGuest?.includes(item.id)) {
+                        setSelectGuest(
+                          selectGuest?.filter(i => i !== item?.id),
+                        );
                       } else {
-                        setSelectGuest([...selectGuest, item]);
+                        setSelectGuest([...selectGuest, item?.id]);
                       }
                     } else {
-                      setSelectGuest([item]);
+                      setSelectGuest([item?.id]);
                     }
                   }}
                   style={tw``}
@@ -82,12 +100,12 @@ const AllGuest = ({navigation}: Props) => {
               containerStyle={tw``}
               data={[
                 {
-                  title: item.name,
+                  title: item.fullName,
 
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: 'VIP',
+                  title: item.tag,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}
@@ -129,22 +147,22 @@ const AllGuest = ({navigation}: Props) => {
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectGuestList(item);
+                  setSelectGuestList(item.id);
                 }}
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectGuestList?.label === item.label}
+                  value={selectGuestList === item.id}
                   onValueChange={() => {
-                    setSelectGuestList(item);
+                    setSelectGuestList(item?.id);
                   }}
                   style={tw``}
                   color={'#fff'}
                 />
                 <Text style={tw`text-white50 font-RobotoBold text-base`}>
-                  {item.label}
+                  {item.name}
                 </Text>
               </TouchableOpacity>
             );
