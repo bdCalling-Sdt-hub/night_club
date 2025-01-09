@@ -5,7 +5,7 @@ export interface IGuest {
   id: string;
   fullName: string;
   tag: string;
-  amount_of_people: string;
+  people: string;
   check_in: string;
   entry_fee: string;
   free_entry: string;
@@ -40,7 +40,24 @@ export const deleteGuest = async (id: string) => {
     const guestRef = guestsCollection.doc(id);
     await guestRef.delete();
     // console.log('Guest deleted successfully');
+    return true;
   } catch (error) {
     console.error('Error deleting Guest:', error);
+  }
+};
+
+// update guest
+export const updateGuest = async (id: string, data: any) => {
+  try {
+    const guestRef = guestsCollection.doc(id);
+    const guestSnapshot = await guestRef.get();
+    if (!guestSnapshot.exists) {
+      console.log('Guest not found');
+      return;
+    }
+    await guestRef.update(data);
+    // console.log('Guest updated successfully');
+  } catch (error) {
+    console.error('Error updating Guest:', error);
   }
 };

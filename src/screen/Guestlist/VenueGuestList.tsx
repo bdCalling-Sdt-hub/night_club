@@ -9,6 +9,9 @@ import {
 } from '../../icons/icons';
 import {BaseColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useFocusEffect} from '@react-navigation/native';
+import moment from 'moment';
 import Papa from 'papaparse';
 import React from 'react';
 import RNFS from 'react-native-fs';
@@ -22,6 +25,9 @@ import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
+import {loadAllData} from '../../firebase/database/collections';
+import {IGuest} from '../../firebase/database/guests.doc';
+import {IGuestsList} from '../../firebase/database/guestsList.doc';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -30,7 +36,9 @@ import data from './guest.json';
 const VenueGuestList = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const [addedBy, setAddedBy] = React.useState('Added by');
+  // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [tags, setTags] = React.useState('Tags');
+  const [loading, setLoading] = React.useState(false);
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
 
@@ -186,6 +194,52 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
       ],
     });
   };
+  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
+  const [guestListAvailable, setGuestListAvailable] = React.useState<
+    Array<IGuestsList>
+  >([]);
+
+  const handleCheckIn = (guest: IGuest) => {
+    const guestRef = firestore().collection('Guests').doc(guest.id);
+    guestRef.update({
+      check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
+    });
+    loadAllData({
+      collectType: 'Guests',
+      setLoad: setGuestListData,
+    });
+  };
+
+  React.useEffect(() => {
+    //get all guest
+    loadAllData({
+      collectType: 'GuestsList',
+      setLoad: setGuestListAvailable,
+    });
+  }, []);
+
+  useFocusEffect(() => {
+    loadAllData({
+      collectType: 'Guests',
+      setLoad: setGuestListData,
+    });
+  });
+
+  const totalGuest = guestListData.reduce(
+    (acc, guest) => acc + Number(guest.people),
+    0,
+  );
+  const totoCheckIn = guestListData.filter(guest => guest.check_in).length;
+
+  const tagsData = Array.from(
+    new Set(guestListData?.map(guest => guest.tag)),
+  ).map(tag => ({label: tag, value: tag}));
+
+  const addedByData = Array.from(
+    new Set(guestListData?.map(guest => guest.added_by)),
+  ).map(addedBy => ({label: addedBy, value: addedBy}));
+
+  // console.log(addedByData);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -276,18 +330,7 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
             }}
             fieldType={Picker.fieldTypes.filter}
             paddingH
-            items={[
-              {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
-              {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
-              {label: 'Oceanview Club', value: 'Oceanview Club'},
-              {label: 'The Pulse Arena', value: 'The Pulse Arena'},
-              {label: 'Neon District', value: 'Neon District'},
-              {label: 'Electric Gardens', value: 'Electric Gardens'},
-              {label: 'The Vibe Room', value: 'The Vibe Room'},
-              {label: 'Sunset Terrace', value: 'Sunset Terrace'},
-              {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
-              {label: 'Majestic Hall', value: 'Majestic Hall'},
-            ]}
+            items={addedByData}
             pickerModalProps={{
               overlayBackgroundColor: BaseColor,
             }}
@@ -344,18 +387,7 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
             }}
             fieldType={Picker.fieldTypes.filter}
             paddingH
-            items={[
-              {label: 'Lounge', value: 'Lounge'},
-              {label: 'Rooftop', value: 'Rooftop'},
-              {label: 'Skyline Views', value: 'Skyline Views'},
-              {label: 'Relaxation', value: 'Relaxation'},
-              {label: 'Cocktails', value: 'Cocktails'},
-              {label: 'Chill Vibes', value: 'Chill Vibes'},
-              {label: 'Nightlife', value: 'Nightlife'},
-              {label: 'Exclusive', value: 'Exclusive'},
-              {label: 'Urban', value: 'Urban'},
-              {label: 'Event Venue', value: 'Event Venue'},
-            ]}
+            items={tagsData}
             pickerModalProps={{
               overlayBackgroundColor: BaseColor,
             }}
@@ -367,34 +399,55 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
           Checked in
         </Text>
         <Text style={tw`text-white50 font-RobotoBold text-base`}>
-          {data.checkin}/{data.total}
+          {totoCheckIn}/{totalGuest}
         </Text>
       </View>
 
       <FlatList
         contentContainerStyle={tw`px-4 pb-14 gap-3`}
-        data={data.guest}
+        data={guestListData
+          ?.filter(item => {
+            return tags === 'Tags' ? item : item?.tag === tags;
+          })
+          .filter(item => {
+            return addedBy === 'Added by' ? item : item?.added_by === addedBy;
+          })
+          .filter(item => {
+            return item.fullName.toLowerCase().includes(search.toLowerCase());
+          })}
+        keyExtractor={(item, index) => index.toString()}
         ListEmptyComponent={
           <EmptyCard hight={height * 0.6} title="No Venues" />
         }
         renderItem={({item, index}) => (
           <Card
-            onPress={() => navigation.navigate('GuestDetails')}
+            onPress={() => navigation.navigate('GuestDetails', {guest: item})}
             containerStyle={tw` flex-row gap-3 items-center`}
-            component={<Card.Button checkedIn={50} total={60} />}>
+            component={
+              <Card.Button
+                onPress={() => handleCheckIn(item)}
+                checkedIn={Number(item?.check_in || 0)}
+                total={Number(item?.people)}
+              />
+            }>
             <Card.Details
               data={[
                 {
-                  title: item.name,
-
+                  title: item.fullName,
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: item.type === 'free' ? 'Free all night' : 'Paid',
+                  title: item.free_entry_time
+                    ? `Free entry start at ${moment(
+                        item.free_entry_time,
+                      ).format('hh:mm A')}`
+                    : 'Paid',
                   titleStyle: tw`text-yellow-400 font-RobotoBold text-xs`,
                 },
                 {
-                  title: `Guests ${item.guest.checkin} out of ${item.guest.total} `,
+                  title: `Guests ${
+                    item?.check_in ? item?.check_in : 0
+                  } out of ${item?.people} `,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}

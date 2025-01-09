@@ -1,6 +1,5 @@
-import {View} from 'react-native';
-
 import React from 'react';
+import {View} from 'react-native';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
@@ -36,9 +35,9 @@ const VenueEvent = ({navigation}: NavigProps<null>) => {
       </View>
 
       {selectOption === 'History' ? (
-        <EHistory navigation={navigation} />
+        <EHistory navigation={navigation} search={search} />
       ) : (
-        <UpcomingEvents navigation={navigation} />
+        <UpcomingEvents navigation={navigation} search={search} />
       )}
     </Background>
   );

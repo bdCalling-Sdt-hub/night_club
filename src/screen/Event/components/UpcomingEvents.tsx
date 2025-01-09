@@ -15,7 +15,10 @@ import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
 
-const UpcomingEvents = ({navigation}: NavigProps<null>) => {
+interface Props extends NavigProps<null> {
+  search?: string;
+}
+const UpcomingEvents = ({navigation, route, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
 
   React.useEffect(() => {
@@ -36,7 +39,7 @@ const UpcomingEvents = ({navigation}: NavigProps<null>) => {
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data}
+      data={data?.filter((item: any) => item.name.includes(search))}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
       renderItem={({item, index}) => (
         <Card

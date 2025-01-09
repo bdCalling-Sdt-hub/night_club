@@ -1,13 +1,13 @@
+import React from 'react';
+import {View} from 'react-native';
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
+import OptionSelect from '../../components/cards/OptionSelect';
+import SearchCard from '../../components/cards/SearchCard';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 import EHistory from './components/EHistory';
-import {NavigProps} from '../../interfaces/NaviProps';
-import OptionSelect from '../../components/cards/OptionSelect';
-import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
 import UpcomingEvents from './components/UpcomingEvents';
-import {View} from 'react-native';
-import tw from '../../lib/tailwind';
 
 const VenueEvent = ({navigation}: NavigProps<null>) => {
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
@@ -30,9 +30,9 @@ const VenueEvent = ({navigation}: NavigProps<null>) => {
       </View>
 
       {selectOption === 'History' ? (
-        <EHistory navigation={navigation} />
+        <EHistory navigation={navigation} search={search} />
       ) : (
-        <UpcomingEvents navigation={navigation} />
+        <UpcomingEvents navigation={navigation} search={search} />
       )}
     </Background>
   );

@@ -75,7 +75,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               <Video
                 // muted={false}
                 // controls
-                controls
+                // controls
                 // paused
                 resizeMode="cover"
                 // onEnd={() => setPaused(true)} // Optional: Pause video on end

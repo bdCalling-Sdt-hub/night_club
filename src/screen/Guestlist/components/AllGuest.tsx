@@ -1,65 +1,55 @@
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {PrimaryColor, height} from '../../../utils/utils';
 
-import Card from '../../../components/cards/Card';
+import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import IButton from '../../../components/buttons/IButton';
+import Or from '../../../components/buttons/Or';
+import TButton from '../../../components/buttons/TButton';
+import Card from '../../../components/cards/Card';
+import NormalModal from '../../../components/modals/NormalModal';
+import {loadAllData} from '../../../firebase/database/collections';
 import {IGuest} from '../../../firebase/database/guests.doc';
 import {IGuestsList} from '../../../firebase/database/guestsList.doc';
 import {IconBigPlusCyan} from '../../../icons/icons';
-import NormalModal from '../../../components/modals/NormalModal';
-import Or from '../../../components/buttons/Or';
-import React from 'react';
-import TButton from '../../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
 import tw from '../../../lib/tailwind';
 
 interface Props {
   navigation: any;
+  tag: any;
 }
-const AllGuest = ({navigation}: Props) => {
+const AllGuest = ({navigation, tag}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState([]);
-  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<string>();
   const [addToGuests, setAddToGuests] = React.useState(false);
 
+  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
 
   React.useEffect(() => {
     //get all guest
-    firestore()
-      .collection('Guests')
-      .get()
-      .then(querySnapshot => {
-        const guests: any = querySnapshot.docs.map(doc => doc.data());
-        setGuestListData(guests);
-      });
-
-    //get All Guest List
-    firestore()
-      .collection('GuestsList')
-      .get()
-      .then(querySnapshot => {
-        const guestList: any = querySnapshot.docs.map(doc => doc.data());
-        setGuestListAvailable(guestList);
-      });
+    loadAllData({
+      collectType: 'Guests',
+      setLoad: setGuestListData,
+    });
+    //get all guest
   }, []);
 
   return (
     <>
       <FlatList
         contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
-        data={guestListData}
+        data={guestListData?.filter((item: any) => item.tag.includes(tag))}
         ListEmptyComponent={
           <EmptyCard hight={height * 0.6} title="No Venues" />
         }
         renderItem={({item, index}) => (
           <Card
             onPress={() => {
-              navigation?.navigate('GuestEdit', item);
+              navigation?.navigate('GuestEdit', {guestId: item.id});
             }}
             containerStyle={tw` flex-row gap-3 items-center`}
             component={
