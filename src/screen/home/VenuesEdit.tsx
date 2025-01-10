@@ -1,9 +1,5 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {
-  IVenue,
-  deleteVenue,
-  updateVenue,
-} from '../../firebase/database/venues.doc';
+import {deleteFireData, updateFireData} from '../../firebase/database/helper';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -24,6 +20,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -87,7 +84,10 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
 
   const handleDeleteVenue = () => {
     setLoading(true);
-    deleteVenue(route?.params?.item?.id as string)
+    deleteFireData({
+      collectType: 'Venues',
+      id: route?.params.item.id as string,
+    })
       .then(() => {
         setLoading(false);
         showToast({
@@ -184,7 +184,11 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
           initialValues={route?.params?.item}
           onSubmit={(values, {resetForm}) => {
             setLoading(true);
-            updateVenue(values)
+            updateFireData({
+              id: route?.params?.item?.id as string,
+              collectType: 'Venues',
+              data: values,
+            })
               .then(() => {
                 setLoading(false);
                 showToast({
@@ -510,8 +514,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                       placeholder="Select status"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.status}
-                      touched={touched.status}
+                      errorText={errors?.status}
+                      touched={touched?.status}
                     />
                   )}
                   renderItem={(value, items) => {

@@ -1,5 +1,6 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {IEvent, createEvents} from '../../firebase/database/events.doc';
+import {createFireData, loadAllData} from '../../firebase/database/helper';
+import {IEvent, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
   IconCloseGray,
@@ -8,7 +9,6 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -21,7 +21,6 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
-import {IVenue} from '../../firebase/database/venues.doc';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -94,11 +93,10 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    const venues = async () => {
-      const venues = await firestore().collection('Venues').get();
-      setAllVenues(venues.docs.map(doc => doc.data() as IVenue));
-    };
-    venues();
+    loadAllData({
+      collectType: 'Venues',
+      setLoad: setAllVenues,
+    });
   }, []);
 
   // console.log(allVenues);
@@ -128,7 +126,10 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
           }}
           onSubmit={values => {
             // console.log(values);
-            createEvents(values).then(() => {
+            createFireData({
+              collectType: 'Events',
+              data: values,
+            }).then(() => {
               showToast({
                 title: 'success',
                 content: 'Event created successfully',
@@ -205,9 +206,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={
-                        allVenues?.find(item => item.id === values.venue)?.name
-                      }
+                      value={values.venue}
                       label="Venue"
                       placeholder="Select venue"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -240,7 +239,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   items={allVenues?.map(item => {
                     return {
                       label: item.name,
-                      value: item.id,
+                      value: item.name,
                     };
                   })}
                   pickerModalProps={{

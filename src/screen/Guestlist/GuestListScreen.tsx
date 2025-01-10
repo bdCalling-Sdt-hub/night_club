@@ -1,37 +1,20 @@
-import {
-  IconCloseGray,
-  IconDownArrayGray,
-  IconFilterGray,
-} from '../../icons/icons';
-import {Text, TouchableOpacity, View} from 'react-native';
-
-import AllGuest from './components/AllGuest';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import {BaseColor} from '../../utils/utils';
-import {IGuest} from '../../firebase/database/guests.doc';
-import {ITags} from '../../firebase/database/tags.doc';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import OptionSelect from '../../components/cards/OptionSelect';
-import {Picker} from 'react-native-ui-lib';
 import React from 'react';
-import SavedGuestList from './components/SavedGuestList';
-import SearchCard from '../../components/cards/SearchCard';
-import {SvgXml} from 'react-native-svg';
+import {View} from 'react-native';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import TButton from '../../components/buttons/TButton';
-import data from './guest.json';
-import tw from '../../lib/tailwind';
-import {useImportFile} from '../../hook/useImportFile';
+import OptionSelect from '../../components/cards/OptionSelect';
+import SearchCard from '../../components/cards/SearchCard';
 import {useToast} from '../../components/modals/Toaster';
+import {useImportFile} from '../../hook/useImportFile';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import AllGuest from './components/AllGuest';
+import SavedGuestList from './components/SavedGuestList';
+import data from './guest.json';
 
 const GuestListScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
-
-  const [addedBy, setAddedBy] = React.useState('Added by');
-  const [tags, setTags] = React.useState('Tags');
-  const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
-  const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
   const [search, setSearch] = React.useState('');
 
@@ -120,85 +103,6 @@ const GuestListScreen = ({navigation}: NavigProps<null>) => {
         />
       </View>
 
-      <View
-        style={tw`mt-4 mb-2 flex-row bg-secondary60 h-10 mx-4 rounded-lg items-center justify-between gap-1`}>
-        <IwtButton
-          title="Filter"
-          svg={IconFilterGray}
-          containerStyle={tw`p-0 bg-transparent items-center   w-20`}
-        />
-
-        <View style={tw`px-1 flex-row items-center gap-2`}>
-          <Picker
-            useSafeArea
-            value={tags}
-            onChange={text => setTags(text)}
-            renderInput={preps => {
-              return (
-                <TouchableOpacity
-                  onPress={preps.onPress}
-                  style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
-                  <Text
-                    numberOfLines={1}
-                    style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                    {tags}
-                  </Text>
-                  <SvgXml xml={IconDownArrayGray} height={10} width={10} />
-                </TouchableOpacity>
-              );
-            }}
-            renderItem={(value, items) => {
-              return (
-                <View
-                  style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
-                  <Text
-                    style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                    {value}
-                  </Text>
-                </View>
-              );
-            }}
-            renderCustomDialogHeader={preps => {
-              return (
-                <View style={tw`flex-row justify-between items-center mr-2`}>
-                  <TouchableOpacity
-                    onPress={preps.onCancel}
-                    style={tw`self-start py-3 px-4`}>
-                    <SvgXml xml={IconCloseGray} height={20} width={20} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setTags('Tags');
-                      preps.onCancel();
-                    }}
-                    style={tw` py-1 px-4 border border-primary rounded-lg `}>
-                    <Text style={tw`text-primary font-RobotoMedium text-sm`}>
-                      Clear
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              );
-            }}
-            fieldType={Picker.fieldTypes.filter}
-            paddingH
-            items={[
-              {label: 'Lounge', value: 'Lounge'},
-              {label: 'Rooftop', value: 'Rooftop'},
-              {label: 'Skyline Views', value: 'Skyline Views'},
-              {label: 'Relaxation', value: 'Relaxation'},
-              {label: 'Cocktails', value: 'Cocktails'},
-              {label: 'Chill Vibes', value: 'Chill Vibes'},
-              {label: 'Nightlife', value: 'Nightlife'},
-              {label: 'Exclusive', value: 'Exclusive'},
-              {label: 'Urban', value: 'Urban'},
-              {label: 'Event Venue', value: 'Event Venue'},
-            ]}
-            pickerModalProps={{
-              overlayBackgroundColor: BaseColor,
-            }}
-          />
-        </View>
-      </View>
       {/* <View style={tw`flex-row justify-between items-center px-4 mb-4`}>
         <Text style={tw`text-white50 font-RobotoBold text-base`}>
           Checked in

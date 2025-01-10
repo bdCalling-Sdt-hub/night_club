@@ -1,3 +1,4 @@
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -5,21 +6,20 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import AniImage from '../../components/animate/AniImage';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import {BaseColor} from '../../utils/utils';
 import {DrawerActions} from '@react-navigation/native';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import tw from '../../lib/tailwind';
+import {Picker} from 'react-native-ui-lib';
+import AniImage from '../../components/animate/AniImage';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import IwtButton from '../../components/buttons/IwtButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useAuth} from '../../context/AuthProvider';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {BaseColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const {user, setUser} = useAuth();
@@ -58,6 +58,9 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
             <Text style={tw`text-2xl text-white200 font-RobotoBold`}>
               {user?.name}
             </Text>
+            {/* <Text style={tw`text-xs text-white400 font-RobotoRegular`}>
+              {user?.email}
+            </Text> */}
             <Text style={tw`text-sm text-white400 font-RobotoRegular`}>
               {user?.role}
             </Text>

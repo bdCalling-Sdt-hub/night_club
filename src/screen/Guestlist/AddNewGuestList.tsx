@@ -1,8 +1,5 @@
 import {FlatList, Text, View} from 'react-native';
-import {
-  IGuestsList,
-  createGuestList,
-} from '../../firebase/database/guestsList.doc';
+import {createFireData, listenToData} from '../../firebase/database/helper';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -11,6 +8,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
+import {IGuestsList} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -27,7 +25,12 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   const handleGuestList = () => {
     if (guestList) {
       setGuestList('');
-      createGuestList({name: guestList}).then(() => {});
+      createFireData({
+        collectType: 'GuestsList',
+        data: {
+          name: guestList,
+        },
+      });
     } else {
       showToast({
         title: 'Warning',
@@ -40,16 +43,12 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('GuestsList') // Your Firestore collection name
-      .onSnapshot(snapshot => {
-        const guestList = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as any;
-        setGuestListAvailable(guestList);
-      });
-
+    const unsubscribe = listenToData({
+      collectType: 'GuestsList',
+      onUpdate: (data: any[]) => {
+        setGuestListAvailable(data);
+      },
+    });
     return () => unsubscribe();
   }, []);
 

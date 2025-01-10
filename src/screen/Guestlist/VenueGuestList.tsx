@@ -2,6 +2,12 @@ import * as XLSX from 'xlsx';
 
 import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {
+  listenToData,
+  loadAllData,
+  updateFireData,
+} from '../../firebase/database/helper';
+import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
+import {
   IconBigPlusCyan,
   IconCloseGray,
   IconDownArrayGray,
@@ -9,8 +15,6 @@ import {
 } from '../../icons/icons';
 import {BaseColor, height} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
-import {useFocusEffect} from '@react-navigation/native';
 import moment from 'moment';
 import Papa from 'papaparse';
 import React from 'react';
@@ -25,15 +29,12 @@ import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
-import {loadAllData} from '../../firebase/database/collections';
-import {IGuest} from '../../firebase/database/guests.doc';
-import {IGuestsList} from '../../firebase/database/guestsList.doc';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 import data from './guest.json';
 
-const VenueGuestList = ({navigation}: NavigProps<null>) => {
+const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
   const [addedBy, setAddedBy] = React.useState('Added by');
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
@@ -200,12 +201,23 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
   >([]);
 
   const handleCheckIn = (guest: IGuest) => {
-    const guestRef = firestore().collection('Guests').doc(guest.id);
-    guestRef.update({
-      check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
+    updateFireData({
+      id: guest.id,
+      collectType: 'Guests',
+      data: {
+        check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
+      },
     });
+
     loadAllData({
       collectType: 'Guests',
+      filters: [
+        {
+          field: 'event_id',
+          operator: '==',
+          value: route?.params?.item?.id,
+        },
+      ],
       setLoad: setGuestListData,
     });
   };
@@ -218,13 +230,25 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
     });
   }, []);
 
-  useFocusEffect(() => {
-    loadAllData({
+  React.useEffect(() => {
+    const unsubscribe = listenToData({
       collectType: 'Guests',
-      setLoad: setGuestListData,
+      filters: [
+        {
+          field: 'event_id',
+          operator: '==',
+          value: route?.params?.item?.id,
+        },
+      ],
+      onUpdate: (data: any[]) => {
+        setGuestListData(data);
+      },
     });
-  });
 
+    return () => {
+      unsubscribe();
+    };
+  }, []);
   const totalGuest = guestListData.reduce(
     (acc, guest) => acc + Number(guest.people),
     0,
@@ -457,7 +481,11 @@ const VenueGuestList = ({navigation}: NavigProps<null>) => {
       />
 
       <IButton
-        onPress={() => navigation.navigate('AddNewGuest')}
+        onPress={() =>
+          navigation.navigate('AddNewGuest', {
+            event_id: route?.params?.item?.id,
+          })
+        }
         svg={IconBigPlusCyan}
         containerStyle={tw`absolute bottom-5 bg-opacity-65 right-6 w-14 h-14 rounded-full  bg-base `}
       />

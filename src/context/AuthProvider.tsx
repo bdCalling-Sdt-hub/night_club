@@ -1,6 +1,6 @@
-import {IUser} from '../firebase/interface';
-import React from 'react';
 import auth from '@react-native-firebase/auth';
+import React from 'react';
+import {IUser} from '../firebase/interface';
 
 interface firebaseClaimUser {
   aud: string;
@@ -55,7 +55,7 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       setUserId(currentUser.uid);
 
       // Fetch the refreshed token with claims
-      currentUser?.getIdToken(true).then(idToken => {
+      await currentUser?.getIdToken(true).then(idToken => {
         currentUser?.getIdTokenResult().then(idTokenResult => {
           idTokenResult?.claims &&
             setUser({

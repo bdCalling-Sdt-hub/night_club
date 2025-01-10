@@ -1,32 +1,30 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {createFireData, loadAllData} from '../../firebase/database/helper';
+import {IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DatePicker from 'react-native-date-picker';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
-import {IGuestsList} from '../../firebase/database/guestsList.doc';
-import {ITags} from '../../firebase/database/tags.doc';
+import moment from 'moment';
+import React from 'react';
+import DatePicker from 'react-native-date-picker';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import {createGuest} from '../../firebase/database/guests.doc';
-import firestore from '@react-native-firebase/firestore';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {useAuth} from '../../context/AuthProvider';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -40,7 +38,7 @@ interface createProps {
   tag: string;
 }
 
-const AddNewGuest = ({navigation}: NavigProps<null>) => {
+const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
   // get current user
   const {user} = useAuth();
   const {closeToast, showToast} = useToast();
@@ -82,9 +80,9 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
     // if (!values.free_entry_end_time) {
     //   errors.free_entry_end_time = 'Free entry end time is required';
     // }
-    if (!values.guest_list) {
-      errors.guest_list = 'Guest list is required';
-    }
+    // if (!values.guest_list) {
+    //   errors.guest_list = 'Guest list is required';
+    // }
     if (!values.added_by) {
       errors.added_by = 'Added by is required';
     }
@@ -96,21 +94,15 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    firestore()
-      .collection('Tags')
-      .get()
-      .then(querySnapshot => {
-        const tags: any = querySnapshot.docs.map(doc => doc.data());
-        setTags(tags);
-      });
+    loadAllData({
+      collectType: 'Tags',
+      setLoad: setTags,
+    });
 
-    firestore()
-      .collection('GuestsList')
-      .get()
-      .then(querySnapshot => {
-        const guestList: any = querySnapshot.docs.map(doc => doc.data());
-        setGuestListAvailable(guestList);
-      });
+    loadAllData({
+      collectType: 'GuestsList',
+      setLoad: setGuestListAvailable,
+    });
   }, []);
 
   return (
@@ -131,13 +123,17 @@ const AddNewGuest = ({navigation}: NavigProps<null>) => {
             free_entry_time: '',
             email: '',
             note: '',
-            added_by: user?.user_id,
+            added_by: user?.name as string,
             guest_list: '',
             tag: '',
+            event_id: route?.params?.event_id,
           }}
           onSubmit={values => {
             // console.log(values);
-            createGuest(values).then(() => {
+            createFireData({
+              collectType: 'Guests',
+              data: values,
+            }).then(() => {
               showToast({
                 title: 'Success',
                 content: 'Guest added successfully',

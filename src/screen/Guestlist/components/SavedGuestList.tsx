@@ -2,8 +2,8 @@ import React from 'react';
 import {FlatList} from 'react-native';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {loadAllData} from '../../../firebase/database/collections';
-import {IGuestsList} from '../../../firebase/database/guestsList.doc';
+import {loadAllData} from '../../../firebase/database/helper';
+import {IGuestsList} from '../../../firebase/interface';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
 
@@ -31,7 +31,7 @@ const SavedGuestList = ({navigation}: Props) => {
       renderItem={({item, index}) => (
         <Card
           onPress={() => {
-            navigation?.navigate('AllGuestInGuestList');
+            navigation?.navigate('AllGuestInGuestList', {item: item});
           }}
           containerStyle={tw` flex-row gap-3 items-center`}>
           <Card.Details

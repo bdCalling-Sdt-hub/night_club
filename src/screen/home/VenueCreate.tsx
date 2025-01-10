@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {IVenue, addVenue} from '../../firebase/database/venues.doc';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -28,6 +27,8 @@ import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import {createFireData} from '../../firebase/database/helper';
+import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -148,7 +149,10 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               values.createdBy = userId;
             }
 
-            addVenue(values).then(() => {
+            createFireData({
+              collectType: 'Venues',
+              data: values,
+            }).then(() => {
               // resetForm();
               showToast({
                 title: 'success',

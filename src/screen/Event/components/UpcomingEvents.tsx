@@ -1,16 +1,16 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {listenToData} from '../../../firebase/database/helper';
 import {
   IconMultiUserCyan,
   IconSmallCalendarCyan,
   IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
 
-import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {IEvent} from '../../../firebase/database/events.doc';
+import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
@@ -22,18 +22,22 @@ const UpcomingEvents = ({navigation, route, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
 
   React.useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Events') // Your Firestore collection name
-      .onSnapshot(snapshot => {
-        const events = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as IEvent[];
-        setData(events);
-      });
-
-    // Cleanup the listener on component unmount
-    return () => unsubscribe();
+    const unsubscribe = listenToData({
+      collectType: 'Events',
+      filters: [
+        {
+          field: 'date',
+          operator: '>=',
+          value: moment().format('YYYY-MM-DD'),
+        },
+      ],
+      onUpdate(data) {
+        setData(data);
+      },
+    });
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
@@ -65,7 +69,7 @@ const UpcomingEvents = ({navigation, route, search}: Props) => {
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: '55 people',
+                title: item.capacity + ' people',
                 icons: IconMultiUserCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },

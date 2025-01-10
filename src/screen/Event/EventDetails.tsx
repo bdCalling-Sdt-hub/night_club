@@ -2,8 +2,6 @@ import {ScrollView, Text, View} from 'react-native';
 import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 
 import Clipboard from '@react-native-clipboard/clipboard';
-import {firebase} from '@react-native-firebase/auth';
-import {useFocusEffect} from '@react-navigation/native';
 import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -12,7 +10,8 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import {useToast} from '../../components/modals/Toaster';
-import {IEvent} from '../../firebase/database/events.doc';
+import {loadSingleData} from '../../firebase/database/helper';
+import {IEvent} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {height} from '../../utils/utils';
@@ -42,22 +41,13 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   // console.log('route', route?.params?.id);
 
-  useFocusEffect(() => {
-    if (route?.params?.id) {
-      firebase
-        .firestore()
-        .collection('Events')
-        .doc(route?.params?.id)
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            setEvent(doc.data() as IEvent);
-          } else {
-            console.log('No such document!');
-          }
-        });
-    }
-  });
+  React.useEffect(() => {
+    loadSingleData({
+      collectType: 'Events',
+      id: route?.params?.id as string,
+      setLoad: setEvent,
+    });
+  }, [route?.params?.id]);
 
   // console.log(event);
 
@@ -178,7 +168,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         <View style={tw`px-4 py-10 gap-5`}>
           <TButton
             onPress={() => {
-              navigation?.navigate('VenueGuestList');
+              navigation?.navigate('VenueGuestList', {item: event});
             }}
             title="View Guest List"
             titleStyle={tw`text-base text-white50 font-RobotoBold`}

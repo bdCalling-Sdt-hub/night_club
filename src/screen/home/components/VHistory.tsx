@@ -5,14 +5,14 @@ import {
   IconLocationV2Cyan,
 } from '../../../icons/icons';
 
+import firebase from '@react-native-firebase/firestore';
+import moment from 'moment';
+import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {IVenue} from '../../../firebase/database/venues.doc';
-import React from 'react';
-import firebase from '@react-native-firebase/firestore';
-import {height} from '../../../utils/utils';
-import moment from 'moment';
+import {IVenue} from '../../../firebase/interface';
 import tw from '../../../lib/tailwind';
+import {height} from '../../../utils/utils';
 
 const VHistory = () => {
   const [data, setData] = React.useState<Array<IVenue>>();

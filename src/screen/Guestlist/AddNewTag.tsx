@@ -1,4 +1,5 @@
 import {FlatList, Text, View} from 'react-native';
+import {createFireData, listenToData} from '../../firebase/database/helper';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -7,7 +8,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
-import {createTags} from '../../firebase/database/tags.doc';
+import {ITags} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -16,7 +17,7 @@ import Background from '../components/Background';
 const AddNewTag = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const [newTag, setNewTag] = React.useState('');
-  const [tags, setTags] = React.useState<Array<Itag>>([]);
+  const [tags, setTags] = React.useState<Array<ITags>>([]);
 
   const handleNewTag = () => {
     if (!newTag) {
@@ -29,20 +30,23 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
       });
     } else {
       setNewTag('');
-      createTags({name: newTag}).then(() => {});
+      createFireData({
+        collectType: 'Tags',
+        data: {
+          name: newTag,
+        },
+      });
     }
   };
 
   React.useEffect(() => {
-    firestore()
-      .collection('Tags')
-      .onSnapshot(querySnapshot => {
-        const tags = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          name: doc.data().name,
-        }));
-        setTags(tags);
-      });
+    const unsubscribe = listenToData({
+      collectType: 'Tags',
+      onUpdate: (data: any[]) => {
+        setTags(data);
+      },
+    });
+    return () => unsubscribe();
   }, []);
 
   return (

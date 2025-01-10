@@ -1,10 +1,10 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {loadAllData, updateFireData} from '../../firebase/database/helper';
+import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
-  IconCleanGray,
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
-  IconTimeGray,
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
@@ -15,19 +15,20 @@ import DatePicker from 'react-native-date-picker';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 interface createProps {
-  name: string;
-  total: string;
-  check_in: string;
+  fullName: string;
+  people: string;
   entry_fee: string;
   free_entry: string;
   free_entry_time: string;
@@ -37,45 +38,36 @@ interface createProps {
   tag: string;
 }
 
-const GuestEdit = ({navigation}: NavigProps<null>) => {
+const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
+  // get current user
+  const {user} = useAuth();
+  const {closeToast, showToast} = useToast();
+  // console.log(currentUser);
   const [extraFields, setExtraFields] = React.useState({
     note: '',
     email: '',
   });
-  const [newTag, setNewTag] = React.useState('');
-  const [guestList, setGuestList] = React.useState('');
+
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState({
     free_entry_time: false,
     free_entry_end_time: false,
   });
 
-  const [tags, setTags] = React.useState([
-    {label: 'VIP', value: 'VIP'},
-    {label: 'PREMIUM', value: 'PREMIUM'},
-    {label: 'GOLD', value: 'GOLD'},
-    {label: 'SILVER', value: 'SILVER'},
-    {label: 'BRONZE', value: 'BRONZE'},
-  ]);
-  const [guestListAvailable, setGuestListAvailable] = React.useState([
-    {label: 'Guest List 1', value: 'Guest List 1'},
-    {label: 'Guest List 2', value: 'Guest List 2'},
-    {label: 'Guest List 3', value: 'Guest List 3'},
-    {label: 'Guest List 4', value: 'Guest List 4'},
-    {label: 'Guest List 5', value: 'Guest List 5'},
-    {label: 'Guest List 6', value: 'Guest List 6'},
-    {label: 'Guest List 7', value: 'Guest List 7'},
-    {label: 'Guest List 8', value: 'Guest List 8'},
-  ]);
+  const [guest, setGuest] = React.useState<IGuest | null>(null);
+  const [tags, setTags] = React.useState<Array<ITags> | []>([]);
+  const [guestListAvailable, setGuestListAvailable] = React.useState<
+    Array<IGuestsList> | []
+  >([]);
 
   const handleValidate = (values: createProps) => {
     const errors: any = {};
 
-    if (!values.name) {
+    if (!values.fullName) {
       errors.name = 'Name is required';
     }
-    if (!values.total) {
-      errors.total = 'Number of total is required';
+    if (!values.people) {
+      errors.people = 'Number of people is required';
     }
     if (!values.entry_fee) {
       errors.entry_fee = 'Entry fee is required';
@@ -89,9 +81,9 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
     // if (!values.free_entry_end_time) {
     //   errors.free_entry_end_time = 'Free entry end time is required';
     // }
-    if (!values.guest_list) {
-      errors.guest_list = 'Guest list is required';
-    }
+    // if (!values.guest_list) {
+    //   errors.guest_list = 'Guest list is required';
+    // }
     if (!values.added_by) {
       errors.added_by = 'Added by is required';
     }
@@ -102,20 +94,15 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
     return errors;
   };
 
-  const handleNewTag = () => {
-    if (!newTag) return;
-    setTags([...tags, {label: newTag, value: newTag}]);
-    setNewTag('');
-  };
+  React.useEffect(() => {
+    loadAllData({collectType: 'Tags', setLoad: setTags});
+    loadAllData({
+      collectType: 'GuestsList',
+      setLoad: setGuestListAvailable,
+    });
+  }, []);
 
-  const handleGuestList = () => {
-    if (!guestList) return;
-    setGuestListAvailable([
-      ...guestListAvailable,
-      {label: guestList, value: guestList},
-    ]);
-    setGuestList('');
-  };
+  // console.log(guest);
 
   return (
     <Background style={tw`flex-1`}>
@@ -127,19 +114,37 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
-          initialValues={{
-            name: 'AlexZender',
-            total: '50',
-            entry_fee: '100',
-            free_entry: '6',
-            free_entry_time: '',
-            check_in: '10',
-            added_by: 'ALex Zender',
-            guest_list: 'Guest List 1',
-            tag: 'VIP',
-          }}
+          initialValues={
+            route?.params?.guest
+              ? route?.params?.guest
+              : {
+                  fullName: '',
+                  people: '',
+                  entry_fee: '',
+                  free_entry: '',
+                  free_entry_time: '',
+                  free_entry_end_time: '',
+                  added_by: '',
+                  guest_list: '',
+                  tag: '',
+                }
+          }
           onSubmit={values => {
-            console.log(values);
+            // console.log(values);
+            updateFireData({
+              collectType: 'Guests',
+              id: route?.params?.guest?.id as string,
+              data: values,
+            }).then(() => {
+              showToast({
+                title: 'Success',
+                content: 'Update guest successfully',
+                onPress() {
+                  closeToast();
+                  navigation?.goBack();
+                },
+              });
+            });
           }}
           validate={(values: createProps) => handleValidate(values)}>
           {({
@@ -157,11 +162,11 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   label="First name & Last name"
                   placeholder="Enter  full name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.name}
-                  onChangeText={handleChange('name')}
-                  onBlur={handleBlur('name')}
-                  errorText={errors.name}
-                  touched={touched.name}
+                  value={values.fullName}
+                  onChangeText={handleChange('fullName')}
+                  onBlur={handleBlur('fullName')}
+                  errorText={errors.fullName}
+                  touched={touched.fullName}
                 />
               </View>
               <View style={tw`bg-base `}>
@@ -207,7 +212,10 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={tags}
+                  items={tags?.map((item: any) => ({
+                    label: item.name,
+                    value: item.name,
+                  }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -225,23 +233,18 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
                 Amount of people{' '}
-                {errors.total && touched.total && (
+                {errors.people && touched.people && (
                   <Text style={[tw`text-red-500 text-[10px] `]}>
                     {' '}
-                    {errors.total}
+                    {errors.people}
                   </Text>
                 )}
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
-                  disabled={
-                    values?.total === '' ||
-                    values?.total === '0' ||
-                    values?.total === values.check_in
-                  }
                   onPress={() => {
-                    if (parseInt(values.total) > 0) {
-                      handleChange('total')(`${parseInt(values.total) - 1}`);
+                    if (parseInt(values.people) > 0) {
+                      handleChange('people')(`${parseInt(values.people) - 1}`);
                     }
                   }}
                   containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
@@ -250,42 +253,28 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                 <InputText
                   placeholder="0"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.total}
-                  editable={false}
+                  value={values.people}
                   fieldStyle={tw`text-center`}
                   keyboardType="numeric"
                   cursorColor={PrimaryColor}
-                  onChangeText={handleChange('total')}
-                  onBlur={handleBlur('total')}
+                  onChangeText={handleChange('people')}
+                  onBlur={handleBlur('people')}
                   textAlign="center"
-                  errorText={errors.total}
-                  touched={touched.total}
+                  errorText={errors.people}
+                  touched={touched.people}
                 />
                 <TButton
                   containerStyle={tw`h-12 rounded-lg bg-primary flex-1`}
                   title="+"
                   onPress={() => {
-                    if (!values.total) {
-                      handleChange('total')('1');
+                    if (!values.people) {
+                      handleChange('people')('1');
                     } else {
-                      handleChange('total')(`${parseInt(values.total) + 1}`);
+                      handleChange('people')(`${parseInt(values.people) + 1}`);
                     }
                   }}
                 />
               </View>
-              {/* <View>
-                <TButton
-                  onPress={() => {
-                    handleChange('check_in')(
-                      `${parseInt(values.check_in) + 1}`,
-                    );
-                  }}
-                  disabled={values?.check_in === values?.total}
-                  containerStyle={tw`h-12 bg-transparent border border-green-500 w-full rounded-lg`}
-                  titleStyle={tw`text-green-500 font-RobotoMedium text-base`}
-                  title={`Checked In ${values?.check_in}/${values?.total}`}
-                />
-              </View> */}
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -315,46 +304,26 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   keyboardType="decimal-pad"
                 />
               </View>
-
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Free entry time"
-                  editable={false}
-                  onPress={() =>
-                    setOpen({
-                      free_entry_time: true,
-                      free_entry_end_time: false,
-                    })
-                  }
-                  placeholder="Default Stop"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={
-                    values.free_entry_time
-                      ? 'Open to free entry at ' +
-                        moment(values.free_entry_time).format('hh:mm A')
-                      : values.free_entry_time
-                  }
-                  onChangeText={handleChange('free_entry_time')}
-                  onBlur={handleBlur('free_entry_time')}
-                  errorText={errors.free_entry_time}
-                  touched={touched.free_entry_time}
-                  svgSecondIcon={!values.free_entry_time && IconTimeGray}
-                  Component2={
-                    <>
-                      {values.free_entry_time && (
-                        <IButton
-                          onPress={() => {
-                            handleChange('free_entry_time')('');
-                          }}
-                          svg={IconCleanGray}
-                          containerStyle={tw`p-0 h-12 w-12 bg-secondary absolute right-0 rounded-r-lg rounded-l-none   `}
-                        />
-                      )}
-                    </>
-                  }
-                />
-              </View>
+              <DateTimePicker
+                value={
+                  values.free_entry_time
+                    ? moment(values.free_entry_time).format('hh:mm A')
+                    : ''
+                }
+                label="Free entry time (optional)"
+                placeholder="Enter free entry time"
+                containerStyle={tw`border-0 h-12 rounded-lg`}
+                onChangeText={handleChange('free_entry_time')}
+                onBlur={handleBlur('free_entry_time')}
+                errorText={errors.free_entry_time}
+                touched={touched.free_entry_time}
+                onClear={() => {
+                  handleChange('free_entry_time')('');
+                }}
+                getCurrentDate={date => {
+                  handleChange('free_entry_time')(date);
+                }}
+              />
 
               <DatePicker
                 style={tw`border-0 h-12 rounded-lg bg-transparent`}
@@ -368,7 +337,7 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                 onConfirm={(currentData: any) => {
                   if (currentData) {
                     // Format the date with time, assuming you want to specify the time as well.
-                    console.log(currentData.toISOString());
+                    // console.log(currentData.toISOString());
                     if (open.free_entry_time) {
                       handleChange('free_entry_time')(
                         currentData.toISOString(),
@@ -414,14 +383,13 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   />
                 </View>
               )} */}
-
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
                   label="Added By"
                   placeholder="Enter your name"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={'Alexzander'}
+                  value={user?.name}
                   editable={false}
                   onChangeText={handleChange('added_by')}
                   onBlur={handleBlur('added_by')}
@@ -472,7 +440,10 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={guestListAvailable}
+                  items={guestListAvailable?.map(item => ({
+                    label: item.name,
+                    value: item.name,
+                  }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -495,7 +466,7 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                     label="Email (optional)"
                     placeholder="Enter your email"
                     containerStyle={tw`border-0 h-12 rounded-lg`}
-                    value={values.email}
+                    value={values?.email}
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                   />
@@ -534,8 +505,8 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                       <IwtButton
                         svg={IconSmallPlusCyan}
                         title="Add new text field"
-                        titleStyle={tw`font-RobotoRegular text-primary text-xs `}
-                        containerStyle={tw`mt-5  p-0 rounded-lg w-full  items-center bg-transparent justify-center h-4`}
+                        titleStyle={tw`font-RobotoRegular text-primary text-xs  border-0`}
+                        containerStyle={tw`mt-5  p-0 rounded-lg w-full h-8 items-center bg-transparent`}
                         onPress={() => {
                           // handleSubmit();
                         }}
@@ -586,7 +557,7 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                 </View>
 
                 <TButton
-                  title="Save"
+                  title="Update"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={() => {
@@ -598,6 +569,41 @@ const GuestEdit = ({navigation}: NavigProps<null>) => {
                   titleStyle={tw`font-RobotoBold text-white50 text-base`}
                   containerStyle={tw`mt-5 bg-transparent border border-primary rounded-lg w-full h-12 `}
                   onPress={() => navigation?.goBack()}
+                />
+                <TButton
+                  title="Delete"
+                  titleStyle={tw`font-RobotoBold text-red-500 text-base`}
+                  containerStyle={tw`mt-5 bg-transparent border border-red-500 rounded-lg w-full h-12 `}
+                  onPress={() => {
+                    showToast({
+                      title: 'Warning',
+                      content: 'Are you sure you want to delete guest?',
+                      multipleBTNStyle: tw`flex-col gap-3`,
+
+                      multipleButton: [
+                        {
+                          buttonText: 'Yes, Delete',
+                          buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
+                          buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
+                          onPress: () => {
+                            deleteGuest(
+                              route?.params?.guest?.id as string,
+                            ).then(() => {
+                              navigation?.goBack();
+                            });
+                            closeToast();
+                          },
+                        },
+                        {
+                          buttonText: 'Cancel',
+                          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+                          onPress: () => {
+                            closeToast();
+                          },
+                        },
+                      ],
+                    });
+                  }}
                 />
               </View>
             </View>

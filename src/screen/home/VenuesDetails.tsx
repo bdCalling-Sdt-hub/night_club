@@ -3,8 +3,6 @@ import {ScrollView, Text, View} from 'react-native';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
-import {useFocusEffect} from '@react-navigation/native';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
 import {PageControl} from 'react-native-ui-lib';
@@ -12,7 +10,8 @@ import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import {IVenue} from '../../firebase/database/venues.doc';
+import {loadSingleData} from '../../firebase/database/helper';
+import {IVenue} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -30,28 +29,24 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   useEffect(() => {
     if (route?.params?.id) {
-      firestore()
-        .collection('Venues')
-        .doc(route?.params?.id)
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            setVenue(doc.data() as IVenue);
-          }
-        });
+      loadSingleData({
+        collectType: 'Venues',
+        id: route?.params?.id as string,
+        setLoad: setVenue,
+      });
     }
   }, [route?.params?.id]);
 
   // console.log(venues);
 
-  useFocusEffect(() => {
-    if (venue?.video) {
-      setPaused(false);
-    }
-    return () => {
-      setPaused(true);
-    };
-  });
+  // useFocusEffect(() => {
+  //   if (venue?.video) {
+  //     setPaused(false);
+  //   }
+  //   return () => {
+  //     setPaused(true);
+  //   };
+  // });
 
   return (
     <Background style={tw`flex-1`}>

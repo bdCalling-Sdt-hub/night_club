@@ -1,10 +1,10 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {loadAllData} from '../../firebase/database/collections';
 import {
-  IGuest,
-  deleteGuest,
-  updateGuest,
-} from '../../firebase/database/guests.doc';
+  deleteFireData,
+  loadAllData,
+  updateFireData,
+} from '../../firebase/database/helper';
+import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -26,8 +26,6 @@ import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
-import {IGuestsList} from '../../firebase/database/guestsList.doc';
-import {ITags} from '../../firebase/database/tags.doc';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -137,7 +135,11 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
           }
           onSubmit={values => {
             // console.log(values);
-            updateGuest(route?.params?.guest?.id as string, values).then(() => {
+            updateFireData({
+              collectType: 'Guests',
+              id: route?.params?.guest?.id as string,
+              data: values,
+            }).then(() => {
               showToast({
                 title: 'Success',
                 content: 'Update guest successfully',
@@ -588,9 +590,10 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                           buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
                           buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
                           onPress: () => {
-                            deleteGuest(
-                              route?.params?.guest?.id as string,
-                            ).then(() => {
+                            deleteFireData({
+                              collectType: 'Guests',
+                              id: route?.params?.guest?.id as string,
+                            }).then(() => {
                               navigation?.goBack();
                             });
                             closeToast();

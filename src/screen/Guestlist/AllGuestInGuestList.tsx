@@ -1,38 +1,56 @@
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import {Checkbox} from 'react-native-ui-lib';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {NavigProps} from '../../interfaces/NaviProps';
-import NormalModal from '../../components/modals/NormalModal';
 import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
+import {Checkbox} from 'react-native-ui-lib';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import TButton from '../../components/buttons/TButton';
-import data from './guest.json';
-import tw from '../../lib/tailwind';
-import {useImportFile} from '../../hook/useImportFile';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import NormalModal from '../../components/modals/NormalModal';
 import {useToast} from '../../components/modals/Toaster';
+import {loadAllData} from '../../firebase/database/helper';
+import {useImportFile} from '../../hook/useImportFile';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import data from './guest.json';
 
-const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
+const AllGuestInGuestList = ({
+  navigation,
+  route,
+}: NavigProps<{item: IGuestsList}>) => {
   const {closeToast, showToast} = useToast();
-  const [selectGuest, setSelectGuest] = React.useState([]);
-  const [selectGuestList, setSelectGuestList] = React.useState(null);
+  const [selectGuest, setSelectGuest] = React.useState<Array<IGuest>>();
+  const [selectGuestList, setSelectGuestList] = React.useState<IGuestsList>();
   const [search, setSearch] = React.useState('');
   const [addToGuests, setAddToGuests] = React.useState(false);
 
-  const [guestListAvailable, setGuestListAvailable] = React.useState([
-    {label: 'Event for demo content 1', value: 'Event for demo content 1'},
-    {label: 'Event for demo content 2', value: 'Event for demo content 2'},
-    {label: 'Event for demo content 3', value: 'Event for demo content 3'},
-    {label: 'Event for demo content 4', value: 'Event for demo content 4'},
-    {label: 'Event for demo content 5', value: 'Event for demo content 5'},
-    {label: 'Event for demo content 6', value: 'Event for demo content 6'},
-    {label: 'Event for demo content 7', value: 'Event for demo content 7'},
-    {label: 'Event for demo content 8', value: 'Event for demo content 8'},
-  ]);
+  const [guestListAvailable, setGuestListAvailable] =
+    React.useState<Array<IGuestsList>>();
+  const [guests, setGuests] = React.useState<Array<IGuest>>();
+
+  React.useEffect(() => {
+    //get all guest
+    loadAllData({
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'guest_list',
+          operator: '==',
+          value: route?.params?.item?.name,
+        },
+      ],
+      setLoad: setGuests,
+    });
+    loadAllData({
+      collectType: 'GuestsList',
+      setLoad: setGuestListAvailable,
+    });
+  }, []);
+
   const handleImportData = () => {
     showToast({
       multipleBTNStyle: tw`flex-col gap-3`,
@@ -74,8 +92,8 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
         onPress={() => {
           navigation.goBack();
         }}
-        offBack
-        title="Random Title of guest List "
+        // offBack
+        title={route?.params?.item?.name}
         containerStyle={tw`justify-between`}
         ComponentBtn={
           <TButton
@@ -93,7 +111,7 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
 
       <FlatList
         contentContainerStyle={tw`px-4 pt-1 pb-8 gap-3`}
-        data={data.guest}
+        data={guests}
         ListHeaderComponent={() => {
           return (
             <TouchableOpacity
@@ -101,7 +119,7 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
                 if (selectGuest?.length > 0) {
                   setSelectGuest([]);
                 } else {
-                  setSelectGuest(data.guest);
+                  setSelectGuest(guestListAvailable);
                 }
               }}
               style={tw` px-4 self-end`}>
@@ -145,7 +163,7 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
               containerStyle={tw``}
               data={[
                 {
-                  title: item.name,
+                  title: item.fullName,
 
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
@@ -193,7 +211,7 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectGuestList?.label === item.label}
+                  value={selectGuestList?.name === item.name}
                   onValueChange={() => {
                     setSelectGuestList(item);
                   }}
@@ -201,7 +219,7 @@ const AllGuestInGuestList = ({navigation}: NavigProps<null>) => {
                   color={'#fff'}
                 />
                 <Text style={tw`text-white50 font-RobotoBold text-base`}>
-                  {item.label}
+                  {item.name}
                 </Text>
               </TouchableOpacity>
             );
