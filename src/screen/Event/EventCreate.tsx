@@ -1,5 +1,4 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {createFireData, loadAllData} from '../../firebase/database/helper';
 import {IEvent, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
@@ -21,6 +20,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import useFireStore from '../../firebase/database/helper';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -29,13 +29,11 @@ import Background from '../components/Background';
 
 const EventCreate = ({navigation}: NavigProps<null>) => {
   const {showToast, closeToast} = useToast();
-  const [open, setOpen] = React.useState({
-    openTime: false,
-    closeTime: false,
-  });
 
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+
+  const {loadAllData, createFireData} = useFireStore();
 
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);

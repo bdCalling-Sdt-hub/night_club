@@ -5,32 +5,49 @@ import {
   IconLocationV2Cyan,
 } from '../../../icons/icons';
 
-import firebase from '@react-native-firebase/firestore';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {useAuth} from '../../../context/AuthProvider';
+import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
+import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
 
-const VHistory = () => {
+const VHistory = ({navigation}: NavigProps<null>) => {
+  const {user} = useAuth();
   const [data, setData] = React.useState<Array<IVenue>>();
+  const {listenToData} = useFireStore();
 
   React.useEffect(() => {
-    const unsubscribe = firebase()
-      .collection('Venues') // Your Firestore collection name
-      .onSnapshot(snapshot => {
-        const venues = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as IVenue[];
-        setData(venues);
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Venues',
+        filters: [
+          {
+            field: 'status',
+            operator: '==',
+            value: 'Closed',
+          },
+        ],
+        onUpdate: (data: any[]) => {
+          setData(data);
+        },
       });
+    };
+
+    initializeListener();
 
     // Cleanup the listener on component unmount
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}

@@ -1,5 +1,4 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {deleteFireData, updateFireData} from '../../firebase/database/helper';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -20,6 +19,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import useFireStore from '../../firebase/database/helper';
 import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
@@ -47,6 +47,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const [loading, setLoading] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(true);
   const {showToast, closeToast} = useToast();
+  const {deleteFireData, updateFireData} = useFireStore();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const handleImageUpdate = async () => {

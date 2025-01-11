@@ -5,12 +5,12 @@ import {
   IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
 
-import firestore from '@react-native-firebase/firestore';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {IEvent} from '../../../firebase/database/events.doc';
+import useFireStore from '../../../firebase/database/helper';
+import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
@@ -22,20 +22,28 @@ interface Props extends NavigProps<null> {
 const EHistory = ({navigation, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
 
+  const {listenToData} = useFireStore();
+
   React.useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('Events') // Your Firestore collection name
-      .onSnapshot(snapshot => {
-        const events = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as IEvent[];
-        setData(events);
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Events',
+        onUpdate: (data: any[]) => {
+          setData(data);
+        },
       });
+    };
+
+    initializeListener();
 
     // Cleanup the listener on component unmount
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}

@@ -1,12 +1,7 @@
 import * as XLSX from 'xlsx';
 
 import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
-import {
-  listenToData,
-  loadAllData,
-  updateFireData,
-} from '../../firebase/database/helper';
-import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
+import {IEvent, IGuest} from '../../firebase/interface';
 import {
   IconBigPlusCyan,
   IconCloseGray,
@@ -29,6 +24,7 @@ import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
+import useFireStore from '../../firebase/database/helper';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -42,6 +38,8 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [loading, setLoading] = React.useState(false);
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
+
+  const {loadAllData, updateFireData, listenToData} = useFireStore();
 
   const handleAddGuest = () => {
     navigation.navigate('AddGuest');
@@ -196,9 +194,6 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     });
   };
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
-  const [guestListAvailable, setGuestListAvailable] = React.useState<
-    Array<IGuestsList>
-  >([]);
 
   const handleCheckIn = (guest: IGuest) => {
     updateFireData({
@@ -208,43 +203,30 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
       },
     });
-
-    loadAllData({
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event_id',
-          operator: '==',
-          value: route?.params?.item?.id,
-        },
-      ],
-      setLoad: setGuestListData,
-    });
   };
 
   React.useEffect(() => {
-    //get all guest
-    loadAllData({
-      collectType: 'GuestsList',
-      setLoad: setGuestListAvailable,
-    });
-  }, []);
+    let unsubscribe = () => {}; // Default to a no-op function
 
-  React.useEffect(() => {
-    const unsubscribe = listenToData({
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event_id',
-          operator: '==',
-          value: route?.params?.item?.id,
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Guests',
+        filters: [
+          {
+            field: 'event_id',
+            operator: '==',
+            value: route?.params?.item?.id,
+          },
+        ],
+        onUpdate: (data: any[]) => {
+          setGuestListData(data);
         },
-      ],
-      onUpdate: (data: any[]) => {
-        setGuestListData(data);
-      },
-    });
+      });
+    };
 
+    initializeListener();
+
+    // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };

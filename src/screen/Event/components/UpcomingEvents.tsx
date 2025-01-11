@@ -1,5 +1,4 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
-import {listenToData} from '../../../firebase/database/helper';
 import {
   IconMultiUserCyan,
   IconSmallCalendarCyan,
@@ -10,6 +9,7 @@ import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import useFireStore from '../../../firebase/database/helper';
 import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
@@ -20,21 +20,24 @@ interface Props extends NavigProps<null> {
 }
 const UpcomingEvents = ({navigation, route, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
+  const {listenToData} = useFireStore();
 
   React.useEffect(() => {
-    const unsubscribe = listenToData({
-      collectType: 'Events',
-      filters: [
-        {
-          field: 'date',
-          operator: '>=',
-          value: moment().format('YYYY-MM-DD'),
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Events',
+
+        onUpdate: (data: any[]) => {
+          setData(data);
         },
-      ],
-      onUpdate(data) {
-        setData(data);
-      },
-    });
+      });
+    };
+
+    initializeListener();
+
+    // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };

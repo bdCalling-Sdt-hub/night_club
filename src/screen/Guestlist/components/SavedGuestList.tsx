@@ -2,7 +2,7 @@ import React from 'react';
 import {FlatList} from 'react-native';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {loadAllData} from '../../../firebase/database/helper';
+import useFireStore from '../../../firebase/database/helper';
 import {IGuestsList} from '../../../firebase/interface';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
@@ -14,6 +14,8 @@ const SavedGuestList = ({navigation}: Props) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState(
     [] as Array<IGuestsList>,
   );
+
+  const {loadAllData} = useFireStore();
 
   React.useEffect(() => {
     //get all guest

@@ -11,7 +11,7 @@ import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import NormalModal from '../../components/modals/NormalModal';
 import {useToast} from '../../components/modals/Toaster';
-import {loadAllData} from '../../firebase/database/helper';
+import useFireStore from '../../firebase/database/helper';
 import {useImportFile} from '../../hook/useImportFile';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -31,6 +31,8 @@ const AllGuestInGuestList = ({
   const [guestListAvailable, setGuestListAvailable] =
     React.useState<Array<IGuestsList>>();
   const [guests, setGuests] = React.useState<Array<IGuest>>();
+
+  const {loadAllData} = useFireStore();
 
   React.useEffect(() => {
     //get all guest
@@ -168,7 +170,7 @@ const AllGuestInGuestList = ({
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: 'VIP',
+                  title: item.tag,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}

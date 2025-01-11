@@ -2,6 +2,8 @@ import firestore, {
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
 
+import {useAuth} from '../../context/AuthProvider';
+
 export type COLLECTION =
   | 'Users'
   | 'Venues'
@@ -10,172 +12,227 @@ export type COLLECTION =
   | 'GuestsList'
   | 'Tags';
 
-// get all data to lising on firestore
-export const listenToData = ({
-  collectType,
-  filters,
-  onUpdate,
-}: {
-  collectType: COLLECTION;
-  filters?: Array<{
-    field: string;
-    operator: FirebaseFirestoreTypes.WhereFilterOp;
-    value: any;
-  }>;
-  onUpdate: (data: any[]) => void;
-}) => {
-  try {
-    // Initialize the Firestore query
-    let query = firestore().collection(collectType);
+const useFireStore = () => {
+  const {user} = useAuth();
 
-    // Apply filters if provided
-    if (filters && filters.length > 0) {
-      filters.forEach(({field, operator, value}) => {
-        query = query.where(field, operator, value);
-      });
+  // Helper to initialize a Firestore query
+  const initializeQuery = async (
+    collectType: COLLECTION,
+    filters?: Array<{
+      field: string;
+      operator: FirebaseFirestoreTypes.WhereFilterOp;
+      value: any;
+    }>,
+  ): Promise<FirebaseFirestoreTypes.Query<FirebaseFirestoreTypes.DocumentData> | null> => {
+    try {
+      let query = firestore().collection(collectType);
+
+      // Apply default filter for super_owner_id
+      query = query.where(
+        'createdBy',
+        '==',
+        user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
+      );
+
+      // Temporary: Remove orderBy while index is being created
+      // query = query.orderBy('createdAt', 'desc');
+
+      // Check for data after default filter
+      const snapshot = await query.limit(1).get();
+      if (snapshot.empty) {
+        console.log(`No data found in ${collectType} for the default filter.`);
+        return null;
+      }
+
+      // Apply additional filters if provided
+      if (filters?.length) {
+        filters.forEach(({field, operator, value}) => {
+          query = query.where(field, operator, value);
+        });
+      }
+
+      return query;
+    } catch (error) {
+      console.error(`Error initializing query for ${collectType}:`, error);
+      throw error;
     }
+  };
 
-    // Listen to real-time updates
-    const unsubscribe = query.onSnapshot(
-      snapshot => {
-        const data = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+  // Helper to get server timestamps
+  const getServerTimestamps = () => ({
+    createdAt: firestore.FieldValue.serverTimestamp() as any,
+    updatedAt: firestore.FieldValue.serverTimestamp() as any,
+  });
 
-        // Pass the data to the callback
-        onUpdate(data);
-      },
-      error => {
-        console.error(`Error listening to ${collectType}:`, error);
-      },
-    );
+  // Listen to real-time updates
+  const listenToData = async ({
+    collectType,
+    filters,
+    onUpdate,
+  }: {
+    collectType: COLLECTION;
+    filters?: Array<{
+      field: string;
+      operator: FirebaseFirestoreTypes.WhereFilterOp;
+      value: any;
+    }>;
+    onUpdate: (data: any[]) => void;
+  }) => {
+    try {
+      const query = await initializeQuery(collectType, filters);
+      if (!query) return () => {}; // Stop if no data matches the default filter
 
-    // Return the unsubscribe function to clean up the listener
-    return unsubscribe;
-  } catch (error) {
-    console.error(`Error initializing listener for ${collectType}:`, error);
-    return () => {};
-  }
-};
+      const unsubscribe = query?.onSnapshot(
+        snapshot => {
+          const data = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          onUpdate(data);
+        },
+        error => {
+          console.warn(`Error listening to ${collectType}:`, error);
+        },
+      );
 
-// Get all data
-export const loadAllData = async ({
-  collectType,
-  filters,
-  setLoad,
-}: {
-  collectType: COLLECTION;
-  filters?: Array<{
-    field: string;
-    operator: FirebaseFirestoreTypes.WhereFilterOp;
-    value: any;
-  }>;
-  setLoad?: Function;
-}) => {
-  try {
-    // Initialize the Firestore query
-    let query = firestore().collection(collectType);
-
-    // Apply filters if provided
-    if (filters && filters.length > 0) {
-      filters.forEach(({field, operator, value}) => {
-        query = query.where(field, operator, value);
-      });
+      return unsubscribe;
+    } catch (error) {
+      console.error(`Error initializing listener for ${collectType}:`, error);
+      return () => {};
     }
+  };
 
-    // Fetch data
-    const Snapshot = await query.get();
-    const data = Snapshot.docs.map(doc => doc.data());
+  // Load all data
+  const loadAllData = async ({
+    collectType,
+    filters,
+    setLoad,
+  }: {
+    collectType: COLLECTION;
+    filters?: Array<{
+      field: string;
+      operator: FirebaseFirestoreTypes.WhereFilterOp;
+      value: any;
+    }>;
+    setLoad?: Function;
+  }) => {
+    try {
+      const query = await initializeQuery(collectType, filters);
+      if (!query) {
+        setLoad?.([]);
+        return [];
+      }
 
-    // Set load if provided
-    setLoad && setLoad(data);
+      const snapshot = await query.get();
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
 
-    return data;
-  } catch (error) {
-    console.error(`Error getting data from ${collectType}:`, error);
-    return [];
-  }
+      setLoad?.(data);
+      return data;
+    } catch (error) {
+      console.error(`Error getting data from ${collectType}:`, error);
+      return [];
+    }
+  };
+
+  // Load single document
+  const loadSingleData = async ({
+    collectType,
+    id,
+    setLoad,
+  }: {
+    id: string;
+    collectType: COLLECTION;
+    setLoad?: Function;
+  }) => {
+    try {
+      const snapshot = await firestore().collection(collectType).doc(id).get();
+      const data = snapshot.data();
+      setLoad?.(data);
+      return data;
+    } catch (error) {
+      console.error(
+        `Error getting ${collectType} document with ID ${id}:`,
+        error,
+      );
+      return {};
+    }
+  };
+
+  // Update document
+  const updateFireData = async ({
+    id,
+    collectType,
+    data,
+  }: {
+    id: string;
+    collectType: COLLECTION;
+    data: any;
+  }) => {
+    try {
+      const docRef = firestore().collection(collectType).doc(id);
+      await docRef.update({
+        ...data,
+        updatedAt: firestore.FieldValue.serverTimestamp(),
+      });
+      return true;
+    } catch (error) {
+      console.error(`Error updating ${collectType} with ID ${id}:`, error);
+    }
+  };
+
+  // Create document
+  const createFireData = async ({
+    collectType,
+    data,
+  }: {
+    collectType: COLLECTION;
+    data: any;
+  }) => {
+    try {
+      const docRef = firestore().collection(collectType).doc();
+      // console.log(data);
+      const docData = {
+        ...data,
+        id: docRef.id,
+        createdBy: user?.user_id,
+        super_owner_id:
+          user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
+        ...getServerTimestamps(),
+      };
+      await docRef.set(docData);
+      return docRef.id;
+    } catch (error) {
+      console.error(`Error creating ${collectType}:`, error);
+    }
+  };
+
+  // Delete document
+  const deleteFireData = async ({
+    id,
+    collectType,
+  }: {
+    id: string;
+    collectType: COLLECTION;
+  }) => {
+    try {
+      const docRef = firestore().collection(collectType).doc(id);
+      await docRef.delete();
+    } catch (error) {
+      console.error(`Error deleting ${collectType} with ID ${id}:`, error);
+    }
+  };
+
+  return {
+    listenToData,
+    loadAllData,
+    loadSingleData,
+    updateFireData,
+    createFireData,
+    deleteFireData,
+  };
 };
 
-// single get all data
-
-export const loadSingleData = async ({
-  collectType,
-  id,
-  setLoad,
-}: {
-  id: string;
-  collectType: COLLECTION;
-  setLoad?: Function;
-}) => {
-  try {
-    const Snapshot = await firestore().collection(collectType).doc(id).get();
-    const data = Snapshot.data();
-    setLoad && setLoad(data);
-    return data;
-  } catch (error) {
-    console.error('Error getting tags:', error);
-    return {};
-  }
-};
-
-// update with id and other filed and collect type
-
-export const updateFireData = async ({
-  id,
-  collectType,
-  data,
-}: {
-  id: string;
-  collectType: COLLECTION;
-  data: any;
-}) => {
-  try {
-    const docRef = firestore().collection(collectType).doc(id);
-    await docRef.update(data);
-  } catch (error) {
-    console.error(`Error updating ${collectType} with ID ${id}:`, error);
-  }
-};
-
-// create data
-
-export const createFireData = async ({
-  collectType,
-  data,
-}: {
-  collectType: COLLECTION;
-  data: any;
-}) => {
-  try {
-    const docRef = firestore().collection(collectType).doc();
-    const docData = {
-      ...data,
-      id: docRef.id,
-      createdAt: firestore.FieldValue.serverTimestamp() as any, // Auto-generate timestamp
-      updatedAt: firestore.FieldValue.serverTimestamp() as any, // Auto-generate timestamp
-    };
-    await docRef.set(docData);
-    return docRef.id;
-  } catch (error) {
-    console.error(`Error updating ${collectType} with ID:`, error);
-  }
-};
-
-// delete data
-
-export const deleteFireData = async ({
-  id,
-  collectType,
-}: {
-  id: string;
-  collectType: COLLECTION;
-}) => {
-  try {
-    const docRef = firestore().collection(collectType).doc(id);
-    await docRef.delete();
-  } catch (error) {
-    console.error(`Error deleting ${collectType} with ID ${id}:`, error);
-  }
-};
+export default useFireStore;

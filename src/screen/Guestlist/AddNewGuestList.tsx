@@ -1,5 +1,4 @@
 import {FlatList, Text, View} from 'react-native';
-import {createFireData, listenToData} from '../../firebase/database/helper';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -8,6 +7,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
+import useFireStore from '../../firebase/database/helper';
 import {IGuestsList} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -21,7 +21,7 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
-
+  const {listenToData, createFireData} = useFireStore();
   const handleGuestList = () => {
     if (guestList) {
       setGuestList('');
@@ -43,13 +43,24 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    const unsubscribe = listenToData({
-      collectType: 'GuestsList',
-      onUpdate: (data: any[]) => {
-        setGuestListAvailable(data);
-      },
-    });
-    return () => unsubscribe();
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'GuestsList',
+
+        onUpdate: (data: any[]) => {
+          setGuestListAvailable(data);
+        },
+      });
+    };
+
+    initializeListener();
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   // console.log(guestListAvailable);
@@ -81,6 +92,7 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
         </Text>
       </View>
       <FlatList
+        keyboardShouldPersistTaps="always"
         data={guestListAvailable}
         renderItem={({item, index}) => (
           <View

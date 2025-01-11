@@ -27,7 +27,7 @@ import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
-import {createFireData} from '../../firebase/database/helper';
+import useFireStore from '../../firebase/database/helper';
 import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
@@ -40,6 +40,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
+  const {createFireData} = useFireStore();
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
     const image = await useMediaPicker({

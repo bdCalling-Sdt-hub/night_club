@@ -1,5 +1,4 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {loadAllData, updateFireData} from '../../firebase/database/helper';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -22,6 +21,7 @@ import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -60,11 +60,13 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     Array<IGuestsList> | []
   >([]);
 
+  const {loadAllData, updateFireData, deleteFireData} = useFireStore();
+
   const handleValidate = (values: createProps) => {
     const errors: any = {};
 
     if (!values.fullName) {
-      errors.name = 'Name is required';
+      errors.fullName = 'Name is required';
     }
     if (!values.people) {
       errors.people = 'Number of people is required';
@@ -84,9 +86,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     // if (!values.guest_list) {
     //   errors.guest_list = 'Guest list is required';
     // }
-    if (!values.added_by) {
-      errors.added_by = 'Added by is required';
-    }
+
     if (!values.tag) {
       errors.tag = 'Tag is required';
     }
@@ -408,7 +408,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                       cursorColor={PrimaryColor}
                       editable={false}
                       value={values.guest_list}
-                      label="Add to guest list"
+                      label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
@@ -586,9 +586,10 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                           buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
                           buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
                           onPress: () => {
-                            deleteGuest(
-                              route?.params?.guest?.id as string,
-                            ).then(() => {
+                            deleteFireData({
+                              collectType: 'Guests',
+                              id: route?.params?.guest?.id as string,
+                            }).then(() => {
                               navigation?.goBack();
                             });
                             closeToast();

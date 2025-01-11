@@ -1,9 +1,4 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {
-  deleteFireData,
-  loadAllData,
-  updateFireData,
-} from '../../firebase/database/helper';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -26,6 +21,7 @@ import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -52,6 +48,8 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     email: '',
   });
 
+  const {loadAllData, updateFireData, deleteFireData} = useFireStore();
+
   const [date, setDate] = React.useState(new Date());
   const [open, setOpen] = React.useState({
     free_entry_time: false,
@@ -68,7 +66,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     const errors: any = {};
 
     if (!values.fullName) {
-      errors.name = 'Name is required';
+      errors.fullName = 'Name is required';
     }
     if (!values.people) {
       errors.people = 'Number of people is required';
@@ -85,12 +83,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     // if (!values.free_entry_end_time) {
     //   errors.free_entry_end_time = 'Free entry end time is required';
     // }
-    if (!values.guest_list) {
-      errors.guest_list = 'Guest list is required';
-    }
-    if (!values.added_by) {
-      errors.added_by = 'Added by is required';
-    }
+
     if (!values.tag) {
       errors.tag = 'Tag is required';
     }
@@ -128,7 +121,6 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   free_entry: '',
                   free_entry_time: '',
                   free_entry_end_time: '',
-                  added_by: '',
                   guest_list: '',
                   tag: '',
                 }
@@ -412,7 +404,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                       cursorColor={PrimaryColor}
                       editable={false}
                       value={values.guest_list}
-                      label="Add to guest list"
+                      label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}

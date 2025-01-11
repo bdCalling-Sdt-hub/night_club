@@ -1,5 +1,4 @@
 import {FlatList, Text, View} from 'react-native';
-import {createFireData, listenToData} from '../../firebase/database/helper';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -8,6 +7,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
+import useFireStore from '../../firebase/database/helper';
 import {ITags} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -18,6 +18,8 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const [newTag, setNewTag] = React.useState('');
   const [tags, setTags] = React.useState<Array<ITags>>([]);
+
+  const {createFireData, listenToData} = useFireStore();
 
   const handleNewTag = () => {
     if (!newTag) {
@@ -40,13 +42,24 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    const unsubscribe = listenToData({
-      collectType: 'Tags',
-      onUpdate: (data: any[]) => {
-        setTags(data);
-      },
-    });
-    return () => unsubscribe();
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Tags',
+
+        onUpdate: (data: any[]) => {
+          setTags(data);
+        },
+      });
+    };
+
+    initializeListener();
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
@@ -71,6 +84,7 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
         <Text style={tw`text-white400 text-base font-RobotoBold`}>Tags</Text>
       </View>
       <FlatList
+        keyboardShouldPersistTaps="always"
         data={tags}
         renderItem={({item, index}) => (
           <View

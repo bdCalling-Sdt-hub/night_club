@@ -10,7 +10,7 @@ import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import {loadSingleData} from '../../firebase/database/helper';
+import useFireStore from '../../firebase/database/helper';
 import {IVenue} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -27,6 +27,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
     setCurrentPage(page); // Update current page
   };
 
+  const {loadSingleData} = useFireStore();
+
   useEffect(() => {
     if (route?.params?.id) {
       loadSingleData({
@@ -35,12 +37,16 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         setLoad: setVenue,
       });
     }
+    setPaused(false);
+    return () => {
+      setPaused(true);
+    };
   }, [route?.params?.id]);
 
   // console.log(venues);
 
   // useFocusEffect(() => {
-  //   if (venue?.video) {
+  //   if (paused == true && venue?.video) {
   //     setPaused(false);
   //   }
   //   return () => {
@@ -71,7 +77,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
                 // muted={false}
                 // controls
                 // controls
-                // paused
+                paused={paused}
                 resizeMode="cover"
                 // onEnd={() => setPaused(true)} // Optional: Pause video on end
                 repeat

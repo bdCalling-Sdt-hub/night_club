@@ -10,7 +10,7 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import {useToast} from '../../components/modals/Toaster';
-import {loadSingleData} from '../../firebase/database/helper';
+import useFireStore from '../../firebase/database/helper';
 import {IEvent} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -40,6 +40,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   };
 
   // console.log('route', route?.params?.id);
+
+  const {loadSingleData} = useFireStore();
 
   React.useEffect(() => {
     loadSingleData({

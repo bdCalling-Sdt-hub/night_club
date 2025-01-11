@@ -1,13 +1,13 @@
-import {ActivityIndicator, View} from 'react-native';
 import React, {Suspense} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
-import Background from '../components/Background';
-import {NavigProps} from '../../interfaces/NaviProps';
 import OptionSelect from '../../components/cards/OptionSelect';
-import {PrimaryColor} from '../../utils/utils';
 import SearchCard from '../../components/cards/SearchCard';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 // Lazy loading the CurrentVenues component
 const CurrentVenues = React.lazy(() => import('./components/CurrentVenues'));
@@ -40,7 +40,7 @@ const Home = ({navigation}: NavigProps<null>) => {
               <ActivityIndicator color={PrimaryColor} size={'large'} />
             </View>
           }>
-          <VHistory />
+          <VHistory navigation={navigation} />
         </Suspense>
       ) : (
         <Suspense

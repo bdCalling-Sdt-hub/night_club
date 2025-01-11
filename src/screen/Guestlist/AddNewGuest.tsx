@@ -1,5 +1,4 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {createFireData, loadAllData} from '../../firebase/database/helper';
 import {IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -22,6 +21,7 @@ import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -35,6 +35,7 @@ interface createProps {
   // free_entry_end_time: string;
   added_by: string;
   guest_list: string;
+  event_id: string;
   tag: string;
 }
 
@@ -42,6 +43,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
   // get current user
   const {user} = useAuth();
   const {closeToast, showToast} = useToast();
+  const {createFireData, loadAllData} = useFireStore();
   // console.log(currentUser);
   const [extraFields, setExtraFields] = React.useState({
     note: '',
@@ -63,7 +65,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
     const errors: any = {};
 
     if (!values.fullName) {
-      errors.name = 'Name is required';
+      errors.fullName = 'Name is required';
     }
     if (!values.people) {
       errors.people = 'Number of people is required';
@@ -73,18 +75,6 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
     }
     if (!values.free_entry) {
       errors.free_entry = 'Free entry is required';
-    }
-    // if (!values.free_entry_time) {
-    //   errors.free_entry_time = 'Free entry time is required';
-    // }
-    // if (!values.free_entry_end_time) {
-    //   errors.free_entry_end_time = 'Free entry end time is required';
-    // }
-    // if (!values.guest_list) {
-    //   errors.guest_list = 'Guest list is required';
-    // }
-    if (!values.added_by) {
-      errors.added_by = 'Added by is required';
     }
     if (!values.tag) {
       errors.tag = 'Tag is required';
@@ -103,6 +93,8 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
       collectType: 'GuestsList',
       setLoad: setGuestListAvailable,
     });
+
+    return () => {};
   }, []);
 
   return (
@@ -121,12 +113,10 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
             entry_fee: '',
             free_entry: '',
             free_entry_time: '',
-            email: '',
-            note: '',
-            added_by: user?.name as string,
             guest_list: '',
             tag: '',
-            event_id: route?.params?.event_id,
+            added_by: user?.name || '',
+            event_id: route?.params?.event_id || '',
           }}
           onSubmit={values => {
             // console.log(values);
@@ -389,10 +379,6 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
                   containerStyle={tw`border-0 h-12 rounded-lg`}
                   value={user?.name}
                   editable={false}
-                  onChangeText={handleChange('added_by')}
-                  onBlur={handleBlur('added_by')}
-                  errorText={errors.added_by}
-                  touched={touched.added_by}
                 />
               </View>
               <View style={tw`bg-base `}>
@@ -406,7 +392,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
                       cursorColor={PrimaryColor}
                       editable={false}
                       value={values.guest_list}
-                      label="Add to guest list"
+                      label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}

@@ -18,7 +18,7 @@ import TButton from '../../../components/buttons/TButton';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import NormalModal from '../../../components/modals/NormalModal';
-import {loadAllData} from '../../../firebase/database/helper';
+import useFireStore from '../../../firebase/database/helper';
 import tw from '../../../lib/tailwind';
 
 interface Props {
@@ -34,13 +34,40 @@ const AllGuest = ({navigation}: Props) => {
     Array<IGuestsList>
   >([]);
   const [tag, setTag] = React.useState('Tags');
+  const {listenToData, loadAllData} = useFireStore();
+
   React.useEffect(() => {
-    //get all guest
     loadAllData({
-      collectType: 'Guests',
-      setLoad: setGuestListData,
+      collectType: 'GuestsList',
+      setLoad: setGuestListAvailable,
     });
-    //get all guest
+  }, []);
+
+  React.useEffect(() => {
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Guests',
+        filters: [
+          {
+            field: 'event_id',
+            operator: '==',
+            value: '',
+          },
+        ],
+        onUpdate: (data: any[]) => {
+          setGuestListData(data);
+        },
+      });
+    };
+
+    initializeListener();
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, []);
   const tagsData = Array.from(
     new Set(guestListData?.map(guest => guest.tag)),

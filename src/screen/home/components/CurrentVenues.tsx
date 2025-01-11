@@ -9,7 +9,7 @@ import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {listenToData} from '../../../firebase/database/helper';
+import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
@@ -18,16 +18,32 @@ import {height} from '../../../utils/utils';
 const CurrentVenues = ({navigation}: NavigProps<null>) => {
   const [data, setData] = React.useState<Array<IVenue>>();
 
+  const {listenToData} = useFireStore();
   React.useEffect(() => {
-    const unsubscribe = listenToData({
-      collectType: 'Venues',
-      onUpdate: (data: any[]) => {
-        setData(data);
-      },
-    });
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    const initializeListener = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Venues',
+        filters: [
+          {
+            field: 'status',
+            operator: '==',
+            value: 'Open',
+          },
+        ],
+        onUpdate: (data: any[]) => {
+          setData(data);
+        },
+      });
+    };
+
+    initializeListener();
 
     // Cleanup the listener on component unmount
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   return (
