@@ -25,17 +25,14 @@ const UpcomingEvents = ({navigation, route, search}: Props) => {
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Events',
+    listenToData({
+      unsubscribe,
+      collectType: 'Events',
 
-        onUpdate: (data: any[]) => {
-          setData(data);
-        },
-      });
-    };
-
-    initializeListener();
+      onUpdate: (data: any[]) => {
+        setData(data);
+      },
+    });
 
     // Cleanup the listener on component unmount
     return () => {
@@ -46,7 +43,9 @@ const UpcomingEvents = ({navigation, route, search}: Props) => {
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data?.filter((item: any) => item.name.includes(search))}
+      data={data
+        ?.filter(item => new Date(item.date).getTime() >= new Date().getTime())
+        ?.filter((item: any) => item.name.includes(search))}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
       renderItem={({item, index}) => (
         <Card

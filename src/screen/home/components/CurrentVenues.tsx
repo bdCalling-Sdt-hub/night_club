@@ -22,23 +22,20 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Venues',
-        filters: [
-          {
-            field: 'status',
-            operator: '==',
-            value: 'Open',
-          },
-        ],
-        onUpdate: (data: any[]) => {
-          setData(data);
+    listenToData({
+      unsubscribe,
+      collectType: 'Venues',
+      filters: [
+        {
+          field: 'status',
+          operator: '==',
+          value: 'Open',
         },
-      });
-    };
-
-    initializeListener();
+      ],
+      onUpdate: (data: any[]) => {
+        setData(data);
+      },
+    });
 
     // Cleanup the listener on component unmount
     return () => {

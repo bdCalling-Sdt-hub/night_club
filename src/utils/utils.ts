@@ -2,9 +2,10 @@
 
 import {Dimensions, PixelRatio, Platform} from 'react-native';
 
+import {MMKVLoader} from 'react-native-mmkv-storage';
 export const PrimaryColor = '#55AACA';
 export const BaseColor = '#071115';
-
+export const lStorage = new MMKVLoader().initialize();
 export const Android = Platform.OS === 'android';
 
 export const Ios = Platform.OS === 'ios';

@@ -30,7 +30,7 @@ import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 import data from './guest.json';
 
-const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
+const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
   const [addedBy, setAddedBy] = React.useState('Added by');
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
@@ -213,9 +213,9 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         collectType: 'Guests',
         filters: [
           {
-            field: 'event_id',
+            field: 'event',
             operator: '==',
-            value: route?.params?.item?.id,
+            value: route?.params?.item?.name,
           },
         ],
         onUpdate: (data: any[]) => {
@@ -267,7 +267,8 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
       <View style={tw`px-4 mb-4 `}>
         <Text style={tw`text-white60 text-xs font-RobotoMedium`}>
-          The Avalon Hollywood {'>'} Ultra Music Festival {'>'} 11/12/2024
+          {route?.params?.item?.venue} {'>'} {route?.params?.item?.name} {'>'}{' '}
+          {moment(route?.params?.item?.date).format('DD-MM-YYYY')}
         </Text>
       </View>
 
@@ -465,7 +466,7 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       <IButton
         onPress={() =>
           navigation.navigate('AddNewGuest', {
-            event_id: route?.params?.item?.id,
+            item: route?.params?.item,
           })
         }
         svg={IconBigPlusCyan}
@@ -475,4 +476,4 @@ const VenueGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   );
 };
 
-export default VenueGuestList;
+export default ViewGuestList;

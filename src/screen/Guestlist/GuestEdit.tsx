@@ -106,10 +106,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle
-        title="Guest Details"
-        onPress={() => navigation?.goBack()}
-      />
+      <BackWithTitle title="Edit Guest" onPress={() => navigation?.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -459,7 +456,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 </TouchableOpacity>
               </View>
 
-              {extraFields?.email && (
+              {(extraFields?.email || values?.email) && (
                 <View>
                   <InputTextWL
                     cursorColor={PrimaryColor}
@@ -472,7 +469,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   />
                 </View>
               )}
-              {extraFields?.note && (
+              {(extraFields?.note || values?.note) && (
                 <View>
                   <InputTextWL
                     cursorColor={PrimaryColor}

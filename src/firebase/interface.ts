@@ -53,6 +53,8 @@ export interface IGuest {
   entry_fee: string;
   free_entry: string;
   added_by: string;
+  event?: string;
+  venue?: string;
   guestList: string;
   free_entry_time: any;
   createdAt: any;

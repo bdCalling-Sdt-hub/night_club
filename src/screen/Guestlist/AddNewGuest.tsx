@@ -1,5 +1,5 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {IGuestsList, ITags} from '../../firebase/interface';
+import {IEvent, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -35,11 +35,12 @@ interface createProps {
   // free_entry_end_time: string;
   added_by: string;
   guest_list: string;
-  event_id: string;
+  event: string;
+  venue: string;
   tag: string;
 }
 
-const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
+const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   // get current user
   const {user} = useAuth();
   const {closeToast, showToast} = useToast();
@@ -116,7 +117,8 @@ const AddNewGuest = ({navigation, route}: NavigProps<{event_id: string}>) => {
             guest_list: '',
             tag: '',
             added_by: user?.name || '',
-            event_id: route?.params?.event_id || '',
+            event: route?.params?.item?.name || '',
+            venue: route?.params?.item?.venue || '',
           }}
           onSubmit={values => {
             // console.log(values);

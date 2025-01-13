@@ -271,6 +271,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   }}
                 />
               </View>
+              <TButton
+                onPress={() => {
+                  handleChange('check_in')(`${parseInt(values?.check_in) + 1}`);
+                }}
+                title={`Check in ${parseInt(values?.check_in || 0)}/${
+                  values?.people
+                }`}
+                containerStyle={tw`bg-green-600`}
+              />
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
@@ -455,7 +464,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 </TouchableOpacity>
               </View>
 
-              {extraFields?.email && (
+              {(extraFields?.email || values?.email) && (
                 <View>
                   <InputTextWL
                     cursorColor={PrimaryColor}
@@ -468,7 +477,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   />
                 </View>
               )}
-              {extraFields?.note && (
+              {(extraFields?.note || values?.note) && (
                 <View>
                   <InputTextWL
                     cursorColor={PrimaryColor}

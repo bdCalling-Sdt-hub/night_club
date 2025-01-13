@@ -6,6 +6,7 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
+import {BaseColor, lStorage} from '../../utils/utils';
 
 import {DrawerActions} from '@react-navigation/native';
 import React from 'react';
@@ -16,17 +17,64 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IwtButton from '../../components/buttons/IwtButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
+import {IGuest} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import {BaseColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const {user, setUser} = useAuth();
   const [selectVenue, setSelectVenue] = React.useState('Select venue');
   const [selectEvent, setSelectEvent] = React.useState('Select event');
-  const [selectOption, setSelectOption] = React.useState('Upcoming Events');
-  const [search, setSearch] = React.useState('');
+
+  const [allGuest, setAllGuest] = React.useState<IGuest[]>([]);
+
+  const {listenToData} = useFireStore();
+
+  React.useEffect(() => {
+    let unsubscribe = () => {};
+
+    const initialized = async () => {
+      unsubscribe = await listenToData({
+        collectType: 'Guests',
+        filters: [
+          {
+            field: 'event_id',
+            operator: '!=',
+            value: '',
+          },
+        ],
+        onUpdate: (data: any[]) => {
+          setAllGuest(data);
+        },
+      });
+    };
+
+    initialized();
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const totalGuest = allGuest?.reduce(
+    (acc, cur) => acc + Number(cur.people),
+    0,
+  );
+
+  const freeGuest = allGuest?.reduce(
+    (acc, cur) => acc + Number(cur.free_entry),
+    0,
+  );
+
+  const check_inGuest = allGuest
+    ?.filter(item => item?.check_in)
+    ?.reduce((acc, cur) => acc + Number(cur.check_in), 0);
+
+  const paidGuest = totalGuest - freeGuest;
+
+  // console.log(check_inGuest);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -228,7 +276,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 Total Guest
               </Text>
               <Text style={tw`text-white60  font-RobotoMedium text-base`}>
-                5210
+                {totalGuest}
               </Text>
             </View>
             <View
@@ -237,7 +285,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 Free Guest
               </Text>
               <Text style={tw`text-white60  font-RobotoMedium text-base`}>
-                210
+                {freeGuest}
               </Text>
             </View>
           </View>
@@ -248,7 +296,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 Checked In
               </Text>
               <Text style={tw`text-white60  font-RobotoMedium text-base`}>
-                5000
+                {check_inGuest}
               </Text>
             </View>
             <View
@@ -257,7 +305,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 Paid Guest
               </Text>
               <Text style={tw`text-white60  font-RobotoMedium text-base`}>
-                210
+                {paidGuest}
               </Text>
             </View>
           </View>
@@ -287,6 +335,8 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
             verticalAlign="top"
             // textAlign="center"
             textAlignVertical="top"
+            value={lStorage?.getString('note')}
+            onChangeText={text => lStorage?.setString('note', text)}
             numberOfLines={10}
             containerStyle={tw` h-40 pt-2 rounded-lg border-[1px] border-transparent`}
             focusSTyle={tw`border-primary`}

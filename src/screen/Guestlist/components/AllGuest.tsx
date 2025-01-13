@@ -43,26 +43,26 @@ const AllGuest = ({navigation}: Props) => {
     });
   }, []);
 
+  const initializeListener = async (unsubscribe?: () => void) => {
+    unsubscribe = await listenToData({
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event_id',
+          operator: '==',
+          value: '',
+        },
+      ],
+      onUpdate: (data: any[]) => {
+        setGuestListData(data);
+      },
+    });
+  };
+
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Guests',
-        filters: [
-          {
-            field: 'event_id',
-            operator: '==',
-            value: '',
-          },
-        ],
-        onUpdate: (data: any[]) => {
-          setGuestListData(data);
-        },
-      });
-    };
-
-    initializeListener();
+    initializeListener(unsubscribe);
 
     // Cleanup the listener on component unmount
     return () => {

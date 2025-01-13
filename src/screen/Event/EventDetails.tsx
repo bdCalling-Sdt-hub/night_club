@@ -170,7 +170,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         <View style={tw`px-4 py-10 gap-5`}>
           <TButton
             onPress={() => {
-              navigation?.navigate('VenueGuestList', {item: event});
+              navigation?.navigate('ViewGuestList', {item: event});
             }}
             title="View Guest List"
             titleStyle={tw`text-base text-white50 font-RobotoBold`}

@@ -45,11 +45,10 @@ const useFireStore = () => {
       }
 
       // Apply additional filters if provided
-      if (filters?.length) {
-        filters.forEach(({field, operator, value}) => {
-          query = query.where(field, operator, value);
-        });
-      }
+
+      filters?.forEach(({field, operator, value}) => {
+        query = query.where(field, operator, value);
+      });
 
       return query;
     } catch (error) {
@@ -69,6 +68,7 @@ const useFireStore = () => {
     collectType,
     filters,
     onUpdate,
+    unsubscribe,
   }: {
     collectType: COLLECTION;
     filters?: Array<{
@@ -76,22 +76,26 @@ const useFireStore = () => {
       operator: FirebaseFirestoreTypes.WhereFilterOp;
       value: any;
     }>;
+    unsubscribe?: () => void;
     onUpdate: (data: any[]) => void;
   }) => {
     try {
       const query = await initializeQuery(collectType, filters);
-      if (!query) return () => {}; // Stop if no data matches the default filter
+      if (!query) {
+        console.log(`No data found in ${collectType} for the default filter.`);
+        return () => {};
+      }
 
-      const unsubscribe = query?.onSnapshot(
+      unsubscribe = query.onSnapshot(
         snapshot => {
-          const data = snapshot.docs.map(doc => ({
+          const data = snapshot?.docs?.map(doc => ({
             id: doc.id,
             ...doc.data(),
           }));
           onUpdate(data);
         },
         error => {
-          console.warn(`Error listening to ${collectType}:`, error);
+          // console.warn(`Error listening to ${collectType}:`, error);
         },
       );
 
