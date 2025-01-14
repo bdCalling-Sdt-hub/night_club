@@ -35,23 +35,20 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     let unsubscribe = () => {};
 
-    const initialized = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Guests',
-        filters: [
-          {
-            field: 'event_id',
-            operator: '!=',
-            value: '',
-          },
-        ],
-        onUpdate: (data: any[]) => {
-          setAllGuest(data);
+    listenToData({
+      unsubscribe,
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event_id',
+          operator: '!=',
+          value: '',
         },
-      });
-    };
-
-    initialized();
+      ],
+      onUpdate: (data: any[]) => {
+        setAllGuest(data);
+      },
+    });
 
     return () => {
       unsubscribe();

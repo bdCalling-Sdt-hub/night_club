@@ -56,16 +56,13 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       setUserId(currentUser.uid);
 
       // Fetch the refreshed token with claims
-      await currentUser?.getIdToken(true).then(idToken => {
-        currentUser?.getIdTokenResult().then(idTokenResult => {
-          idTokenResult?.claims &&
-            setUser({
-              ...idTokenResult.claims,
-              photoURL: currentUser.photoURL,
-            }); // This should now include the custom claims
-        });
-      });
+      const idTokenResult = await currentUser?.getIdTokenResult();
 
+      idTokenResult?.claims &&
+        setUser({
+          ...idTokenResult.claims,
+          photoURL: currentUser.photoURL,
+        }); // This should now include the custom claims
       // const user = await getUser(currentUser.uid);
       // user &&
       //   setUser({

@@ -101,7 +101,7 @@ const useFireStore = () => {
 
       return unsubscribe;
     } catch (error) {
-      console.error(`Error initializing listener for ${collectType}:`, error);
+      console.log(`Error initializing listener for ${collectType}:`, error);
       return () => {};
     }
   };
