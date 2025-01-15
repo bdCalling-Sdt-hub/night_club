@@ -4,7 +4,7 @@ export interface IUser {
   displayName: string;
   password: string;
   phoneNumber: string;
-  photoURL: string;
+  photoURL?: string | null;
   role: 'super-owner' | 'owner' | 'manager' | 'promoters' | 'guard';
 }
 

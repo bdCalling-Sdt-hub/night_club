@@ -44,7 +44,7 @@ const linking = {
   config: {
     screens: {
       VerifySuccess: 'email-verified',
-      Login: 'login',
+      LoadingSplash: 'login',
     },
   },
 };

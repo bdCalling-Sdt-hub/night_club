@@ -6,16 +6,16 @@ import {
   DrawerItemList,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import {IconCloseGray, IconLoginRed} from '../icons/icons';
 import {Text, View} from 'react-native';
+import {IconCloseGray, IconLoginRed} from '../icons/icons';
 
-import BottomRoutes from './BottomRoutes';
 import IwtButton from '../components/buttons/IwtButton';
 import TButton from '../components/buttons/TButton';
-import tw from '../lib/tailwind';
+import {useToast} from '../components/modals/Toaster';
 import {useAuth} from '../context/AuthProvider';
 import {useFireAuth} from '../firebase/useFireAuth';
-import {useToast} from '../components/modals/Toaster';
+import tw from '../lib/tailwind';
+import BottomRoutes from './BottomRoutes';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // console.log(user);
@@ -114,6 +114,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           onPress={() => {
             SignOut();
             setUserId(undefined);
+            setUser(undefined);
             (props.navigation as any).replace('Loading');
             props.navigation.closeDrawer();
           }}

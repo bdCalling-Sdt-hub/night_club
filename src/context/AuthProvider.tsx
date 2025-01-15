@@ -22,8 +22,8 @@ interface firebaseClaimUser {
 }
 
 interface AuthContextProps {
-  user: firebaseClaimUser | undefined;
-  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
+  user: firebaseClaimUser | null;
+  setUser: React.Dispatch<React.SetStateAction<IUser | null>>;
   initialLoading: boolean;
   setInitialLoading: React.Dispatch<React.SetStateAction<boolean>>;
   userId: string | undefined;
@@ -75,7 +75,7 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       //     role: user.role,
       //     // add other properties as needed
       //   });
-      setInitialLoading(false);
+      idTokenResult?.claims && setInitialLoading(false);
     } else {
       setInitialLoading(false);
       console.log('No user logged in');

@@ -208,23 +208,20 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Guests',
-        filters: [
-          {
-            field: 'event',
-            operator: '==',
-            value: route?.params?.item?.name,
-          },
-        ],
-        onUpdate: (data: any[]) => {
-          setGuestListData(data);
+    listenToData({
+      unsubscribe,
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event',
+          operator: '==',
+          value: route?.params?.item?.name,
         },
-      });
-    };
-
-    initializeListener();
+      ],
+      onUpdate: (data: any[]) => {
+        setGuestListData(data);
+      },
+    });
 
     // Cleanup the listener on component unmount
     return () => {

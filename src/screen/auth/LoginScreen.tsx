@@ -1,18 +1,18 @@
-import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
 
-import Background from '../components/Background';
-import {Checkbox} from 'react-native-ui-lib';
 import {Formik} from 'formik';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
+import {Checkbox} from 'react-native-ui-lib';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import {useFireAuth} from '../../firebase/useFireAuth';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 interface ISingInForm {
   email: string;
@@ -23,7 +23,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const {SignInWithEmailPass, handleResetPassword, handleVerifyEmail} =
     useFireAuth();
-  const {userId, setUserId} = useAuth();
+  const {userId, setUserId, setUser} = useAuth();
   const [check, setCheck] = React.useState(false);
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
@@ -36,8 +36,15 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         .then(res => {
           if (res.user.emailVerified) {
             setUserId(res.user.uid);
-            setLoading(false);
-            (navigation as any)?.replace('Home');
+            res?.user?.getIdTokenResult().then(idTokenResult => {
+              idTokenResult?.claims &&
+                setUser({
+                  ...idTokenResult.claims,
+                  photoURL: res.user.photoURL,
+                } as any);
+              setLoading(false);
+              (navigation as any)?.replace('Home');
+            });
           } else {
             setLoading(false);
             showToast({

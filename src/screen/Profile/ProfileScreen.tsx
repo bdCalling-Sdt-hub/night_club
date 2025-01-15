@@ -1,4 +1,5 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IEvent, IGuest, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
@@ -18,19 +19,22 @@ import IwtButton from '../../components/buttons/IwtButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {IGuest} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const {user, setUser} = useAuth();
+  const [venueData, setVenueData] = React.useState<IVenue[]>([]);
+  const [eventData, setEventData] = React.useState<IEvent[]>([]);
   const [selectVenue, setSelectVenue] = React.useState('Select venue');
   const [selectEvent, setSelectEvent] = React.useState('Select event');
 
   const [allGuest, setAllGuest] = React.useState<IGuest[]>([]);
 
-  const {listenToData} = useFireStore();
+  // console.log(user);
+
+  const {listenToData, loadAllData} = useFireStore();
 
   React.useEffect(() => {
     let unsubscribe = () => {};
@@ -40,9 +44,19 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
       collectType: 'Guests',
       filters: [
         {
-          field: 'event_id',
+          field: 'event',
           operator: '!=',
           value: '',
+        },
+        {
+          field: 'event',
+          operator: '==',
+          value: selectEvent,
+        },
+        {
+          field: 'venue',
+          operator: '==',
+          value: selectVenue,
         },
       ],
       onUpdate: (data: any[]) => {
@@ -53,6 +67,17 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
     return () => {
       unsubscribe();
     };
+  }, []);
+
+  React.useEffect(() => {
+    loadAllData({
+      collectType: 'Venues',
+      setLoad: setVenueData,
+    });
+    loadAllData({
+      collectType: 'Events',
+      setLoad: setEventData,
+    });
   }, []);
 
   const totalGuest = allGuest?.reduce(
@@ -178,18 +203,12 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 }}
                 fieldType={Picker.fieldTypes.filter}
                 paddingH
-                items={[
-                  {label: 'The Velvet Lounge', value: 'The Velvet Lounge'},
-                  {label: 'Skyline Rooftop', value: 'Skyline Rooftop'},
-                  {label: 'Oceanview Club', value: 'Oceanview Club'},
-                  {label: 'The Pulse Arena', value: 'The Pulse Arena'},
-                  {label: 'Neon District', value: 'Neon District'},
-                  {label: 'Electric Gardens', value: 'Electric Gardens'},
-                  {label: 'The Vibe Room', value: 'The Vibe Room'},
-                  {label: 'Sunset Terrace', value: 'Sunset Terrace'},
-                  {label: 'Riverside Pavilion', value: 'Riverside Pavilion'},
-                  {label: 'Majestic Hall', value: 'Majestic Hall'},
-                ]}
+                items={venueData?.map(item => {
+                  return {
+                    label: item?.name,
+                    value: item?.name,
+                  };
+                })}
                 pickerModalProps={{
                   overlayBackgroundColor: BaseColor,
                 }}
@@ -248,18 +267,12 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 }}
                 fieldType={Picker.fieldTypes.filter}
                 paddingH
-                items={[
-                  {label: 'Lounge', value: 'Lounge'},
-                  {label: 'Rooftop', value: 'Rooftop'},
-                  {label: 'Skyline Views', value: 'Skyline Views'},
-                  {label: 'Relaxation', value: 'Relaxation'},
-                  {label: 'Cocktails', value: 'Cocktails'},
-                  {label: 'Chill Vibes', value: 'Chill Vibes'},
-                  {label: 'Nightlife', value: 'Nightlife'},
-                  {label: 'Exclusive', value: 'Exclusive'},
-                  {label: 'Urban', value: 'Urban'},
-                  {label: 'Event Venue', value: 'Event Venue'},
-                ]}
+                items={eventData?.map(item => {
+                  return {
+                    label: item?.name,
+                    value: item?.name,
+                  };
+                })}
                 pickerModalProps={{
                   overlayBackgroundColor: BaseColor,
                 }}
@@ -316,13 +329,15 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
             titleStyle={tw`text-white font-RobotoBold text-base`}
             onPress={() => navigation.navigate('EditProfile')}
           />
-          <IwtButton
-            title="Manage Users"
-            svg={IconLeftArrayGray}
-            containerStyle={tw`flex-row-reverse justify-between p-0 items-center px-4 w-full h-12 rounded-lg bg-primary800`}
-            titleStyle={tw`text-white font-RobotoBold text-base`}
-            onPress={() => navigation.navigate('ManageUsers')}
-          />
+          {(user?.role === 'super-owner' || user?.role === 'owner') && (
+            <IwtButton
+              title="Manage Users"
+              svg={IconLeftArrayGray}
+              containerStyle={tw`flex-row-reverse justify-between p-0 items-center px-4 w-full h-12 rounded-lg bg-primary800`}
+              titleStyle={tw`text-white font-RobotoBold text-base`}
+              onPress={() => navigation.navigate('ManageUsers')}
+            />
+          )}
         </View>
         {/*================= note section ==================  */}
         <View style={tw`px-4 mb-5`}>

@@ -4,43 +4,112 @@ import {Formik} from 'formik';
 import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
-const data = ['Owner', 'Nightclub manager', 'Promoters', 'Guard'];
+const data = [
+  {
+    label: 'Owner',
+    value: 'owner',
+  },
+  {
+    label: 'Nightclub manager',
+    value: 'manager',
+  },
+  {
+    label: 'Promoters',
+    value: 'promoters',
+  },
+  {
+    label: 'Guard',
+    value: 'guard',
+  },
+];
 
 interface createUser {
-  name: string;
+  displayName: string;
   email: string;
   role: string;
 }
 
 const AddUser = ({navigation}: NavigProps<null>) => {
-  const [selectRole, setSelectRole] = React.useState(null);
+  const {user} = useAuth();
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [selectRole, setSelectRole] = React.useState<string | null>(null);
   const [optionSendMail, setOptionSendMail] = React.useState({
     sendMail: true,
     setPass: false,
   });
+  const {closeToast, showToast} = useToast();
 
-  const handleSendMail = () => {
-    setOptionSendMail({
-      sendMail: true,
-      setPass: false,
-    });
-  };
+  const handleOnSubmit = async (values: any) => {
+    setLoading(true);
+    values.company = user?.company;
+    values.super_owner_id =
+      user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
 
-  const handleOnSubmit = (values: any) => {
     console.log(values);
+
+    const res = await fetch(
+      'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/users',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      },
+    );
+    const resData = await res.json();
+    // console.log(resData);
+
+    if (resData?.success) {
+      setLoading(false);
+      if (resData?.loginType === 'email') {
+        showToast({
+          content: 'user added successfully,And send login link to email',
+          title: 'Success',
+          onPress: () => {
+            closeToast();
+            navigation.goBack();
+          },
+        });
+      } else {
+        setLoading(false);
+        showToast({
+          content: 'User added successfully',
+          title: 'Success',
+          onPress: () => {
+            closeToast();
+            navigation.goBack();
+          },
+        });
+      }
+    } else {
+      setLoading(false);
+      showToast({
+        content: resData?.message || resData?.details,
+        title: 'Warning',
+        onPress: () => {
+          closeToast();
+          navigation.goBack();
+        },
+      });
+    }
+    // navigation.goBack();
   };
 
   const handleValidate = (values: createUser) => {
     const errors: any = {};
 
-    if (!values.name) {
-      errors.name = 'Name is required';
+    if (!values.displayName) {
+      errors.displayName = 'name is required';
     }
     if (!values.email) {
       errors.email = 'Email is required';
@@ -60,9 +129,11 @@ const AddUser = ({navigation}: NavigProps<null>) => {
         contentContainerStyle={tw`gap-5 pb-12 pt-1`}>
         <Formik
           initialValues={{
-            name: '',
+            displayName: '',
             email: '',
             role: '',
+            phoneNumber: '',
+            loginType: 'email',
           }}
           onSubmit={values => {
             handleOnSubmit(values);
@@ -102,17 +173,17 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                           borderRadius={100}
                           size={15}
                           iconColor="#fff"
-                          value={selectRole === item}
+                          value={selectRole === item.value}
                           onValueChange={() => {
-                            setSelectRole(item);
-                            handleChange('role')(item);
+                            setSelectRole(item.value);
+                            handleChange('role')(item.value);
                           }}
                           style={tw``}
                           color={PrimaryColor}
                         />
                         <Text
                           style={tw`text-white50 font-RobotoBold text-base`}>
-                          {item}
+                          {item?.label}
                         </Text>
                       </View>
                     );
@@ -120,14 +191,14 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                 </View>
                 <View>
                   <InputTextWL
-                    label="First & last name"
+                    label="First & last displayName"
                     containerStyle={tw`h-12 border-0`}
-                    placeholder="Enter your full name"
-                    value={values.name}
-                    onChangeText={handleChange('name')}
-                    onBlur={handleBlur('name')}
-                    errorText={errors.name}
-                    touched={touched.name}
+                    placeholder="Enter your full displayName"
+                    value={values.displayName}
+                    onChangeText={handleChange('displayName')}
+                    onBlur={handleBlur('displayName')}
+                    errorText={errors.displayName}
+                    touched={touched.displayName}
                   />
                 </View>
                 <View>
@@ -150,6 +221,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       iconColor="#fff"
                       value={optionSendMail?.sendMail}
                       onValueChange={value => {
+                        handleChange('loginType')('email');
                         setOptionSendMail({
                           sendMail: value,
                           setPass: false,
@@ -169,6 +241,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       iconColor="#fff"
                       value={optionSendMail?.setPass}
                       onValueChange={value => {
+                        handleChange('loginType')('password');
                         setOptionSendMail({
                           sendMail: false,
                           setPass: value,
@@ -186,6 +259,10 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                   <View>
                     <InputTextWL
                       label="Password"
+                      secureTextEntry
+                      value={values?.password}
+                      onChangeText={handleChange('password')}
+                      onBlur={handleBlur('password')}
                       containerStyle={tw`h-12 border-0 `}
                       placeholder="Enter your password"
                     />
@@ -193,14 +270,19 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                 )}
               </View>
 
-              {/* <View style={tw`px-4  mt-12 gap-5 `}>
-                <TButton title="Save" onPress={handleSubmit} />
+              <View style={tw`px-4  mt-12 gap-5 `}>
+                <TButton
+                  disabled={optionSendMail.setPass && !values?.password}
+                  isLoading={loading}
+                  title="Save"
+                  onPress={handleSubmit}
+                />
                 <TButton
                   title="Cancel"
                   onPress={() => navigation?.goBack()}
                   containerStyle={tw`bg-transparent border border-red-800`}
                 />
-              </View> */}
+              </View>
             </View>
           )}
         </Formik>
