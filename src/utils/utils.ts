@@ -1,8 +1,14 @@
 // devices screen size
 
-import {Dimensions, PixelRatio, Platform} from 'react-native';
+import {
+  Dimensions,
+  PermissionsAndroid,
+  PixelRatio,
+  Platform,
+} from 'react-native';
 
 import {MMKVLoader} from 'react-native-mmkv-storage';
+
 export const PrimaryColor = '#55AACA';
 export const BaseColor = '#071115';
 export const lStorage = new MMKVLoader().initialize();
@@ -42,3 +48,24 @@ function getRandomHashColor() {
 // console.log(price); // Output: "1 234,56 €" (French formatting for Euros)
 
 // Call requestPermissions before trying to write to the file
+export const filRequestPermission = async () => {
+  if (Platform.OS === 'android') {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'This app needs access to your storage to save files.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
+  }
+  return true; // iOS does not require runtime permission for file writing.
+};

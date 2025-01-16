@@ -278,16 +278,14 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
 
               <DateTimePicker
                 value={
-                  values.date
-                    ? moment(values.date || new Date()).format('d MMMM, YYYY')
-                    : ''
+                  values.date ? moment(values.date).format('D MMMM, YYYY') : ''
                 }
                 dateProps={{
                   mode: 'date',
                 }}
                 svgSecondIcon={!values?.date && IconCalendarGay}
                 label="Event date"
-                placeholder="Enter event date name"
+                placeholder="Enter event date"
                 containerStyle={tw`border-0 h-12 rounded-lg`}
                 onChangeText={handleChange('date')}
                 onBlur={handleBlur('date')}
@@ -295,11 +293,16 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 touched={touched.date}
                 onClear={() => {
                   handleChange('date')('');
+                  handleChange('start_time')('');
+                  handleChange('end_time')('');
                 }}
                 getCurrentDate={date => {
-                  handleChange('date')(date);
+                  handleChange('date')(new Date(date).toISOString());
+                  handleChange('start_time')(''); // Reset times if a new date is selected
+                  handleChange('end_time')('');
                 }}
               />
+
               <DateTimePicker
                 value={
                   values.start_time
@@ -316,10 +319,18 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 onClear={() => {
                   handleChange('start_time')('');
                 }}
-                getCurrentDate={date => {
-                  handleChange('start_time')(date);
+                getCurrentDate={time => {
+                  // Combine the selected date with the start time
+                  const combinedStartDateTime = moment(values.date)
+                    .set({
+                      hour: moment(time).hour(),
+                      minute: moment(time).minute(),
+                    })
+                    .toISOString();
+                  handleChange('start_time')(combinedStartDateTime);
                 }}
               />
+
               <DateTimePicker
                 value={
                   values.end_time
@@ -336,8 +347,16 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 onClear={() => {
                   handleChange('end_time')('');
                 }}
-                getCurrentDate={date => {
-                  handleChange('end_time')(date);
+                getCurrentDate={time => {
+                  // Combine the selected date with the end time
+                  const combinedEndDateTime = moment(values.date)
+                    .set({
+                      hour: moment(time).hour(),
+                      minute: moment(time).minute(),
+                    })
+                    .toISOString();
+                  handleChange('end_time')(combinedEndDateTime);
+                  handleChange('date')(combinedEndDateTime);
                 }}
               />
 

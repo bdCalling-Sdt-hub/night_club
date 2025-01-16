@@ -68,18 +68,6 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     if (!values.fullName) {
       errors.fullName = 'Name is required';
     }
-    if (!values.people) {
-      errors.people = 'Number of people is required';
-    }
-    if (!values.entry_fee) {
-      errors.entry_fee = 'Entry fee is required';
-    }
-    if (!values.free_entry) {
-      errors.free_entry = 'Free entry is required';
-    }
-    if (!values.tag) {
-      errors.tag = 'Tag is required';
-    }
 
     return errors;
   };
@@ -225,7 +213,6 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 Amount of people{' '}
                 {errors.people && touched.people && (
                   <Text style={[tw`text-red-500 text-[10px] `]}>
-                    {' '}
                     {errors.people}
                   </Text>
                 )}

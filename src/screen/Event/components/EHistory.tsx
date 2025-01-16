@@ -30,6 +30,13 @@ const EHistory = ({navigation, search}: Props) => {
     listenToData({
       unsubscribe,
       collectType: 'Events',
+      filters: [
+        {
+          field: 'date',
+          operator: '<',
+          value: new Date().toISOString(),
+        },
+      ],
       onUpdate: (data: any[]) => {
         setData(data || []); // Ensure data is always an array
       },
@@ -44,9 +51,7 @@ const EHistory = ({navigation, search}: Props) => {
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data
-        ?.filter(item => new Date(item.date).getTime() < new Date().getTime())
-        .filter((item: any) => item.name.includes(search))}
+      data={data}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
       renderItem={({item, index}) => (
         <Card
@@ -62,7 +67,7 @@ const EHistory = ({navigation, search}: Props) => {
           }>
           <Card.Image
             source={{uri: item.image}}
-            imageStyle={tw`h-14 w-14 rounded-lg`}
+            imageStyle={tw`h-16 w-16 rounded-lg`}
           />
           <Card.Details
             data={[

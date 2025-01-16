@@ -68,15 +68,15 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     if (!values.fullName) {
       errors.fullName = 'Name is required';
     }
-    if (!values.people) {
-      errors.people = 'Number of people is required';
-    }
-    if (!values.entry_fee) {
-      errors.entry_fee = 'Entry fee is required';
-    }
-    if (!values.free_entry) {
-      errors.free_entry = 'Free entry is required';
-    }
+    // if (!values.people) {
+    //   errors.people = 'Number of people is required';
+    // }
+    // if (!values.entry_fee) {
+    //   errors.entry_fee = 'Entry fee is required';
+    // }
+    // if (!values.free_entry) {
+    //   errors.free_entry = 'Free entry is required';
+    // }
     // if (!values.free_entry_time) {
     //   errors.free_entry_time = 'Free entry time is required';
     // }

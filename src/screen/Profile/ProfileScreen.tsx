@@ -49,16 +49,16 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           value: '',
         },
         {
-          field: 'event',
-          operator: '==',
-          value: selectEvent,
-        },
-        {
           field: 'venue',
           operator: '==',
-          value: selectVenue,
+          value: selectVenue === 'Select venue' ? '' : selectVenue,
         },
-      ],
+        {
+          field: 'event',
+          operator: '==',
+          value: selectEvent === 'Select event' ? '' : selectEvent,
+        },
+      ].filter(Boolean),
       onUpdate: (data: any[]) => {
         setAllGuest(data);
       },
@@ -67,7 +67,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [selectEvent, selectVenue]);
 
   React.useEffect(() => {
     loadAllData({

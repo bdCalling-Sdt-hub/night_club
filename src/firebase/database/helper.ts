@@ -22,6 +22,7 @@ const useFireStore = () => {
       field: string;
       operator: FirebaseFirestoreTypes.WhereFilterOp;
       value: any;
+      accept?: boolean;
     }>,
   ): Promise<FirebaseFirestoreTypes.Query<FirebaseFirestoreTypes.DocumentData> | null> => {
     try {
@@ -46,7 +47,9 @@ const useFireStore = () => {
 
       // Apply additional filters if provided
 
-      filters?.forEach(({field, operator, value}) => {
+      // Apply additional filters if provided
+      filters?.forEach(({field, operator, value, accept}) => {
+        if (value?.length === 0 && accept) return;
         query = query.where(field, operator, value);
       });
 

@@ -16,14 +16,13 @@ import {useImportFile} from '../../hook/useImportFile';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
-import data from './guest.json';
 
 const AllGuestInGuestList = ({
   navigation,
   route,
 }: NavigProps<{item: IGuestsList}>) => {
   const {closeToast, showToast} = useToast();
-  const [selectGuest, setSelectGuest] = React.useState<Array<IGuest>>();
+  const [selectGuest, setSelectGuest] = React.useState<IGuest[]>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<IGuestsList>();
   const [search, setSearch] = React.useState('');
   const [addToGuests, setAddToGuests] = React.useState(false);
@@ -48,7 +47,7 @@ const AllGuestInGuestList = ({
       setLoad: setGuests,
     });
     loadAllData({
-      collectType: 'GuestsList',
+      collectType: 'Events',
       setLoad: setGuestListAvailable,
     });
   }, []);
@@ -58,30 +57,30 @@ const AllGuestInGuestList = ({
       multipleBTNStyle: tw`flex-col gap-3`,
       multipleButton: [
         {
-          buttonText: 'Import as text',
+          buttonText: 'Export as text',
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
             // handleAddGuest();
-            useImportFile({data, type: 'text'});
+            useImportFile({data: selectGuest, type: 'text'});
             closeToast();
           },
         },
         {
-          buttonText: 'Import as CSV',
+          buttonText: 'Export as CSV',
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
-            useImportFile({data, type: 'csv'});
+            useImportFile({data: selectGuest, type: 'csv'});
             closeToast();
           },
         },
         {
-          buttonText: 'Import as Excel',
+          buttonText: 'Export as Excel',
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
-            useImportFile({data, type: 'xlsx'});
+            useImportFile({data: selectGuest, type: 'xlsx'});
             closeToast();
           },
         },
@@ -99,7 +98,8 @@ const AllGuestInGuestList = ({
         containerStyle={tw`justify-between`}
         ComponentBtn={
           <TButton
-            title="Import"
+            title="Export"
+            disabled={selectGuest?.length > 0 ? false : true}
             onPress={handleImportData}
             containerStyle={tw`w-24 p-0 h-6 rounded-lg  bg-transparent self-end justify-end`}
             titleStyle={tw`text-primary font-RobotoBold text-base`}
@@ -121,7 +121,7 @@ const AllGuestInGuestList = ({
                 if (selectGuest?.length > 0) {
                   setSelectGuest([]);
                 } else {
-                  setSelectGuest(guestListAvailable);
+                  setSelectGuest(guests);
                 }
               }}
               style={tw` px-4 self-end`}>
@@ -136,17 +136,17 @@ const AllGuestInGuestList = ({
         }
         renderItem={({item, index}) => (
           <Card
-            onPress={() => {
-              if (selectGuest?.length > 0) {
-                if (selectGuest?.includes(item)) {
-                  setSelectGuest(selectGuest?.filter(i => i !== item));
-                } else {
-                  setSelectGuest([...selectGuest, item]);
-                }
-              } else {
-                setSelectGuest([item]);
-              }
-            }}
+            // onPress={() => {
+            //   if (selectGuest?.length > 0) {
+            //     if (selectGuest?.includes(item)) {
+            //       setSelectGuest(selectGuest?.filter(i => i !== item));
+            //     } else {
+            //       setSelectGuest([...selectGuest, item]);
+            //     }
+            //   } else {
+            //     setSelectGuest([item]);
+            //   }
+            // }}
             containerStyle={tw` flex-row gap-3 items-center`}
             component={
               <>
@@ -155,7 +155,17 @@ const AllGuestInGuestList = ({
                   size={15}
                   // iconColor="#000000"
                   value={selectGuest?.includes(item)}
-                  onValueChange={() => {}}
+                  onValueChange={() => {
+                    if (selectGuest?.length > 0) {
+                      if (selectGuest?.includes(item)) {
+                        setSelectGuest(selectGuest?.filter(i => i !== item));
+                      } else {
+                        setSelectGuest([...selectGuest, item]);
+                      }
+                    } else {
+                      setSelectGuest([item]);
+                    }
+                  }}
                   style={tw``}
                   color={PrimaryColor}
                 />

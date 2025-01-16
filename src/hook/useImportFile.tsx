@@ -1,28 +1,44 @@
 import * as XLSX from 'xlsx';
 
+import {Alert, Platform} from 'react-native';
+
 import Papa from 'papaparse';
-import {Platform} from 'react-native';
 import RNFS from 'react-native-fs';
+import {IGuest} from '../firebase/interface';
+import {filRequestPermission} from '../utils/utils';
 
 export const useImportFile = async ({
   data,
   type,
 }: {
   type: 'text' | 'csv' | 'xlsx';
-  data: any;
+  data: IGuest[];
 }) => {
   try {
+    const permission = await filRequestPermission();
+    if (!permission) {
+      return Alert.alert(
+        'Permission Denied',
+        'Guest list can not be saved without storage permission.',
+      );
+    }
+
     const csv = Papa.unparse(data);
+    // Papa.parse(csv, {
+    //   complete: function (results) {
+    //     console.log(results);
+    //   },
+    // })
     if (type === 'text') {
       //================ Start the file download of Text formate Save local file manager ====================
       let path = '';
 
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
-        path = RNFS.ExternalStorageDirectoryPath + '/Download/data.csv'; // Use '/Download/' directory on Android
+        path = RNFS.ExternalStorageDirectoryPath + '/Download/data.text'; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
-        path = RNFS.DocumentDirectoryPath + '/data.csv';
+        path = RNFS.DocumentDirectoryPath + '/data.text';
       }
 
       try {
@@ -39,10 +55,10 @@ export const useImportFile = async ({
 
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
-        path = RNFS.ExternalStorageDirectoryPath + '/Download/data.text'; // Use '/Download/' directory on Android
+        path = RNFS.ExternalStorageDirectoryPath + '/Download/data.csv'; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
-        path = RNFS.DocumentDirectoryPath + '/data.text';
+        path = RNFS.DocumentDirectoryPath + '/data.csv';
       }
 
       try {

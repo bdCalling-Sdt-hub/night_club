@@ -26,7 +26,7 @@ interface Props {
 }
 const AllGuest = ({navigation}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState([]);
-  const [selectGuestList, setSelectGuestList] = React.useState<string>();
+  const [selectGuestList, setSelectGuestList] = React.useState<string>('');
   const [addToGuests, setAddToGuests] = React.useState(false);
 
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
@@ -34,7 +34,7 @@ const AllGuest = ({navigation}: Props) => {
     Array<IGuestsList>
   >([]);
   const [tag, setTag] = React.useState('Tags');
-  const {listenToData, loadAllData} = useFireStore();
+  const {listenToData, loadAllData, updateFireData} = useFireStore();
 
   React.useEffect(() => {
     loadAllData({
@@ -43,12 +43,20 @@ const AllGuest = ({navigation}: Props) => {
     });
   }, []);
 
-  const initializeListener = async (unsubscribe?: () => void) => {
-    unsubscribe = await listenToData({
+  React.useEffect(() => {
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    listenToData({
+      unsubscribe,
       collectType: 'Guests',
       filters: [
         {
-          field: 'event_id',
+          field: 'event',
+          operator: '==',
+          value: '',
+        },
+        {
+          field: 'guest_list',
           operator: '==',
           value: '',
         },
@@ -57,12 +65,6 @@ const AllGuest = ({navigation}: Props) => {
         setGuestListData(data);
       },
     });
-  };
-
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
-
-    initializeListener(unsubscribe);
 
     // Cleanup the listener on component unmount
     return () => {
@@ -72,6 +74,21 @@ const AllGuest = ({navigation}: Props) => {
   const tagsData = Array.from(
     new Set(guestListData?.map(guest => guest.tag)),
   ).map(tag => ({label: tag, value: tag}));
+
+  const handleAddGuestOnGuestList = async () => {
+    selectGuest?.forEach((id: string) => {
+      updateFireData({
+        collectType: 'Guests',
+        id: id,
+        data: {
+          guest_list: selectGuestList,
+        },
+      });
+    });
+
+    setAddToGuests(false);
+  };
+
   return (
     <>
       <FlatList
@@ -210,7 +227,7 @@ const AllGuest = ({navigation}: Props) => {
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: item.tag,
+                  title: item?.tag,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}
@@ -252,16 +269,16 @@ const AllGuest = ({navigation}: Props) => {
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectGuestList(item.id);
+                  setSelectGuestList(item.name);
                 }}
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectGuestList === item.id}
+                  value={selectGuestList === item.name}
                   onValueChange={() => {
-                    setSelectGuestList(item?.id);
+                    setSelectGuestList(item?.name);
                   }}
                   style={tw``}
                   color={'#fff'}
@@ -306,8 +323,10 @@ const AllGuest = ({navigation}: Props) => {
           />
           <TButton
             title="Save"
+            disabled={selectGuestList?.length > 0 ? false : true}
             onPress={() => {
-              setAddToGuests(false);
+              // setAddToGuests(false);
+              handleAddGuestOnGuestList();
               // navigation.navigate('AddNewGuestList');
             }}
             containerStyle={tw` w-[90%] self-center h-10 rounded-lg bg-primary`}
