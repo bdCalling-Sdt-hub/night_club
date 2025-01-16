@@ -87,6 +87,9 @@ const AllGuestInGuestList = ({
       ],
     });
   };
+
+  const handleAddEventGuest = async () => {};
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithComponent

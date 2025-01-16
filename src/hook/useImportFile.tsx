@@ -75,15 +75,26 @@ export const useImportFile = async ({
       //================ Start the file download of Excel formate Save local file manager ====================
       try {
         const flattenJsonData = (data: any) => {
-          const flattenedData: any = [];
+          const flattenedData: IGuest[] = [];
 
           // Loop through each guest and flatten their data
-          data.guest.forEach((item: any) => {
-            const guestData = {
-              Title: item.title,
-              Type: item.type,
-              GuestCheckin: item.guest.checkin,
-              GuestTotal: item.guest.total,
+          data.forEach((item: any) => {
+            const guestData: IGuest = {
+              added_by: item.added_by,
+              check_in: item.check_in,
+              entry_fee: item.entry_fee,
+              event: item.event,
+              free_entry: item.free_entry,
+              free_entry_time: item.free_entry_time,
+              guestList: item.guestList,
+              id: item.id,
+              note: item.note,
+              people: item.people,
+              tag: item.tag,
+              updatedAt: item.updatedAt,
+              fullName: item.fullName,
+              email: item.email,
+              venue: item.venue,
             };
             flattenedData.push(guestData);
           });
@@ -91,7 +102,7 @@ export const useImportFile = async ({
           return flattenedData;
         };
         // Check if JSON data is valid and not empty
-        if (!data || data.guest.length === 0) {
+        if (!data || data.length === 0) {
           console.log('No data to write to Excel.');
           return;
         }
