@@ -87,9 +87,9 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     //   errors.guest_list = 'Guest list is required';
     // }
 
-    if (!values.tag) {
-      errors.tag = 'Tag is required';
-    }
+    // if (!values.tag) {
+    //   errors.tag = 'Tag is required';
+    // }
 
     return errors;
   };

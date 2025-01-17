@@ -1,6 +1,4 @@
-import * as XLSX from 'xlsx';
-
-import {FlatList, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest} from '../../firebase/interface';
 import {
   IconBigPlusCyan,
@@ -11,9 +9,7 @@ import {
 import {BaseColor, height} from '../../utils/utils';
 
 import moment from 'moment';
-import Papa from 'papaparse';
 import React from 'react';
-import RNFS from 'react-native-fs';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
@@ -25,10 +21,10 @@ import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
 import useFireStore from '../../firebase/database/helper';
+import {useImportData} from '../../hook/useImportFIle';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
-import data from './guest.json';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
@@ -41,158 +37,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
   const {loadAllData, updateFireData, listenToData} = useFireStore();
 
-  const handleAddGuest = () => {
-    navigation.navigate('AddGuest');
-  };
-
-  const jsonData = [
-    {name: 'John', age: 30, city: 'New York'},
-    {name: 'Jane', age: 25, city: 'London'},
-    {name: 'Doe', age: 35, city: 'Paris'},
-  ];
-
-  const csv = Papa.unparse(jsonData);
-
-  const saveCSVFile = async (csvData: any) => {
-    let path = '';
-
-    if (Platform.OS === 'android') {
-      // Set path for Android Downloads folder
-      path = RNFS.ExternalStorageDirectoryPath + '/Download/data.csv'; // Use '/Download/' directory on Android
-    } else {
-      // For iOS, save in the Documents directory (no Downloads folder on iOS)
-      path = RNFS.DocumentDirectoryPath + '/data.csv';
-    }
-
-    try {
-      await RNFS.writeFile(path, csvData, 'utf8');
-      console.log('CSV file saved at: ', path);
-    } catch (error) {
-      console.error('Failed to save CSV file: ', error);
-    }
-  };
-  const saveTextFile = async (csvData: any) => {
-    let path = '';
-
-    if (Platform.OS === 'android') {
-      // Set path for Android Downloads folder
-      path = RNFS.ExternalStorageDirectoryPath + '/Download/data.text'; // Use '/Download/' directory on Android
-    } else {
-      // For iOS, save in the Documents directory (no Downloads folder on iOS)
-      path = RNFS.DocumentDirectoryPath + '/data.text';
-    }
-
-    try {
-      await RNFS.writeFile(path, csvData, 'utf8');
-      console.log('CSV file saved at: ', path);
-    } catch (error) {
-      console.error('Failed to save CSV file: ', error);
-    }
-  };
-  // Function to flatten the JSON data
-
-  //=================== Excel Import start ======================
-  const flattenJsonData = (jsonData: any) => {
-    const flattenedData = [];
-
-    // Loop through each guest and flatten their data
-    jsonData.guest.forEach((item: any) => {
-      const guestData = {
-        Title: item.title,
-        Type: item.type,
-        GuestCheckin: item.guest.checkin,
-        GuestTotal: item.guest.total,
-      };
-      flattenedData.push(guestData);
-    });
-
-    return flattenedData;
-  };
-
-  // Function to convert JSON data to Excel and save it
-  const parseExcel = async (jsonData: any) => {
-    try {
-      // Check if JSON data is valid and not empty
-      if (!jsonData || jsonData.guest.length === 0) {
-        console.log('No data to write to Excel.');
-        return;
-      }
-
-      // Flatten the JSON data to a table-like structure
-      const flattenedData = flattenJsonData(jsonData);
-
-      // Convert JSON data to Excel sheet
-      const ws = XLSX.utils.json_to_sheet(flattenedData);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-
-      // Write the workbook to binary data (XLSX format)
-      const binaryExcel = XLSX.write(wb, {bookType: 'xlsx', type: 'binary'});
-
-      // Convert the binary string to base64
-      const base64Excel = binaryToBase64(binaryExcel);
-
-      // Set the file path based on platform
-      let path = '';
-      if (Platform.OS === 'android') {
-        path = RNFS.ExternalStorageDirectoryPath + '/Download/output.xlsx'; // Android path
-      } else {
-        path = RNFS.DocumentDirectoryPath + '/output.xlsx'; // iOS path
-      }
-
-      // Write the base64 data to the file
-      await RNFS.writeFile(path, base64Excel, 'base64');
-
-      console.log('XLS file saved successfully at: ', path);
-    } catch (error) {
-      console.error('Failed to save XLS file: ', error);
-    }
-  };
-
-  // Helper function to convert binary string to base64
-  const binaryToBase64 = (binary: string): string => {
-    let base64String = '';
-    for (let i = 0; i < binary.length; i++) {
-      base64String += String.fromCharCode(binary.charCodeAt(i));
-    }
-    return global.btoa(base64String); // Use global.btoa for base64 encoding in React Native
-  };
-  //=================== Excel Import end ======================
-  const handleImportData = () => {
-    showToast({
-      multipleBTNStyle: tw`flex-col gap-3`,
-      multipleButton: [
-        {
-          buttonText: 'Import as text',
-          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
-          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
-          onPress: () => {
-            // handleAddGuest();
-            saveTextFile(csv);
-            closeToast();
-          },
-        },
-        {
-          buttonText: 'Import as CSV',
-          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
-          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
-          onPress: () => {
-            saveCSVFile(csv);
-            closeToast();
-          },
-        },
-        {
-          buttonText: 'Import as Excel',
-          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
-          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
-          onPress: () => {
-            parseExcel(data);
-            closeToast();
-          },
-        },
-      ],
-    });
-  };
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
   const handleCheckIn = (guest: IGuest) => {
@@ -243,6 +87,14 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   ).map(addedBy => ({label: addedBy, value: addedBy}));
 
   // console.log(addedByData);
+
+  const handleImportData = async () => {
+    try {
+      useImportData();
+    } catch (err: unknown) {
+      // see error handling
+    }
+  };
 
   return (
     <Background style={tw`flex-1 bg-base`}>

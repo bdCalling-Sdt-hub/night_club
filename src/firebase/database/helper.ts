@@ -12,6 +12,15 @@ export type COLLECTION =
   | 'GuestsList'
   | 'Tags';
 
+const preprocessData = (data: any) => {
+  const processedData = {} as any;
+  for (const key in data) {
+    const value = data[key];
+    processedData[key] = value === '' || value?.length === 0 ? null : value;
+  }
+  return processedData;
+};
+
 const useFireStore = () => {
   const {user} = useAuth();
 
@@ -26,7 +35,8 @@ const useFireStore = () => {
     }>,
   ): Promise<FirebaseFirestoreTypes.Query<FirebaseFirestoreTypes.DocumentData> | null> => {
     try {
-      let query = firestore().collection(collectType);
+      let query: FirebaseFirestoreTypes.Query<FirebaseFirestoreTypes.DocumentData> =
+        firestore().collection(collectType);
 
       // Apply default filter for super_owner_id
       query = query.where(
@@ -48,15 +58,15 @@ const useFireStore = () => {
       // Apply additional filters if provided
 
       // Apply additional filters if provided
-      filters?.forEach(({field, operator, value, accept}) => {
-        if (value?.length === 0 && accept) return;
+      filters?.forEach(({field, operator, value}) => {
+        if (value?.length === 0) return;
         query = query.where(field, operator, value);
       });
 
       return query;
     } catch (error) {
-      console.error(`Error initializing query for ${collectType}:`, error);
-      throw error;
+      console.warn(`Error initializing query for ${collectType}:`, error);
+      return null;
     }
   };
 
@@ -126,7 +136,6 @@ const useFireStore = () => {
     try {
       const query = await initializeQuery(collectType, filters);
       if (!query) {
-        setLoad?.([]);
         return [];
       }
 
@@ -179,6 +188,7 @@ const useFireStore = () => {
     data: any;
   }) => {
     try {
+      data = preprocessData(data);
       const docRef = firestore().collection(collectType).doc(id);
       await docRef.update({
         ...data,
@@ -199,6 +209,7 @@ const useFireStore = () => {
     data: any;
   }) => {
     try {
+      data = preprocessData(data);
       const docRef = firestore().collection(collectType).doc();
       // console.log(data);
       const docData = {

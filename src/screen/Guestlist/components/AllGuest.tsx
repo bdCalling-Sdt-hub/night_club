@@ -25,7 +25,7 @@ interface Props {
   navigation: any;
 }
 const AllGuest = ({navigation}: Props) => {
-  const [selectGuest, setSelectGuest] = React.useState([]);
+  const [selectGuest, setSelectGuest] = React.useState<any>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<string>('');
   const [addToGuests, setAddToGuests] = React.useState(false);
 
@@ -53,12 +53,12 @@ const AllGuest = ({navigation}: Props) => {
         {
           field: 'event',
           operator: '==',
-          value: '',
+          value: null,
         },
         {
           field: 'guest_list',
           operator: '==',
-          value: '',
+          value: null,
         },
       ],
       onUpdate: (data: any[]) => {
@@ -107,8 +107,8 @@ const AllGuest = ({navigation}: Props) => {
                 <Picker
                   useSafeArea
                   value={tag}
-                  onChange={text => setTag(text)}
-                  renderInput={preps => {
+                  onChange={(text: any) => setTag(text)}
+                  renderInput={(preps: any) => {
                     return (
                       <TouchableOpacity
                         onPress={preps.onPress}
@@ -137,7 +137,7 @@ const AllGuest = ({navigation}: Props) => {
                       </View>
                     );
                   }}
-                  renderCustomDialogHeader={preps => {
+                  renderCustomDialogHeader={(preps: any) => {
                     return (
                       <View
                         style={tw`flex-row justify-between items-center mr-2`}>
@@ -149,7 +149,7 @@ const AllGuest = ({navigation}: Props) => {
                         <TouchableOpacity
                           onPress={() => {
                             setTag('Tags');
-                            preps.onCancel();
+                            preps?.onCancel();
                           }}
                           style={tw` py-1 px-4 border border-primary rounded-lg `}>
                           <Text
@@ -204,7 +204,7 @@ const AllGuest = ({navigation}: Props) => {
                     if (selectGuest?.length > 0) {
                       if (selectGuest?.includes(item.id)) {
                         setSelectGuest(
-                          selectGuest?.filter(i => i !== item?.id),
+                          selectGuest?.filter((i: string) => i !== item?.id),
                         );
                       } else {
                         setSelectGuest([...selectGuest, item?.id]);

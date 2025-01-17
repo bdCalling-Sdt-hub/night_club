@@ -44,7 +44,8 @@
 		D5A720E243E84A5A836F267C /* Roboto-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 935FD52F9D05434FAB94F291 /* Roboto-BoldItalic.ttf */; };
 		DEA93D0DEBE744CB9C84A204 /* PoppinsThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BAD6153258924CC8A2C45346 /* PoppinsThinItalic.ttf */; };
 		E11CB2182AF34A19BF4A13BF /* PoppinsBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9B463FF59E7A4EB0948B2DC2 /* PoppinsBoldItalic.ttf */; };
-		F66D6BA92D19516300FE23EF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F66D6BA82D19516300FE23EF /* GoogleService-Info.plist */; };
+		F6BDD7C42D3A26D3003398A8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */; };
+		F6BDD7C52D3A26D3003398A8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */; };
 		F751FBB20D4659B8EEDD04E3 /* Pods_night_club_night_clubTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3957AE9CF67BE36E274E263 /* Pods_night_club_night_clubTests.framework */; };
 		F79C8359AEB64BAFA5BF4E0F /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3E5D101860B94A7FA0B2AE03 /* Roboto-Light.ttf */; };
 /* End PBXBuildFile section */
@@ -109,7 +110,7 @@
 		D2B012F5E15E46DCA4E8E0BF /* PoppinsMediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsMediumItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsMediumItalic.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F3957AE9CF67BE36E274E263 /* Pods_night_club_night_clubTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_night_club_night_clubTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		F66D6BA82D19516300FE23EF /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		F6BDD7C22D3A26D3003398A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = "Base.lproj/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FE40222A3DDB4DA6B03D2934 /* PoppinsSemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsSemiBold.ttf; path = ../src/assets/fonts/Poppins/PoppinsSemiBold.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -223,7 +224,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				F66D6BA82D19516300FE23EF /* GoogleService-Info.plist */,
+				F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* night_club */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* night_clubTests */,
@@ -344,6 +345,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F6BDD7C52D3A26D3003398A8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -378,7 +380,7 @@
 				433C2BAC3291469BB6915829 /* PoppinsLight.ttf in Resources */,
 				2ECE6C6C237A4E32A122E10B /* PoppinsLightItalic.ttf in Resources */,
 				A3EFB343D57A4B4DAEEAF790 /* PoppinsMedium.ttf in Resources */,
-				F66D6BA92D19516300FE23EF /* GoogleService-Info.plist in Resources */,
+				F6BDD7C42D3A26D3003398A8 /* GoogleService-Info.plist in Resources */,
 				2B89150602A24DE4A7B732A9 /* PoppinsMediumItalic.ttf in Resources */,
 				7C44C5F4FD28459FB433BB4B /* PoppinsRegular.ttf in Resources */,
 				A5A49ABCAC0F4D8B8475DC78 /* PoppinsSemiBold.ttf in Resources */,
@@ -562,6 +564,18 @@
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */ = {
+			isa = PBXVariantGroup;
+			children = (
+				F6BDD7C22D3A26D3003398A8 /* Base */,
+			);
+			name = "GoogleService-Info.plist";
+			path = ../../../../../../../../Desktop/projects/night_club/ios;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
@@ -751,10 +765,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -838,10 +849,7 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					" ",
-				);
+				OTHER_LDFLAGS = "$(inherited)  ";
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;

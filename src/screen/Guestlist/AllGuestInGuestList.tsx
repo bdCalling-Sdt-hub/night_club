@@ -12,7 +12,7 @@ import EmptyCard from '../../components/Empty/EmptyCard';
 import NormalModal from '../../components/modals/NormalModal';
 import {useToast} from '../../components/modals/Toaster';
 import useFireStore from '../../firebase/database/helper';
-import {useImportFile} from '../../hook/useImportFile';
+import {useExportFile} from '../../hook/useExportFile';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -23,7 +23,7 @@ const AllGuestInGuestList = ({
 }: NavigProps<{item: IGuestsList}>) => {
   const {closeToast, showToast} = useToast();
   const [selectGuest, setSelectGuest] = React.useState<IGuest[]>([]);
-  const [selectGuestList, setSelectGuestList] = React.useState<IGuestsList>();
+  const [selectEvent, setSelectEvent] = React.useState<string>();
   const [search, setSearch] = React.useState('');
   const [addToGuests, setAddToGuests] = React.useState(false);
 
@@ -31,11 +31,26 @@ const AllGuestInGuestList = ({
     React.useState<Array<IGuestsList>>();
   const [guests, setGuests] = React.useState<Array<IGuest>>();
 
-  const {loadAllData} = useFireStore();
+  const {loadAllData, updateFireData, listenToData} = useFireStore();
 
   React.useEffect(() => {
-    //get all guest
     loadAllData({
+      collectType: 'Events',
+      filters: [
+        {
+          field: 'date',
+          operator: '>=',
+          value: new Date().toISOString(),
+        },
+      ].filter(Boolean),
+      setLoad: setGuestListAvailable,
+    });
+  }, []);
+
+  React.useEffect(() => {
+    const unsubscribe = () => {};
+    listenToData({
+      unsubscribe,
       collectType: 'Guests',
       filters: [
         {
@@ -43,13 +58,20 @@ const AllGuestInGuestList = ({
           operator: '==',
           value: route?.params?.item?.name,
         },
+        {
+          field: 'event',
+          operator: '==',
+          value: '',
+        },
       ],
-      setLoad: setGuests,
+      onUpdate: (data: any[]) => {
+        setGuests(data);
+      },
     });
-    loadAllData({
-      collectType: 'Events',
-      setLoad: setGuestListAvailable,
-    });
+
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const handleImportData = () => {
@@ -62,7 +84,7 @@ const AllGuestInGuestList = ({
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
             // handleAddGuest();
-            useImportFile({data: selectGuest, type: 'text'});
+            useExportFile({data: selectGuest, type: 'txt'});
             closeToast();
           },
         },
@@ -71,7 +93,7 @@ const AllGuestInGuestList = ({
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
-            useImportFile({data: selectGuest, type: 'csv'});
+            useExportFile({data: selectGuest, type: 'csv'});
             closeToast();
           },
         },
@@ -80,7 +102,7 @@ const AllGuestInGuestList = ({
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
-            useImportFile({data: selectGuest, type: 'xlsx'});
+            useExportFile({data: selectGuest, type: 'xlsx'});
             closeToast();
           },
         },
@@ -88,7 +110,26 @@ const AllGuestInGuestList = ({
     });
   };
 
-  const handleAddEventGuest = async () => {};
+  const handleAddEventGuest = async () => {
+    try {
+      // console.log(selectGuest);
+
+      selectGuest?.forEach(item => {
+        updateFireData({
+          collectType: 'Guests',
+          id: item.id,
+          data: {
+            event: selectEvent,
+          },
+        });
+        setAddToGuests(false);
+      });
+
+      // console.log(selectGuestList);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -219,16 +260,16 @@ const AllGuestInGuestList = ({
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectGuestList(item);
+                  setSelectEvent(item?.name);
                 }}
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectGuestList?.name === item.name}
+                  value={selectEvent === item.name}
                   onValueChange={() => {
-                    setSelectGuestList(item);
+                    setSelectEvent(item?.name);
                   }}
                   style={tw``}
                   color={'#fff'}
@@ -244,7 +285,8 @@ const AllGuestInGuestList = ({
         <TButton
           title="Save"
           onPress={() => {
-            setAddToGuests(false);
+            // setAddToGuests(false);
+            handleAddEventGuest();
             // navigation.navigate('AddNewGuestList');
           }}
           containerStyle={tw` w-full mt-2

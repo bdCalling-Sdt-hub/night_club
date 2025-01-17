@@ -60,7 +60,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
         },
       ].filter(Boolean),
       onUpdate: (data: any[]) => {
-        setAllGuest(data);
+        setAllGuest(data?.filter(item => item?.event === selectEvent));
       },
     });
 
@@ -74,10 +74,31 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
       collectType: 'Venues',
       setLoad: setVenueData,
     });
-    loadAllData({
+  }, []);
+  React.useEffect(() => {
+    let unsubscribe = () => {}; // Default to a no-op function
+
+    listenToData({
+      unsubscribe,
       collectType: 'Events',
-      setLoad: setEventData,
+
+      filters: [
+        {
+          field: 'date',
+          operator: '>=',
+          value: new Date().toISOString(),
+        },
+      ],
+
+      onUpdate: (data: any[]) => {
+        setEventData(data);
+      },
     });
+
+    // Cleanup the listener on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, []);
 
   const totalGuest = allGuest?.reduce(
