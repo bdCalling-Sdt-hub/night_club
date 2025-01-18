@@ -68,15 +68,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     if (!values.fullName) {
       errors.fullName = 'Name is required';
     }
-    if (!values.people) {
-      errors.people = 'Number of people is required';
-    }
-    if (!values.entry_fee) {
-      errors.entry_fee = 'Entry fee is required';
-    }
-    if (!values.free_entry) {
-      errors.free_entry = 'Free entry is required';
-    }
+    // if (!values.people) {
+    //   errors.people = 'Number of people is required';
+    // }
+    // if (!values.entry_fee) {
+    //   errors.entry_fee = 'Entry fee is required';
+    // }
+    // if (!values.free_entry) {
+    //   errors.free_entry = 'Free entry is required';
+    // }
     // if (!values.free_entry_time) {
     //   errors.free_entry_time = 'Free entry time is required';
     // }
@@ -84,9 +84,9 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     //   errors.free_entry_end_time = 'Free entry end time is required';
     // }
 
-    if (!values.tag) {
-      errors.tag = 'Tag is required';
-    }
+    // if (!values.tag) {
+    //   errors.tag = 'Tag is required';
+    // }
 
     return errors;
   };

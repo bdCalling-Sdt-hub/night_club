@@ -10,6 +10,7 @@ export type COLLECTION =
   | 'Events'
   | 'Guests'
   | 'GuestsList'
+  | 'News'
   | 'Tags';
 
 const preprocessData = (data: any) => {
@@ -96,6 +97,7 @@ const useFireStore = () => {
       const query = await initializeQuery(collectType, filters);
       if (!query) {
         console.log(`No data found in ${collectType} for the default filter.`);
+        onUpdate([]);
         return () => {};
       }
 

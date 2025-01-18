@@ -1,18 +1,18 @@
 import {ScrollView, Text, View} from 'react-native';
 
-import {Formik} from 'formik';
-import React from 'react';
-import {Checkbox} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import TButton from '../../components/buttons/TButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
+import {Checkbox} from 'react-native-ui-lib';
+import {Formik} from 'formik';
 import {IMangeUser} from './ManageUsers';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {PrimaryColor} from '../../utils/utils';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
+import {useAuth} from '../../context/AuthProvider';
+import {useToast} from '../../components/modals/Toaster';
 
 const data = [
   {
@@ -43,7 +43,7 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
   const {user} = useAuth();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [selectRole, setSelectRole] = React.useState<string | null>(
-    route?.params?.item.role,
+    route?.params?.item.role as string,
   );
   const [optionSendMail, setOptionSendMail] = React.useState({
     sendMail: true,
@@ -206,9 +206,10 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
                 <View>
                   <InputTextWL
                     label="Email"
-                    containerStyle={tw`h-12 border-0 `}
+                    containerStyle={tw`h-12 border-0 opacity-50`}
                     placeholder="Enter your email"
                     value={values?.email}
+                    // editable={false}
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                     errorText={errors.email}

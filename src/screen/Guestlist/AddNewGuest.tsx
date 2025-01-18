@@ -1,30 +1,30 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {IEvent, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {Formik} from 'formik';
-import moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-native-date-picker';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import {Formik} from 'formik';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 interface createProps {
   fullName: string;
@@ -107,6 +107,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             added_by: user?.name || '',
             event: route?.params?.item?.name || '',
             venue: route?.params?.item?.venue || '',
+            event_date: route?.params?.item?.date || '',
           }}
           onSubmit={values => {
             // console.log(values);

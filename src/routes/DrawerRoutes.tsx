@@ -6,22 +6,22 @@ import {
   DrawerItemList,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import {Text, View} from 'react-native';
 import {IconCloseGray, IconLoginRed} from '../icons/icons';
+import {Text, View} from 'react-native';
 
+import BottomRoutes from './BottomRoutes';
 import IwtButton from '../components/buttons/IwtButton';
 import TButton from '../components/buttons/TButton';
-import {useToast} from '../components/modals/Toaster';
+import tw from '../lib/tailwind';
 import {useAuth} from '../context/AuthProvider';
 import {useFireAuth} from '../firebase/useFireAuth';
-import tw from '../lib/tailwind';
-import BottomRoutes from './BottomRoutes';
+import {useToast} from '../components/modals/Toaster';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // console.log(user);
   const {closeToast, showToast} = useToast();
-  const {setUser, setUserId} = useAuth();
-  const {SignOut} = useFireAuth();
+  const {setUser, setUserId, user} = useAuth();
+  const {SignOut, handleResetPassword} = useFireAuth();
 
   const handleDeleteAccount = () => {
     showToast({
@@ -37,6 +37,43 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
             closeToast();
+          },
+        },
+        {
+          buttonText: 'No',
+          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
+          onPress: () => {
+            closeToast();
+          },
+        },
+      ],
+    });
+  };
+
+  const sendRestMailHandler = () => {
+    showToast({
+      title: 'Reset password',
+      content: 'Are you sure you want to reset your password?',
+      // btnDisplay: true,
+      multipleBTNStyle: tw`flex-col gap-3`,
+      multipleButton: [
+        {
+          buttonText: 'Yes',
+          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
+          onPress: () => {
+            closeToast();
+            handleResetPassword(user?.email).then(res => {
+              // console.log(res);
+              showToast({
+                title: 'Reset password',
+                content: 'Please check your email',
+                onPress: () => {
+                  closeToast();
+                },
+              });
+            });
           },
         },
         {
@@ -75,7 +112,9 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
             containerStyle={tw`bg-transparent self-start`}
             titleStyle={tw`text-white60 font-RobotoRegular text-base `}
             title="Change password"
-            onPress={() => props.navigation.navigate('CreatePassword')}
+            onPress={() => {
+              sendRestMailHandler();
+            }}
           />
           <TButton
             containerStyle={tw`bg-transparent self-start`}

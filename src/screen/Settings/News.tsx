@@ -1,50 +1,47 @@
-import {ScrollView, Text, View} from 'react-native';
-
-import React from 'react';
-import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
-
+import {FlatList} from 'react-native';
+import {INews} from '../../firebase/interface';
+import {NavigProps} from '../../interfaces/NaviProps';
+import NewsCard from './components/NewsCard';
+import React from 'react';
+import firestore from '@react-native-firebase/firestore';
+import tw from '../../lib/tailwind';
 const News = ({navigation}: NavigProps<null>) => {
+  const [allNews, setAllNews] = React.useState<INews[]>([]);
+
+  React.useEffect(() => {
+    let unsubscribe = () => {};
+    // Cleanup the listener on  component unmount
+    const query = firestore().collection('News');
+    unsubscribe = query.onSnapshot(
+      snapshot => {
+        const data = snapshot?.docs?.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAllNews(data);
+      },
+      error => {
+        console.log(error);
+      },
+    );
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  // console.log(allNews);
+
   return (
     <Background style={tw`flex-1 `}>
       <BackWithTitle title="News" onPress={() => navigation.goBack()} />
-      <ScrollView
-        contentContainerStyle={tw`gap-10`}
-        keyboardShouldPersistTaps="always">
-        <View style={tw`px-4 gap-2`}>
-          <AniImage
-            source={{
-              uri: 'https://s3-alpha-sig.figma.com/img/5882/b576/8692f8fe724444d0ec5a7d897364586e?Expires=1735516800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hA2MxVrJ~rThtarBWuU0SIzTbrAD2sS42MkJN5iLXVlkivFd94YMr9n88L-SSpSbZbozIhhBh4rLbLUHLuOU8sgYMn2Y8qLc96AwvJLEWuiBMFIq7Jk4Ar5g-aYqxMB~G-siMW973c7obPuTCtKsrYLCTNzyRzWQjs3115lJBDDV9qUZVlkZZxR32IFhsChfG~HN0nhiuOkKHPgRCDUVI8G1hcbzbc7a1Q4x0FnzyPEnF3ln22VgMPdRhrTOkUO2mYFSEBitpsukN1fS-4NQcCunU~f0oJlG5eSfMqeom-SFXNMsPbywi7V8bD9f4vXYi~qY~INyhL35mj2J~Mlv1g__',
-            }}
-            imageStyle={tw`aspect-video w-full`}
-          />
-          <Text style={tw`text-sm text-white60 font-RobotoRegular`}>
-            Lorem ipsum dolor sit amet consectetur. Et etiam dui facilisi
-            malesuada amet nam tincidunt. Lobortis nulla feugiat penatibus
-            pulvinar eget quam. Magna et est nascetur ac id. Turpis vehicula
-            orci pellentesque vehicula nunc interdum quis turpis. Turpis
-            vehicula orci pellentesque vehicula nunc interdum quis turpis.
-          </Text>
-        </View>
-        <View style={tw`px-4 gap-2`}>
-          <AniImage
-            source={{
-              uri: 'https://s3-alpha-sig.figma.com/img/5882/b576/8692f8fe724444d0ec5a7d897364586e?Expires=1735516800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=hA2MxVrJ~rThtarBWuU0SIzTbrAD2sS42MkJN5iLXVlkivFd94YMr9n88L-SSpSbZbozIhhBh4rLbLUHLuOU8sgYMn2Y8qLc96AwvJLEWuiBMFIq7Jk4Ar5g-aYqxMB~G-siMW973c7obPuTCtKsrYLCTNzyRzWQjs3115lJBDDV9qUZVlkZZxR32IFhsChfG~HN0nhiuOkKHPgRCDUVI8G1hcbzbc7a1Q4x0FnzyPEnF3ln22VgMPdRhrTOkUO2mYFSEBitpsukN1fS-4NQcCunU~f0oJlG5eSfMqeom-SFXNMsPbywi7V8bD9f4vXYi~qY~INyhL35mj2J~Mlv1g__',
-            }}
-            imageStyle={tw`aspect-video w-full`}
-          />
-          <Text style={tw`text-sm text-white60 font-RobotoRegular`}>
-            Lorem ipsum dolor sit amet consectetur. Et etiam dui facilisi
-            malesuada amet nam tincidunt. Lobortis nulla feugiat penatibus
-            pulvinar eget quam. Magna et est nascetur ac id. Turpis vehicula
-            orci pellentesque vehicula nunc interdum quis turpis. Turpis
-            vehicula orci pellentesque vehicula nunc interdum quis turpis.
-          </Text>
-        </View>
-      </ScrollView>
+      <FlatList
+        contentContainerStyle={tw`px-4 pb-5 gap-3`}
+        data={allNews}
+        renderItem={({item}) => <NewsCard item={item} />}
+      />
     </Background>
   );
 };

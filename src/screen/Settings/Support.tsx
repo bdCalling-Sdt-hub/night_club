@@ -1,23 +1,25 @@
-import {EmailJSResponseStatus, send} from '@emailjs/react-native';
 import {ScrollView, Text, View} from 'react-native';
 
-import React from 'react';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import TButton from '../../components/buttons/TButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
+import {useAuth} from '../../context/AuthProvider';
+import {useToast} from '../../components/modals/Toaster';
 
 const Support = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
+
+  const [laoding, setLoading] = React.useState(false);
 
   const {user} = useAuth();
   const [content, setContent] = React.useState<string>('');
 
   const onSubmit = async () => {
+    setLoading(true);
     if (content.trim().length < 50) {
       showToast({
         title: 'Warning',
@@ -30,57 +32,41 @@ const Support = ({navigation}: NavigProps<null>) => {
     }
 
     try {
-      await send(
-        'service_pt8yu45',
-        'template_lvlarjl',
-        {
-          name: user?.name,
-          email: user?.email,
-          message: content,
-        },
-        {
-          publicKey: '-sgscKfEcySxIg0BV',
-        },
-      );
-
       const response = await fetch(
-        'https://api.emailjs.com/api/v1.0/email/send',
+        'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/support?',
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            service_id: 'service_pt8yu45',
-            template_id: 'template_lvlarjl',
-            user_id: 'YOUR_PUBLIC_KEY', // Replace with your EmailJS public key
-            template_params: {
-              name: user?.name,
-              email: user?.email,
-              message: content,
-            },
+            email: user?.email,
+            content,
           }),
         },
       );
-      showToast({
-        title: 'Success',
-        content: 'Support message sent successfully',
-        onPress: () => {
-          closeToast();
-        },
-      });
-      console.log('SUCCESS!');
-    } catch (err) {
-      if (err instanceof EmailJSResponseStatus) {
-        console.log('EmailJS Request Failed...', err);
+      const data = await response.json();
+      // console.log(data);
+
+      if (data?.success) {
+        setLoading(false);
         showToast({
-          title: 'Warning',
-          content: err?.text,
+          title: 'Success',
+          content: 'Support message sent successfully',
           onPress: () => {
             closeToast();
           },
         });
       }
+    } catch (err) {
+      setLoading(false);
+      showToast({
+        title: 'Warning',
+        content: err?.message,
+        onPress: () => {
+          closeToast();
+        },
+      });
 
       console.log('ERROR', err);
     }

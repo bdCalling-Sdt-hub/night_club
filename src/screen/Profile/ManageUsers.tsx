@@ -5,15 +5,15 @@ import {
   IconSmallUserCyan,
 } from '../../icons/icons';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import Card from '../../components/cards/Card';
-import {useAuth} from '../../context/AuthProvider';
-import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useAuth} from '../../context/AuthProvider';
 
 export interface IMangeUser {
   uid: string;
@@ -62,7 +62,15 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
               component={
                 <View>
                   <Text style={tw`text-primary font-RobotoBold`}>
-                    {item.role}
+                    {item.role === 'super-owner'
+                      ? 'Super Owner'
+                      : item.role === 'owner'
+                      ? 'Owner'
+                      : item.role === 'manager'
+                      ? 'Manager'
+                      : item.role === 'promoters'
+                      ? 'Promoters'
+                      : item.role === 'guard' && 'Guard'}
                   </Text>
                 </View>
               }>

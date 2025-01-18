@@ -61,6 +61,7 @@ export interface IGuest {
   updatedAt: any;
   email?: string;
   note?: string;
+  event_date?: string;
 }
 export interface IGuestsList {
   id: string;
@@ -73,4 +74,11 @@ export interface ITags {
   name?: string;
   createdAt?: any;
   updatedAt?: any;
+}
+
+export interface INews {
+  createdAt?: any;
+  updatedAt?: any;
+  content?: string;
+  image: any;
 }

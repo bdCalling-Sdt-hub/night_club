@@ -1,3 +1,4 @@
+import {BaseColor, height} from '../../utils/utils';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest} from '../../firebase/interface';
 import {
@@ -6,25 +7,24 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import {BaseColor, height} from '../../utils/utils';
 
-import moment from 'moment';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
-import Card from '../../components/cards/Card';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
 import SearchCard from '../../components/cards/SearchCard';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {useToast} from '../../components/modals/Toaster';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFIle';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
@@ -35,7 +35,8 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
 
-  const {loadAllData, updateFireData, listenToData} = useFireStore();
+  const {loadAllData, updateFireData, listenToData, loadSingleData} =
+    useFireStore();
 
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
@@ -46,6 +47,17 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       data: {
         check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
       },
+    });
+    loadAllData({
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event',
+          operator: '==',
+          value: route?.params?.item?.name,
+        },
+      ],
+      setLoad: setGuestListData,
     });
   };
 
@@ -76,7 +88,10 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     (acc, guest) => acc + Number(guest.people),
     0,
   );
-  const totoCheckIn = guestListData.filter(guest => guest.check_in).length;
+  const totoCheckIn = guestListData.reduce(
+    (acc, guest) => acc + (guest?.check_in ? Number(guest.check_in) : 0),
+    0,
+  );
 
   const tagsData = Array.from(
     new Set(guestListData?.map(guest => guest.tag)),
@@ -90,11 +105,24 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
   const handleImportData = async () => {
     try {
-      useImportData();
+      const data = await useImportData();
+      // console.log(data);
+      data?.forEach((guest: IGuest) => {
+        guest.event = route?.params?.item?.name;
+        guest.venue = route?.params?.item?.venue;
+        guest.event_date = route?.params?.item?.date;
+        updateFireData({
+          id: guest.id,
+          collectType: 'Guests',
+          data: guest,
+        });
+      });
     } catch (err: unknown) {
       // see error handling
     }
   };
+
+  // console.log(guestListData);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -137,8 +165,8 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           <Picker
             useSafeArea
             value={addedBy}
-            onChange={text => setAddedBy(text)}
-            renderInput={preps => {
+            onChange={text => setAddedBy(text as string)}
+            renderInput={(preps: any) => {
               return (
                 <TouchableOpacity
                   onPress={preps.onPress}
@@ -163,7 +191,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 </View>
               );
             }}
-            renderCustomDialogHeader={preps => {
+            renderCustomDialogHeader={(preps: any) => {
               return (
                 <View style={tw`flex-row justify-between items-center mr-2`}>
                   <TouchableOpacity
@@ -194,8 +222,8 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           <Picker
             useSafeArea
             value={tags}
-            onChange={text => setTags(text)}
-            renderInput={preps => {
+            onChange={text => setTags(text as any)}
+            renderInput={(preps: any) => {
               return (
                 <TouchableOpacity
                   onPress={preps.onPress}
@@ -220,7 +248,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 </View>
               );
             }}
-            renderCustomDialogHeader={preps => {
+            renderCustomDialogHeader={(preps: any) => {
               return (
                 <View style={tw`flex-row justify-between items-center mr-2`}>
                   <TouchableOpacity

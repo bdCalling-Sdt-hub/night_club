@@ -1,21 +1,21 @@
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import {IGuest, IGuestsList} from '../../firebase/interface';
+import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import React from 'react';
-import {Checkbox} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import TButton from '../../components/buttons/TButton';
-import Card from '../../components/cards/Card';
-import SearchCard from '../../components/cards/SearchCard';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import NormalModal from '../../components/modals/NormalModal';
-import {useToast} from '../../components/modals/Toaster';
-import useFireStore from '../../firebase/database/helper';
-import {useExportFile} from '../../hook/useExportFile';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import {Checkbox} from 'react-native-ui-lib';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {NavigProps} from '../../interfaces/NaviProps';
+import NormalModal from '../../components/modals/NormalModal';
+import React from 'react';
+import SearchCard from '../../components/cards/SearchCard';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
+import {useExportFile} from '../../hook/useExportFile';
+import useFireStore from '../../firebase/database/helper';
+import {useToast} from '../../components/modals/Toaster';
 
 const AllGuestInGuestList = ({
   navigation,
@@ -23,7 +23,7 @@ const AllGuestInGuestList = ({
 }: NavigProps<{item: IGuestsList}>) => {
   const {closeToast, showToast} = useToast();
   const [selectGuest, setSelectGuest] = React.useState<IGuest[]>([]);
-  const [selectEvent, setSelectEvent] = React.useState<string>();
+  const [selectEvent, setSelectEvent] = React.useState<IEvent>();
   const [search, setSearch] = React.useState('');
   const [addToGuests, setAddToGuests] = React.useState(false);
 
@@ -42,7 +42,7 @@ const AllGuestInGuestList = ({
           operator: '>=',
           value: new Date().toISOString(),
         },
-      ].filter(Boolean),
+      ],
       setLoad: setGuestListAvailable,
     });
   }, []);
@@ -61,7 +61,7 @@ const AllGuestInGuestList = ({
         {
           field: 'event',
           operator: '==',
-          value: '',
+          value: null,
         },
       ],
       onUpdate: (data: any[]) => {
@@ -112,14 +112,17 @@ const AllGuestInGuestList = ({
 
   const handleAddEventGuest = async () => {
     try {
-      // console.log(selectGuest);
+      console.log('selectGuest', selectGuest);
+      console.log('Event', selectEvent);
 
       selectGuest?.forEach(item => {
         updateFireData({
           collectType: 'Guests',
           id: item.id,
           data: {
-            event: selectEvent,
+            event: selectEvent?.name,
+            venue: selectEvent?.venue,
+            event_date: selectEvent?.date,
           },
         });
         setAddToGuests(false);
@@ -165,7 +168,7 @@ const AllGuestInGuestList = ({
                 if (selectGuest?.length > 0) {
                   setSelectGuest([]);
                 } else {
-                  setSelectGuest(guests);
+                  setSelectGuest(guests as any);
                 }
               }}
               style={tw` px-4 self-end`}>
@@ -260,16 +263,16 @@ const AllGuestInGuestList = ({
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectEvent(item?.name);
+                  setSelectEvent(item as any);
                 }}
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectEvent === item.name}
+                  value={selectEvent === item}
                   onValueChange={() => {
-                    setSelectEvent(item?.name);
+                    setSelectEvent(item as any);
                   }}
                   style={tw``}
                   color={'#fff'}

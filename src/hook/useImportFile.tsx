@@ -1,8 +1,9 @@
 import * as XLSX from 'xlsx';
 
+import {Alert} from 'react-native';
 import Papa from 'papaparse';
-import {pick} from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
+import {pick} from 'react-native-document-picker';
 
 export const useImportData = async () => {
   try {
@@ -11,7 +12,7 @@ export const useImportData = async () => {
     const fileExtension = pickResult.name.split('.').pop()?.toLowerCase();
     if (!fileExtension) throw new Error('Invalid file format.');
 
-    console.log('File Extension:', fileExtension);
+    // console.log('File Extension:', fileExtension);
 
     let jsonData: any[] = [];
 
@@ -29,9 +30,11 @@ export const useImportData = async () => {
             console.error('Parsing Errors:', results.errors);
           }
           jsonData = results.data; // Parsed JSON
-          console.log('CSV/Text to JSON:', jsonData);
+
+          return jsonData;
         },
       });
+      return jsonData;
     } else if (fileExtension === 'xlsx') {
       // Read the XLSX file content
       const fileContent = await RNFS.readFile(fileUri, 'base64'); // XLSX needs base64 encoding
@@ -42,11 +45,18 @@ export const useImportData = async () => {
       const worksheet = workbook.Sheets[sheetName];
       jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-      console.log('XLSX to JSON:', jsonData);
+      // console.log('XLSX to JSON:', jsonData);
+      return jsonData;
     } else {
-      throw new Error('Unsupported file format.');
+      Alert.alert(
+        'Invalid File Format',
+        'Please select a CSV, TXT, or XLSX file for import.',
+      );
     }
   } catch (err: unknown) {
-    console.error('Error importing file:', err);
+    Alert.alert(
+      'Import Failed',
+      'Unable to import the file. Please try again.',
+    );
   }
 };

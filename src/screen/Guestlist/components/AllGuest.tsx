@@ -1,5 +1,6 @@
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 import {Checkbox, Picker} from 'react-native-ui-lib';
+import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IGuest, IGuestsList} from '../../../firebase/interface';
 import {
   IconBigPlusCyan,
@@ -7,19 +8,19 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import IButton from '../../../components/buttons/IButton';
-import IwtButton from '../../../components/buttons/IwtButton';
-import Or from '../../../components/buttons/Or';
-import TButton from '../../../components/buttons/TButton';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import IButton from '../../../components/buttons/IButton';
+import IwtButton from '../../../components/buttons/IwtButton';
 import NormalModal from '../../../components/modals/NormalModal';
-import useFireStore from '../../../firebase/database/helper';
+import Or from '../../../components/buttons/Or';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../../components/buttons/TButton';
 import tw from '../../../lib/tailwind';
+import {useAuth} from '../../../context/AuthProvider';
+import useFireStore from '../../../firebase/database/helper';
 
 interface Props {
   navigation: any;
@@ -28,6 +29,8 @@ const AllGuest = ({navigation}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState<any>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<string>('');
   const [addToGuests, setAddToGuests] = React.useState(false);
+
+  const {user} = useAuth();
 
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
   const [guestListAvailable, setGuestListAvailable] = React.useState<
@@ -60,7 +63,12 @@ const AllGuest = ({navigation}: Props) => {
           operator: '==',
           value: null,
         },
-      ],
+        user?.role === 'promoters' && {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ].filter(Boolean),
       onUpdate: (data: any[]) => {
         setGuestListData(data);
       },
