@@ -1,4 +1,5 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {IEvent, IVenue} from '../../../firebase/interface';
 import {
   IconMultiUserCyan,
   IconSmallCalendarCyan,
@@ -10,13 +11,13 @@ import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import useFireStore from '../../../firebase/database/helper';
-import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
 
 interface Props extends NavigProps<null> {
   search?: string;
+  venue?: IVenue;
 }
 
 const EHistory = ({navigation, search}: Props) => {

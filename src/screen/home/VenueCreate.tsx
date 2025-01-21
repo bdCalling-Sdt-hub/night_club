@@ -6,12 +6,13 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -28,7 +29,6 @@ import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -36,10 +36,11 @@ import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
-  const {userId} = useAuth();
+  const {userId, user} = useAuth();
   const {showToast, closeToast} = useToast();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
+  const [allManager, setManger] = React.useState<IUser[]>([]);
   const {createFireData} = useFireStore();
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
@@ -94,8 +95,8 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
     if (!values.openingTime) {
       errors.openingTime = 'Required';
     }
-    if (!values.nightclubManager) {
-      errors.nightclubManager = 'Required';
+    if (!values.manger_id) {
+      errors.manger_id = 'Required';
     }
     if (!values.closingTime) {
       errors.closingTime = 'Required';
@@ -119,6 +120,23 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
     return errors;
   };
 
+  const handleLoader = async () => {
+    const res = await fetch(
+      `${ApiUrl}users?super_owner_id=${
+        user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
+      }`,
+    );
+    const resData = await res.json();
+    // console.log(resData?.users);
+    setManger(
+      resData?.users?.filter((item: IUser) => item?.role === 'manager'),
+    );
+  };
+
+  React.useEffect(() => {
+    handleLoader();
+  }, []);
+
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle
@@ -140,7 +158,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             capacity: '',
             bars: '',
             danceFloor: '',
-            nightclubManager: '',
+            manger_id: '',
             residentDj: '',
             status: '',
             createdBy: '',
@@ -414,20 +432,23 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
-                  value={values.nightclubManager}
-                  onChange={handleChange('nightclubManager')}
-                  onBlur={handleBlur('nightclubManager')}
+                  value={values.manger_id}
+                  onChange={handleChange('manger_id')}
+                  onBlur={handleBlur('manger_id')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
-                      value={values.nightclubManager}
+                      value={
+                        allManager.find(item => item?.uid === values.manger_id)
+                          ?.displayName
+                      }
                       editable={false}
                       label="Nightclub manager"
                       placeholder="select nightclub manager"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.nightclubManager}
-                      touched={touched.nightclubManager}
+                      errorText={errors.manger_id}
+                      touched={touched.manger_id}
                     />
                   )}
                   renderItem={(value, items) => {
@@ -437,7 +458,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -453,11 +474,12 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={[
-                    {label: 'Badhenke', value: 'Badhenke'},
-                    {label: 'Alexjender', value: 'Alexjender'},
-                    {label: 'Arif Biswas', value: 'Arif Biswas'},
-                  ]}
+                  items={allManager.map(item => {
+                    return {
+                      label: item?.displayName,
+                      value: item?.uid,
+                    };
+                  })}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}

@@ -34,7 +34,7 @@ interface createProps {
   description: string;
   image: any;
   video?: any;
-  nightclubManager?: string;
+  manger_id?: string;
   openingTime: string;
   closingTime: string;
   capacity: string;
@@ -133,8 +133,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     if (!values.openingTime) {
       errors.openingTime = 'Required';
     }
-    if (!values.nightclubManager) {
-      errors.nightclubManager = 'Required';
+    if (!values.manger_id) {
+      errors.manger_id = 'Required';
     }
     if (!values.closingTime) {
       errors.closingTime = 'Required';
@@ -451,20 +451,20 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
-                  value={values.nightclubManager}
-                  onChange={handleChange('nightclubManager')}
-                  onBlur={handleBlur('nightclubManager')}
+                  value={values.manger_id}
+                  onChange={handleChange('manger_id')}
+                  onBlur={handleBlur('manger_id')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
-                      value={values.nightclubManager}
+                      value={values.manger_id}
                       editable={false}
                       label="Nightclub manager"
                       placeholder="select nightclub manager"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.nightclubManager}
-                      touched={touched.nightclubManager}
+                      errorText={errors.manger_id}
+                      touched={touched.manger_id}
                     />
                   )}
                   renderItem={(value, items) => {

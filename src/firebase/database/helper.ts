@@ -41,7 +41,7 @@ const useFireStore = () => {
 
       // Apply default filter for super_owner_id
       query = query.where(
-        'createdBy',
+        'super_owner_id',
         '==',
         user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
       );

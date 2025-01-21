@@ -4,6 +4,7 @@ import {ActivityIndicator, View} from 'react-native';
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
+import {useAuth} from '../../context/AuthProvider';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {PrimaryColor} from '../../utils/utils';
@@ -16,6 +17,8 @@ const VHistory = React.lazy(() => import('./components/VHistory'));
 const Home = ({navigation}: NavigProps<null>) => {
   const [selectOption, setSelectOption] = React.useState('Current Venues');
   const [search, setSearch] = React.useState('');
+  const {user} = useAuth();
+  console.log(user?.user_id);
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithHeader navigation={navigation} offBack title="Your Venues" />

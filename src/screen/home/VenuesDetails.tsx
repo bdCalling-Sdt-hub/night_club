@@ -10,14 +10,17 @@ import Video from 'react-native-video';
 import AniImage from '../../components/animate/AniImage';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {IVenue} from '../../firebase/interface';
+import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const [venue, setVenue] = useState<IVenue | null>();
+  const {user} = useAuth();
   const [currentPage, setCurrentPage] = useState(0); // Track current page
   const [paused, setPaused] = useState(true);
   // Handle scroll and update the current page
@@ -46,9 +49,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   // console.log(venues);
 
   // useFocusEffect(() => {
-  //   if (paused == true && venue?.video) {
-  //     setPaused(false);
-  //   }
+  //   setPaused(false);
+
   //   return () => {
   //     setPaused(true);
   //   };
@@ -153,7 +155,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               Nightclub Manager:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venue?.nightclubManager}
+              {venue?.manger_id}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -194,20 +196,22 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         <View style={tw`px-4 py-10 gap-5`}>
           <TButton
             onPress={() => {
-              navigation?.navigate('VenueEvent');
+              navigation?.navigate('VenueEvent', {item: venue});
             }}
             title="See Venues Events"
             titleStyle={tw`text-base text-white50 font-RobotoBold`}
             containerStyle={tw`bg-primary p-0 h-12 rounded-lg items-center w-full `}
           />
-          <TButton
-            onPress={() => {
-              navigation?.navigate('VenueEdit', {item: venue});
-            }}
-            title="Edit"
-            titleStyle={tw`text-base text-primary font-RobotoBold`}
-            containerStyle={tw`bg-transparent border-primary border-2 p-0 h-12 rounded-lg items-center w-full `}
-          />
+          {userAccess({GRole: 'upper'}) && (
+            <TButton
+              onPress={() => {
+                navigation?.navigate('VenueEdit', {item: venue});
+              }}
+              title="Edit"
+              titleStyle={tw`text-base text-primary font-RobotoBold`}
+              containerStyle={tw`bg-transparent border-primary border-2 p-0 h-12 rounded-lg items-center w-full `}
+            />
+          )}
         </View>
       </ScrollView>
     </Background>

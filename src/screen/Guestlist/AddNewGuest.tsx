@@ -1,30 +1,31 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DatePicker from 'react-native-date-picker';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
+import moment from 'moment';
+import React from 'react';
+import DatePicker from 'react-native-date-picker';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useToast} from '../../components/modals/Toaster';
+import {userAccess} from '../../hook/useAccess';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -199,15 +200,17 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewTag');
-                  }}>
-                  <Text style={tw`text-primary pt-2 text-xs text-right`}>
-                    Add new Tag
-                  </Text>
-                </TouchableOpacity>
+                {userAccess({GRole: 'middler'}) && (
+                  <TouchableOpacity
+                    style={tw`self-end`}
+                    onPress={() => {
+                      navigation.navigate('AddNewTag');
+                    }}>
+                    <Text style={tw`text-primary pt-2 text-xs text-right`}>
+                      Add new Tag
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
@@ -422,15 +425,17 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewGuestList');
-                  }}>
-                  <Text style={tw`text-primary py-2 text-xs text-right`}>
-                    Add new guest list
-                  </Text>
-                </TouchableOpacity>
+                {userAccess({GRole: 'middler'}) && (
+                  <TouchableOpacity
+                    style={tw`self-end`}
+                    onPress={() => {
+                      navigation.navigate('AddNewGuestList');
+                    }}>
+                    <Text style={tw`text-primary py-2 text-xs text-right`}>
+                      Add new guest list
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               {extraFields?.email && (

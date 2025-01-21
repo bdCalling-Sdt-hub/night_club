@@ -17,7 +17,7 @@ export interface IVenue {
   description: string;
   image: any;
   video?: any;
-  nightclubManager?: string;
+  manger_id?: string;
   openingTime: string;
   closingTime: string;
   capacity: string;

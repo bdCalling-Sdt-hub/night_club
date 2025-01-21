@@ -12,6 +12,7 @@ import TButton from '../../components/buttons/TButton';
 import {useToast} from '../../components/modals/Toaster';
 import useFireStore from '../../firebase/database/helper';
 import {IEvent} from '../../firebase/interface';
+import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import {height} from '../../utils/utils';
@@ -27,13 +28,15 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const handleShearPress = () => {
     showToast({
       title: 'Share link:',
-      content: 'https://www.freepik.com/search?format=sear.........',
+      content: `http://127.0.0.1:5500/index.html?event=${event?.id}`,
       contentStyle: tw`text-blue-400 `,
       buttonStyle: tw`bg-primary w-1/3 self-center`,
       buttonText: 'Copy link',
       buttonTextStyle: tw`text-white font-RobotoBlack text-sm`,
       onPress() {
-        Clipboard.setString('hello world');
+        Clipboard.setString(
+          `http://127.0.0.1:5500/index.html?event=${event?.id}`,
+        );
         closeToast();
       },
     });
@@ -167,7 +170,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         </View>
 
         {/*====================== actions ====================== */}
-        <View style={tw`px-4 py-10 gap-5`}>
+        <View style={tw`px-4 py-11 gap-5`}>
           <TButton
             onPress={() => {
               navigation?.navigate('ViewGuestList', {item: event});
@@ -176,14 +179,16 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
             titleStyle={tw`text-base text-white50 font-RobotoBold`}
             containerStyle={tw`bg-primary p-0 h-12 rounded-lg items-center w-full `}
           />
-          <TButton
-            onPress={() => {
-              navigation?.navigate('EventEdit', {item: event});
-            }}
-            title="Edit"
-            titleStyle={tw`text-base text-primary font-RobotoBold`}
-            containerStyle={tw`bg-transparent border-primary border-2 p-0 h-12 rounded-lg items-center w-full `}
-          />
+          {userAccess({GRole: 'middler'}) && (
+            <TButton
+              onPress={() => {
+                navigation?.navigate('EventEdit', {item: event});
+              }}
+              title="Edit"
+              titleStyle={tw`text-base text-primary font-RobotoBold`}
+              containerStyle={tw`bg-transparent border-primary border-2 p-0 h-12 rounded-lg items-center w-full `}
+            />
+          )}
         </View>
       </ScrollView>
     </Background>

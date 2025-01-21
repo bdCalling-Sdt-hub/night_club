@@ -16,6 +16,9 @@ export const Android = Platform.OS === 'android';
 
 export const Ios = Platform.OS === 'ios';
 
+export const ApiUrl =
+  'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/';
+
 export const {width, height} = Dimensions.get('screen');
 //  three size like sm md or tablet
 const fontScale = PixelRatio.getFontScale();

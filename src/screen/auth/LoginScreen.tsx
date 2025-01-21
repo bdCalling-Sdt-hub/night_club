@@ -1,5 +1,6 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
+import {PrimaryColor, lStorage} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import React from 'react';
@@ -11,7 +12,6 @@ import {useAuth} from '../../context/AuthProvider';
 import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 interface ISingInForm {
@@ -24,7 +24,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
   const {SignInWithEmailPass, handleResetPassword, handleVerifyEmail} =
     useFireAuth();
   const {userId, setUserId, setUser} = useAuth();
-  const [check, setCheck] = React.useState(false);
+  const [check, setCheck] = React.useState(lStorage.getBool('check') || false);
   const [showPass, setShowPass] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
@@ -135,7 +135,10 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
         {/*================= inputs fields email or password  ================= */}
 
         <Formik
-          initialValues={{email: '', password: ''}}
+          initialValues={{
+            email: lStorage.getString('email') || '',
+            password: lStorage.getString('password') || '',
+          }}
           onSubmit={onSubmitHandler}
           validate={values => {
             const errors: {email?: string; password?: string} = {};
@@ -172,9 +175,13 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   cursorColor={PrimaryColor}
                   label="Email"
                   value={values.email}
-                  onChangeText={handleChange('email')}
+                  onChangeText={(text: string) => {
+                    handleChange('email')(text);
+                    check && lStorage.setString('email', text);
+                  }}
                   onBlur={handleBlur('email')}
                   placeholder="Enter Your Email"
+                  defaultValue={lStorage.getString('email') || ''}
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   svgFirstIcon={IconEmailGay}
@@ -190,7 +197,10 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   label="Password"
                   onSvgPress={() => setShowPass(!showPass)}
                   value={values.password}
-                  onChangeText={handleChange('password')}
+                  onChangeText={(text: string) => {
+                    handleChange('password')(text);
+                    check && lStorage.setString('password', text);
+                  }}
                   onBlur={handleBlur('password')}
                   placeholder="Enter Your Password"
                   containerStyle={tw`h-12`}
@@ -210,13 +220,21 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                   style={tw` my-5 flex-row items-center `}
                   onPress={() => {
                     setCheck(!check);
+                    lStorage.setBool('check', check ? false : true);
+                    lStorage.setString('email', values.email);
+                    lStorage.setString('password', values.password);
                   }}>
                   <Checkbox
                     color={PrimaryColor}
                     size={25}
                     style={tw`border-2 border-[#E8E8EA]`}
                     value={check}
-                    onValueChange={value => setCheck(value)}
+                    onValueChange={value => {
+                      setCheck(value);
+                      lStorage.setBool('check', value ? true : false);
+                      lStorage.setString('email', values.email);
+                      lStorage.setString('password', values.password);
+                    }}
                   />
                   <Text style={tw`ml-2  font-RobotoBold text-black60`}>
                     Keep me logged in

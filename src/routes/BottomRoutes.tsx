@@ -1,3 +1,4 @@
+import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCalendarCyan,
   IconCalendarGay,
@@ -8,20 +9,23 @@ import {
   IconUserHomeCyan,
   IconUserHomeGray,
 } from '../icons/icons';
-import {Text, TouchableOpacity, View} from 'react-native';
 
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {SvgXml} from 'react-native-svg';
+import {useAuth} from '../context/AuthProvider';
+import {userAccess} from '../hook/useAccess';
+import {IconBottomPlusButton} from '../icons/Special.icon';
+import tw from '../lib/tailwind';
 import Background from '../screen/components/Background';
 import EventScreen from '../screen/Event/EventScreen';
 import GuestListScreen from '../screen/Guestlist/GuestListScreen';
 import Home from '../screen/home/Home';
-import {IconBottomPlusButton} from '../icons/Special.icon';
 import ProfileScreen from '../screen/Profile/ProfileScreen';
-import {SvgXml} from 'react-native-svg';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import tw from '../lib/tailwind';
 
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
+  const {user} = useAuth();
+  // console.log(user);
   return (
     <Background style={tw`bg-base`}>
       <View style={tw`flex-row justify-around px-4 h-16 items-center`}>
@@ -82,7 +86,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
               </TouchableOpacity>
             );
           }
-          if (route.name === 'Button') {
+          if (route.name === 'Button' && userAccess({GRole: 'middler'})) {
             return (
               <TouchableOpacity
                 key={index}
