@@ -1,18 +1,21 @@
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Checkbox, Picker} from 'react-native-ui-lib';
+import {IconCloseGray, IconDownArrayGray} from '../../icons/icons';
+import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {Checkbox} from 'react-native-ui-lib';
 import {Formik} from 'formik';
-import {IMangeUser} from './ManageUsers';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
-import {useAuth} from '../../context/AuthProvider';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import {IMangeUser} from './ManageUsers';
 
 const data = [
   {
@@ -37,6 +40,7 @@ interface createUser {
   displayName: string;
   email: string;
   role: string;
+  manager_id?: string;
 }
 
 const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
@@ -56,12 +60,12 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
     values.company = user?.company;
     values.super_owner_id =
       user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
+    values.manager_id = user?.role === 'manager' ? user.user_id : null;
 
     // console.log(values);
 
     const res = await fetch(
-      'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/users?user_id=' +
-        route?.params?.item?.uid,
+      `${ApiUrl}users?user_id=${route?.params?.item?.uid}`,
       {
         method: 'PUT',
         headers: {
@@ -74,27 +78,7 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
     // console.log(resData);
 
     if (resData?.success) {
-      setLoading(false);
-      if (resData?.loginType === 'email') {
-        showToast({
-          content: 'user added successfully,And send login link to email',
-          title: 'Success',
-          onPress: () => {
-            closeToast();
-            navigation.goBack();
-          },
-        });
-      } else {
-        setLoading(false);
-        showToast({
-          content: 'User added successfully',
-          title: 'Success',
-          onPress: () => {
-            closeToast();
-            navigation.goBack();
-          },
-        });
-      }
+      navigation.goBack();
     } else {
       setLoading(false);
       showToast({
@@ -125,6 +109,13 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
     return errors;
   };
 
+  const {getAllUser} = useFireStore();
+  const [allUser, setAllUser] = React.useState<IMangeUser[]>([]);
+  React.useEffect(() => {
+    getAllUser(data => {
+      setAllUser(data?.filter(item => item.role == 'manager'));
+    });
+  }, []);
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle title="Add User" onPress={() => navigation.goBack()} />
@@ -136,6 +127,7 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
             displayName: route?.params?.item.displayName,
             email: route?.params?.item.email,
             role: route?.params?.item.role,
+            manager_id: route?.params?.item.manager_id,
           }}
           onSubmit={values => {
             handleOnSubmit(values);
@@ -191,6 +183,69 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
                     );
                   })}
                 </View>
+                {(values?.role == 'promoters' || values?.role == 'guard') && (
+                  <View style={tw`bg-base `}>
+                    <Picker
+                      useSafeArea
+                      value={values?.manager_id}
+                      onChange={handleChange('manager_id')}
+                      onBlur={handleBlur('manager_id')}
+                      renderInput={() => (
+                        <InputTextWL
+                          cursorColor={PrimaryColor}
+                          value={
+                            allUser.find(
+                              item => item?.uid === values?.manager_id,
+                            )?.displayName
+                          }
+                          editable={false}
+                          label="Select manager"
+                          placeholder="select  manager"
+                          containerStyle={tw`h-12 border-0 rounded-lg`}
+                          svgSecondIcon={IconDownArrayGray}
+                          errorText={errors?.manager_id}
+                          touched={touched?.manager_id}
+                        />
+                      )}
+                      renderItem={(value, items) => {
+                        return (
+                          <View
+                            // onPress={() => setValue(value)}
+                            style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                            <Text
+                              style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                              {items?.label}
+                            </Text>
+                          </View>
+                        );
+                      }}
+                      renderCustomDialogHeader={preps => {
+                        return (
+                          <TouchableOpacity
+                            onPress={preps.onCancel}
+                            style={tw`self-start py-3 px-4`}>
+                            <SvgXml
+                              xml={IconCloseGray}
+                              height={20}
+                              width={20}
+                            />
+                          </TouchableOpacity>
+                        );
+                      }}
+                      fieldType={Picker.fieldTypes.filter}
+                      paddingH
+                      items={allUser.map(item => {
+                        return {
+                          label: item?.displayName,
+                          value: item?.uid,
+                        };
+                      })}
+                      pickerModalProps={{
+                        overlayBackgroundColor: BaseColor,
+                      }}
+                    />
+                  </View>
+                )}
                 <View>
                   <InputTextWL
                     label="First & last name"

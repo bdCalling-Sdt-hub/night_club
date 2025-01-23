@@ -33,7 +33,14 @@ const VHistory = ({navigation}: NavigProps<null>) => {
           operator: '==',
           value: 'Closed',
         },
-      ],
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ].filter(Boolean) as any,
       onUpdate: (data: any[]) => {
         setData(data);
       },

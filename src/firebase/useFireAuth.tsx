@@ -1,4 +1,5 @@
 import auth from '@react-native-firebase/auth';
+import {ApiUrl} from '../utils/utils';
 
 export const useFireAuth = () => {
   // sigin in with email and password
@@ -13,17 +14,13 @@ export const useFireAuth = () => {
 
   const handleVerifyEmail = async (data: any) => {
     try {
-      const res = await fetch(
-        // 'https://us-central1-pushnotifiation-d1bcb.cloudfunctions.net/send_email_verification',
-        'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/send_email_verification',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+      const res = await fetch(`${ApiUrl}send_email_verification`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+        body: JSON.stringify(data),
+      });
       const resData = await res.json();
       return resData;
     } catch (error) {
@@ -33,7 +30,7 @@ export const useFireAuth = () => {
 
   const handleResetPassword = async (email: string) => {
     const actionCodeSettings = {
-      url: `https://pushnotifiation-d1bcb.web.app/login`,
+      url: `https://nightclubapp.web.app/login`,
       handleCodeInApp: true,
     };
     try {

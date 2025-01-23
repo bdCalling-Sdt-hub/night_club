@@ -1,6 +1,5 @@
-import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
-import {Checkbox, Picker} from 'react-native-ui-lib';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IGuest, IGuestsList} from '../../../firebase/interface';
 import {
   IconBigPlusCyan,
@@ -8,19 +7,20 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../../icons/icons';
+import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
-import Card from '../../../components/cards/Card';
-import EmptyCard from '../../../components/Empty/EmptyCard';
-import IButton from '../../../components/buttons/IButton';
-import IwtButton from '../../../components/buttons/IwtButton';
-import NormalModal from '../../../components/modals/NormalModal';
-import Or from '../../../components/buttons/Or';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import IButton from '../../../components/buttons/IButton';
+import IwtButton from '../../../components/buttons/IwtButton';
+import Or from '../../../components/buttons/Or';
 import TButton from '../../../components/buttons/TButton';
-import tw from '../../../lib/tailwind';
+import Card from '../../../components/cards/Card';
+import EmptyCard from '../../../components/Empty/EmptyCard';
+import NormalModal from '../../../components/modals/NormalModal';
 import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
+import tw from '../../../lib/tailwind';
 
 interface Props {
   navigation: any;
@@ -63,12 +63,12 @@ const AllGuest = ({navigation}: Props) => {
           operator: '==',
           value: null,
         },
-        user?.role === 'promoters' && {
+        {
           field: 'createdBy',
           operator: '==',
           value: user?.user_id,
         },
-      ].filter(Boolean),
+      ],
       onUpdate: (data: any[]) => {
         setGuestListData(data);
       },

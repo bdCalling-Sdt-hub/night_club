@@ -25,11 +25,10 @@
         <category android:name="android.intent.category.DEFAULT" />
         <category android:name="android.intent.category.BROWSABLE" />
         <!-- For VerifySuccess -->
-        <data android:scheme="https" android:host="pushnotifiation-d1bcb.web.app" android:pathPrefix="/email-verified" />
-        <data android:scheme="http" android:host="pushnotifiation-d1bcb.web.app" android:pathPrefix="/email-verified" />
+        <data android:scheme="https" android:host="nightclubapp.web.app" android:pathPrefix="/email-verified" />
         <!-- For LoadingSplash -->
-        <data android:scheme="https" android:host="pushnotifiation-d1bcb.web.app" android:pathPrefix="/login" />
-        <data android:scheme="http" android:host="pushnotifiation-d1bcb.web.app" android:pathPrefix="/login" />
+        <data android:scheme="https" android:host="nightclubapp.web.app" android:pathPrefix="/login" />
+  
       </intent-filter>
       <!-- Main launcher activity -->
       <intent-filter>

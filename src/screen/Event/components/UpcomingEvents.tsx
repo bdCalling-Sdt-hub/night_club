@@ -1,5 +1,4 @@
 import {FlatList, Text, TouchableOpacity} from 'react-native';
-import {IEvent, IVenue} from '../../../firebase/interface';
 import {
   IconMultiUserCyan,
   IconSmallCalendarCyan,
@@ -10,18 +9,23 @@ import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
+import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 import {height} from '../../../utils/utils';
 
 interface Props extends NavigProps<null> {
   search?: string;
-  venue?: IVenue;
+  venueId?: string;
 }
-const UpcomingEvents = ({navigation, route, search}: Props) => {
+const UpcomingEvents = ({navigation, venueId, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
-  const {listenToData} = useFireStore();
+  const {listenToData, createRefer} = useFireStore();
+  const {user} = useAuth();
+
+  // console.log(venue?.id);
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
@@ -29,17 +33,24 @@ const UpcomingEvents = ({navigation, route, search}: Props) => {
     listenToData({
       unsubscribe,
       collectType: 'Events',
-
       filters: [
-        {
-          field: 'date',
-          operator: '>=',
-          value: new Date().toISOString(),
+        venueId && {
+          field: 'venue',
+          operator: '==',
+          value: venueId,
         },
-      ],
-
-      onUpdate: (data: any[]) => {
-        setData(data);
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ].filter(Boolean) as any,
+      onUpdate: (data: any) => {
+        setData(
+          data?.filter((item: IEvent) => item.date > new Date().toISOString()),
+        );
       },
     });
 

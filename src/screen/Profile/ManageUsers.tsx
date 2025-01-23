@@ -5,43 +5,27 @@ import {
   IconSmallUserCyan,
 } from '../../icons/icons';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
-import tw from '../../lib/tailwind';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
+import Card from '../../components/cards/Card';
 import {useAuth} from '../../context/AuthProvider';
-
-export interface IMangeUser {
-  uid: string;
-  email: string;
-  displayName: string;
-  role: string;
-  company: string;
-  photoURL: string;
-}
+import useFireStore from '../../firebase/database/helper';
+import {IMangeUser} from '../../firebase/interface';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 const ManageUsers = ({navigation}: NavigProps<null>) => {
   const {user} = useAuth();
   const [allUser, setAllUser] = React.useState<IMangeUser[]>([]);
+  const {getAllUser} = useFireStore();
   const [loading, setLoading] = React.useState(false);
 
-  const handleLoader = async () => {
-    const res = await fetch(
-      `http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/users?super_owner_id=${
-        user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
-      }`,
-    );
-    const resData = await res.json();
-    // console.log(resData?.users);
-    setAllUser(resData?.users);
-  };
-
   React.useEffect(() => {
-    handleLoader();
+    getAllUser(setAllUser);
   }, []);
 
   return (
@@ -50,7 +34,15 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
 
       <FlatList
         refreshControl={
-          <RefreshControl onRefresh={handleLoader} refreshing={loading} />
+          <RefreshControl
+            onRefresh={() => {
+              setLoading(true);
+              getAllUser(setAllUser);
+              setLoading(false);
+            }}
+            refreshing={loading}
+            colors={[PrimaryColor]}
+          />
         }
         data={allUser}
         contentContainerStyle={tw`px-4 pb-5 gap-3`}

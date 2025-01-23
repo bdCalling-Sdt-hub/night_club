@@ -37,10 +37,7 @@ import CustomDrawer from './DrawerRoutes';
 const Stack = createNativeStackNavigator();
 
 const linking = {
-  prefixes: [
-    'https://pushnotifiation-d1bcb.web.app/',
-    'http://pushnotifiation-d1bcb.web.app/',
-  ],
+  prefixes: ['https://nightclubapp.web.app/', 'nightclubapp://'],
   config: {
     screens: {
       VerifySuccess: 'email-verified',

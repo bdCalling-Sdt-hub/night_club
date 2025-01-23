@@ -5,27 +5,28 @@ import {
   View,
 } from 'react-native';
 
-import AniImage from '../../components/animate/AniImage';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {IconImage} from '../../icons/Special.icon';
-import {IconPenCyan} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import AniImage from '../../components/animate/AniImage';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useFireAuth} from '../../firebase/useFireAuth';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {IconImage} from '../../icons/Special.icon';
+import {IconPenCyan} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
+import Background from '../components/Background';
 
 const EditProfile = ({navigation}: NavigProps<null>) => {
   const {user, setUser} = useAuth();
   const {UpdateCurrentUser} = useFireAuth();
+
   const [image, setImage] = React.useState<any>(
     user?.photoURL ? {uri: user?.photoURL} : null,
   );

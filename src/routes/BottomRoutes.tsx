@@ -25,7 +25,7 @@ import ProfileScreen from '../screen/Profile/ProfileScreen';
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
   const {user} = useAuth();
-  // console.log(user);
+  // console.log(state);
   return (
     <Background style={tw`bg-base`}>
       <View style={tw`flex-row justify-around px-4 h-16 items-center`}>
@@ -86,7 +86,14 @@ function CustomTabBar({state, descriptors, navigation}: any) {
               </TouchableOpacity>
             );
           }
+
           if (route.name === 'Button' && userAccess({GRole: 'middler'})) {
+            if (
+              state.routes[state.index].name == 'Venue' &&
+              user?.role === 'manager'
+            ) {
+              return null;
+            }
             return (
               <TouchableOpacity
                 key={index}
@@ -114,6 +121,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
               </TouchableOpacity>
             );
           }
+
           if (route.name === 'GuestList') {
             return (
               <TouchableOpacity

@@ -65,7 +65,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           title: 'success',
           content: 'Event deleted successfully',
           onPress: () => {
-            navigation?.canGoBack(2) && navigation?.goBack();
+            (navigation as any)?.pop(2) && navigation?.goBack();
             closeToast();
           },
         });
@@ -139,7 +139,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   title: 'success',
                   content: 'Event updated successfully',
                   onPress: () => {
-                    navigation?.goBack();
+                    (navigation as any)?.pop(2);
                     closeToast();
                   },
                 });

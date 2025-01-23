@@ -3,6 +3,8 @@ import firestore, {
 } from '@react-native-firebase/firestore';
 
 import {useAuth} from '../../context/AuthProvider';
+import {ApiUrl} from '../../utils/utils';
+import {IMangeUser} from '../interface';
 
 export type COLLECTION =
   | 'Users'
@@ -24,6 +26,17 @@ const preprocessData = (data: any) => {
 
 const useFireStore = () => {
   const {user} = useAuth();
+
+  const getAllUser = async (setAllUser: (data: IMangeUser[]) => void) => {
+    const res = await fetch(
+      `${ApiUrl}users?super_owner_id=${
+        user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
+      }`,
+    );
+    const resData = await res.json();
+    // console.log(resData?.users);
+    setAllUser(resData?.users);
+  };
 
   // Helper to initialize a Firestore query
   const initializeQuery = async (
@@ -215,11 +228,19 @@ const useFireStore = () => {
       const docRef = firestore().collection(collectType).doc();
       // console.log(data);
       const docData = {
-        ...data,
         id: docRef.id,
         createdBy: user?.user_id,
         super_owner_id:
           user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
+        owner_id:
+          user?.role === 'owner' ? user.user_id : user?.owner_id || null,
+        manager_id:
+          user?.role === 'manager'
+            ? user.user_id
+            : user?.role == 'guard' || user?.role == 'promoters'
+            ? user.manager_id
+            : null,
+        ...data,
         ...getServerTimestamps(),
       };
       await docRef.set(docData);
@@ -245,13 +266,32 @@ const useFireStore = () => {
     }
   };
 
+  // create Refer
+  const createRefer = async ({
+    collectType,
+    id,
+  }: {
+    collectType: COLLECTION;
+    id: string;
+  }) => {
+    try {
+      const docRef = firestore().collection(collectType).doc(id);
+      // console.log(data);
+      return docRef;
+    } catch (error) {
+      console.error(`Error creating ${collectType}:`, error);
+    }
+  };
+
   return {
     listenToData,
+    createRefer,
     loadAllData,
     loadSingleData,
     updateFireData,
     createFireData,
     deleteFireData,
+    getAllUser,
   };
 };
 

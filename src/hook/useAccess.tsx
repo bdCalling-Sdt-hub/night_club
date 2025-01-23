@@ -3,7 +3,7 @@ import {useAuth} from '../context/AuthProvider';
 export const userAccess = ({
   GRole,
 }: {
-  GRole: 'super' | 'upper' | 'middler' | 'ground';
+  GRole: 'super' | 'upper' | 'middler' | 'ground' | 'manager';
 }) => {
   const {user} = useAuth();
   // super users can access all
@@ -26,6 +26,7 @@ export const userAccess = ({
       return true;
     }
   }
+
   // Ground Label can access
   else if (GRole === 'ground') {
     // guard can access only guard

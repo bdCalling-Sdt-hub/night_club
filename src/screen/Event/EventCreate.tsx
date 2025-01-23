@@ -1,5 +1,5 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {IEvent, IVenue} from '../../firebase/interface';
+import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
   IconCloseGray,
@@ -20,6 +20,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
@@ -29,11 +30,12 @@ import Background from '../components/Background';
 
 const EventCreate = ({navigation}: NavigProps<null>) => {
   const {showToast, closeToast} = useToast();
-
+  const {user} = useAuth();
+  const [allManager, setManger] = React.useState<IMangeUser[]>([]);
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
 
-  const {loadAllData, createFireData} = useFireStore();
+  const {loadAllData, createFireData, getAllUser} = useFireStore();
 
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
@@ -86,6 +88,11 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     if (!values.resident_dj) {
       errors.resident_dj = 'Required';
     }
+    if (user?.role === 'owner' || user?.role === 'super-owner') {
+      if (!values.manager_id) {
+        errors.manager_id = 'Required';
+      }
+    }
 
     return errors;
   };
@@ -94,6 +101,12 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     loadAllData({
       collectType: 'Venues',
       setLoad: setAllVenues,
+    });
+  }, []);
+
+  React.useEffect(() => {
+    getAllUser(data => {
+      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
     });
   }, []);
 
@@ -121,24 +134,23 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             entry_fee: '',
             resident_dj: '',
             createdBy: '',
+            manager_id: user?.role === 'manager' ? user?.user_id : '',
           }}
-          onSubmit={values => {
-            // console.log(values);
+          onSubmit={async values => {
+            // console.log(values.venue);
+            // const refer = await createRefer({
+            //   collectType: 'Venues',
+            //   id: values.venue,
+            // });
+            // values.venue = refer as any;
             createFireData({
               collectType: 'Events',
               data: values,
             }).then(() => {
-              showToast({
-                title: 'success',
-                content: 'Event created successfully',
-                onPress: () => {
-                  navigation?.goBack();
-                  closeToast();
-                },
-              });
+              navigation?.goBack();
             });
           }}
-          validate={(values: IEvent) => handleValidate(values)}>
+          validate={values => handleValidate(values as any)}>
           {({
             handleChange,
             handleBlur,
@@ -204,7 +216,9 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.venue}
+                      value={
+                        allVenues?.find(item => item.id === values.venue)?.name
+                      }
                       label="Venue"
                       placeholder="Select venue"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -237,7 +251,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   items={allVenues?.map(item => {
                     return {
                       label: item.name,
-                      value: item.name,
+                      value: item.id,
                     };
                   })}
                   pickerModalProps={{
@@ -245,6 +259,65 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   }}
                 />
               </View>
+              {(user?.role === 'super-owner' || user?.role === 'owner') && (
+                <View style={tw`bg-base `}>
+                  <Picker
+                    useSafeArea
+                    value={values.manager_id}
+                    onChange={handleChange('manager_id')}
+                    onBlur={handleBlur('manager_id')}
+                    renderInput={() => (
+                      <InputTextWL
+                        cursorColor={PrimaryColor}
+                        value={
+                          allManager.find(
+                            item => item?.uid === values.manager_id,
+                          )?.displayName
+                        }
+                        editable={false}
+                        label="Nightclub manager"
+                        placeholder="select nightclub manager"
+                        containerStyle={tw`h-12 border-0 rounded-lg`}
+                        svgSecondIcon={IconDownArrayGray}
+                        errorText={errors.manager_id}
+                        touched={touched.manager_id}
+                      />
+                    )}
+                    renderItem={(value, items) => {
+                      return (
+                        <View
+                          // onPress={() => setValue(value)}
+                          style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items?.label}
+                          </Text>
+                        </View>
+                      );
+                    }}
+                    renderCustomDialogHeader={preps => {
+                      return (
+                        <TouchableOpacity
+                          onPress={preps.onCancel}
+                          style={tw`self-start py-3 px-4`}>
+                          <SvgXml xml={IconCloseGray} height={20} width={20} />
+                        </TouchableOpacity>
+                      );
+                    }}
+                    fieldType={Picker.fieldTypes.filter}
+                    paddingH
+                    items={allManager.map(item => {
+                      return {
+                        label: item?.displayName,
+                        value: item?.uid,
+                      };
+                    })}
+                    pickerModalProps={{
+                      overlayBackgroundColor: BaseColor,
+                    }}
+                  />
+                </View>
+              )}
 
               <View>
                 <InputTextWL

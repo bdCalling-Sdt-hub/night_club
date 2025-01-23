@@ -1,13 +1,17 @@
-import React from 'react';
-import {View} from 'react-native';
+import React, {Suspense} from 'react';
+import {ActivityIndicator, View} from 'react-native';
+
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
-import EHistory from './components/EHistory';
-import UpcomingEvents from './components/UpcomingEvents';
+
+// Lazy loading the CurrentVenues component
+const UpcomingEvents = React.lazy(() => import('./components/UpcomingEvents'));
+const EHistory = React.lazy(() => import('./components/EHistory'));
 
 const VenueEvent = ({navigation}: NavigProps<null>) => {
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
@@ -30,9 +34,23 @@ const VenueEvent = ({navigation}: NavigProps<null>) => {
       </View>
 
       {selectOption === 'History' ? (
-        <EHistory navigation={navigation} search={search} />
+        <Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <EHistory navigation={navigation} search={search} />
+        </Suspense>
       ) : (
-        <UpcomingEvents navigation={navigation} search={search} />
+        <Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <UpcomingEvents navigation={navigation} search={search} />
+        </Suspense>
       )}
     </Background>
   );

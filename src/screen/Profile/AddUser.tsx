@@ -1,16 +1,20 @@
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Checkbox, Picker} from 'react-native-ui-lib';
+import {IconCloseGray, IconDownArrayGray} from '../../icons/icons';
+import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import React from 'react';
-import {Checkbox} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
+import {IMangeUser} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const data = [
@@ -40,6 +44,8 @@ interface createUser {
 
 const AddUser = ({navigation}: NavigProps<null>) => {
   const {user} = useAuth();
+  const [allUser, setAllUser] = React.useState<IMangeUser[]>([]);
+  const {getAllUser} = useFireStore();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [selectRole, setSelectRole] = React.useState<string | null>(null);
   const [optionSendMail, setOptionSendMail] = React.useState({
@@ -54,18 +60,15 @@ const AddUser = ({navigation}: NavigProps<null>) => {
     values.super_owner_id =
       user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
 
-    console.log(values);
+    // console.log(values);
 
-    const res = await fetch(
-      'http://10.0.80.14:5001/pushnotifiation-d1bcb/us-central1/users',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(values),
+    const res = await fetch(`${ApiUrl}users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    );
+      body: JSON.stringify(values),
+    });
     const resData = await res.json();
     // console.log(resData);
 
@@ -73,7 +76,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
       setLoading(false);
       if (resData?.loginType === 'email') {
         showToast({
-          content: 'user added successfully,And send login link to email',
+          content: 'Please check your email',
           title: 'Success',
           onPress: () => {
             closeToast();
@@ -117,10 +120,17 @@ const AddUser = ({navigation}: NavigProps<null>) => {
     if (!values.role) {
       errors.role = 'Role is required';
     }
+    if (values?.loginType === 'password' && !values?.password) {
+      errors.password = 'Password is required';
+    }
 
     return errors;
   };
-
+  React.useEffect(() => {
+    getAllUser(data => {
+      setAllUser(data?.filter(item => item.role == 'manager'));
+    });
+  }, []);
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle title="Add User" onPress={() => navigation.goBack()} />
@@ -132,6 +142,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
             displayName: '',
             email: '',
             role: '',
+            manager_id: '',
             phoneNumber: '',
             loginType: 'email',
           }}
@@ -189,6 +200,71 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                     );
                   })}
                 </View>
+
+                {(values?.role == 'promoters' || values?.role == 'guard') && (
+                  <View style={tw`bg-base `}>
+                    <Picker
+                      useSafeArea
+                      value={values.manager_id}
+                      onChange={handleChange('manager_id')}
+                      onBlur={handleBlur('manager_id')}
+                      renderInput={() => (
+                        <InputTextWL
+                          cursorColor={PrimaryColor}
+                          value={
+                            allUser.find(
+                              item => item?.uid === values.manager_id,
+                            )?.displayName
+                          }
+                          editable={false}
+                          label="Select manager"
+                          placeholder="select  manager"
+                          containerStyle={tw`h-12 border-0 rounded-lg`}
+                          svgSecondIcon={IconDownArrayGray}
+                          errorText={errors.manager_id}
+                          touched={touched.manager_id}
+                        />
+                      )}
+                      renderItem={(value, items) => {
+                        return (
+                          <View
+                            // onPress={() => setValue(value)}
+                            style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                            <Text
+                              style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                              {items?.label}
+                            </Text>
+                          </View>
+                        );
+                      }}
+                      renderCustomDialogHeader={preps => {
+                        return (
+                          <TouchableOpacity
+                            onPress={preps.onCancel}
+                            style={tw`self-start py-3 px-4`}>
+                            <SvgXml
+                              xml={IconCloseGray}
+                              height={20}
+                              width={20}
+                            />
+                          </TouchableOpacity>
+                        );
+                      }}
+                      fieldType={Picker.fieldTypes.filter}
+                      paddingH
+                      items={allUser.map(item => {
+                        return {
+                          label: item?.displayName,
+                          value: item?.uid,
+                        };
+                      })}
+                      pickerModalProps={{
+                        overlayBackgroundColor: BaseColor,
+                      }}
+                    />
+                  </View>
+                )}
+
                 <View>
                   <InputTextWL
                     label="First & last displayName"
@@ -265,6 +341,8 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       onBlur={handleBlur('password')}
                       containerStyle={tw`h-12 border-0 `}
                       placeholder="Enter your password"
+                      errorText={errors.password}
+                      touched={touched.password}
                     />
                   </View>
                 )}

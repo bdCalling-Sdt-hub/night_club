@@ -116,14 +116,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               collectType: 'Guests',
               data: values,
             }).then(() => {
-              showToast({
-                title: 'Success',
-                content: 'Guest added successfully',
-                onPress() {
-                  closeToast();
-                  navigation?.goBack();
-                },
-              });
+              navigation.goBack();
             });
           }}
           validate={(values: createProps) => handleValidate(values)}>

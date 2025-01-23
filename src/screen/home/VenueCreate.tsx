@@ -12,7 +12,7 @@ import {
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -41,7 +41,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const [allManager, setManger] = React.useState<IUser[]>([]);
-  const {createFireData} = useFireStore();
+  const {createFireData, getAllUser} = useFireStore();
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
     const image = await useMediaPicker({
@@ -95,8 +95,8 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
     if (!values.openingTime) {
       errors.openingTime = 'Required';
     }
-    if (!values.manger_id) {
-      errors.manger_id = 'Required';
+    if (!values.manager_id) {
+      errors.manager_id = 'Required';
     }
     if (!values.closingTime) {
       errors.closingTime = 'Required';
@@ -120,23 +120,12 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
     return errors;
   };
 
-  const handleLoader = async () => {
-    const res = await fetch(
-      `${ApiUrl}users?super_owner_id=${
-        user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
-      }`,
-    );
-    const resData = await res.json();
-    // console.log(resData?.users);
-    setManger(
-      resData?.users?.filter((item: IUser) => item?.role === 'manager'),
-    );
-  };
-
   React.useEffect(() => {
-    handleLoader();
+    getAllUser(data => {
+      setManger(data.filter((item: IUser) => item?.role === 'manager'));
+    });
   }, []);
-
+  // console.log(allManager);
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle
@@ -158,29 +147,28 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             capacity: '',
             bars: '',
             danceFloor: '',
-            manger_id: '',
+            manager_id: '',
+            manager_name: '',
             residentDj: '',
             status: '',
-            createdBy: '',
+            createdBy: user?.user_id || '',
           }}
           onSubmit={(values, {resetForm}) => {
             if (userId) {
               values.createdBy = userId;
             }
+            values.manager_name = allManager.find(
+              item => item?.uid === values.manager_id,
+            )?.displayName;
+
+            // console.log(values);
 
             createFireData({
               collectType: 'Venues',
               data: values,
             }).then(() => {
-              // resetForm();
-              showToast({
-                title: 'success',
-                content: 'Venue created successfully',
-                onPress: () => {
-                  navigation?.goBack();
-                  closeToast();
-                },
-              });
+              navigation.goBack();
+              resetForm();
             });
           }}
           validate={(values: IVenue) => handleValidate(values)}>
@@ -432,14 +420,14 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
-                  value={values.manger_id}
-                  onChange={handleChange('manger_id')}
-                  onBlur={handleBlur('manger_id')}
+                  value={values.manager_id}
+                  onChange={handleChange('manager_id')}
+                  onBlur={handleBlur('manager_id')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       value={
-                        allManager.find(item => item?.uid === values.manger_id)
+                        allManager.find(item => item?.uid === values.manager_id)
                           ?.displayName
                       }
                       editable={false}
@@ -447,8 +435,8 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                       placeholder="select nightclub manager"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.manger_id}
-                      touched={touched.manger_id}
+                      errorText={errors.manager_id}
+                      touched={touched.manager_id}
                     />
                   )}
                   renderItem={(value, items) => {

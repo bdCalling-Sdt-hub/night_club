@@ -25,7 +25,7 @@ const GuestListScreen = ({navigation}: NavigProps<null>) => {
           navigation.goBack();
         }}
         offBack
-        title="View Guests List "
+        title="My Guests List "
         containerStyle={tw`justify-between`}
       />
 

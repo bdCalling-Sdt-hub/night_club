@@ -1,10 +1,3 @@
-import {
-  Dimensions,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React, {
   createContext,
   forwardRef,
@@ -13,6 +6,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {
+  Dimensions,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import {BlurView} from '@react-native-community/blur';
 import {Modal} from 'react-native-ui-lib';
@@ -96,7 +96,7 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
             setVisible(false);
           }}
           style={tw`flex-1 justify-center items-center`}>
-          <View
+          <Pressable
             style={[
               tw`bg-base bg-opacity-90 border border-white w-[80%] p-5 rounded-xl gap-2`,
               modalContent?.containerStyle,
@@ -188,7 +188,7 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
                 ))}
               </View>
             )}
-          </View>
+          </Pressable>
         </Pressable>
         {/* </BlurView> */}
       </Modal>
@@ -210,7 +210,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
  * @throws {Error} if called outside of a ToastProvider
  * @returns {ToastContextType} the toast context
  */
-export const useToast = () => {
+export const useToast = (): ToastContextType => {
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within a ToastProvider');

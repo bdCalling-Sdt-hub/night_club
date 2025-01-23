@@ -45,6 +45,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               setLoading(false);
               (navigation as any)?.replace('Home');
             });
+            
           } else {
             setLoading(false);
             showToast({

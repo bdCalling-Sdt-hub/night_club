@@ -1,10 +1,11 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {useFocusEffect} from '@react-navigation/native';
 import {Formik} from 'formik';
@@ -19,8 +20,8 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {IVenue} from '../../firebase/interface';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -34,7 +35,7 @@ interface createProps {
   description: string;
   image: any;
   video?: any;
-  manger_id?: string;
+  manager?: string;
   openingTime: string;
   closingTime: string;
   capacity: string;
@@ -50,6 +51,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const {deleteFireData, updateFireData} = useFireStore();
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
+  const [allManager, setManger] = React.useState<IUser[]>([]);
+  const {userId, user} = useAuth();
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
     const image = await useMediaPicker({
@@ -133,8 +136,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     if (!values.openingTime) {
       errors.openingTime = 'Required';
     }
-    if (!values.manger_id) {
-      errors.manger_id = 'Required';
+    if (!values.manager) {
+      errors.manager = 'Required';
     }
     if (!values.closingTime) {
       errors.closingTime = 'Required';
@@ -167,6 +170,23 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     };
   });
 
+  const handleLoader = async () => {
+    const res = await fetch(
+      `${ApiUrl}users?super_owner_id=${
+        user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
+      }`,
+    );
+    const resData = await res.json();
+    // console.log(resData?.users);
+    setManger(
+      resData?.users?.filter((item: IUser) => item?.role === 'manager'),
+    );
+  };
+
+  React.useEffect(() => {
+    handleLoader();
+  }, []);
+
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle
@@ -192,14 +212,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
             })
               .then(() => {
                 setLoading(false);
-                showToast({
-                  title: 'success',
-                  content: 'Venue Update successfully',
-                  onPress: () => {
-                    navigation?.goBack();
-                    closeToast();
-                  },
-                });
+                navigation.goBack();
               })
               .catch(err => {
                 setLoading(false);
@@ -451,20 +464,23 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
-                  value={values.manger_id}
-                  onChange={handleChange('manger_id')}
-                  onBlur={handleBlur('manger_id')}
+                  value={values.manager}
+                  onChange={handleChange('manager')}
+                  onBlur={handleBlur('manager')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
-                      value={values.manger_id}
+                      value={
+                        allManager.find(item => item?.uid === values.manager)
+                          ?.displayName
+                      }
                       editable={false}
                       label="Nightclub manager"
                       placeholder="select nightclub manager"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.manger_id}
-                      touched={touched.manger_id}
+                      errorText={errors.manager}
+                      touched={touched.manager}
                     />
                   )}
                   renderItem={(value, items) => {
@@ -474,7 +490,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -490,11 +506,12 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={[
-                    {label: 'Badhenke', value: 'Badhenke'},
-                    {label: 'Alexjender', value: 'Alexjender'},
-                    {label: 'Arif Biswas', value: 'Arif Biswas'},
-                  ]}
+                  items={allManager.map(item => {
+                    return {
+                      label: item?.displayName,
+                      value: item?.uid,
+                    };
+                  })}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}

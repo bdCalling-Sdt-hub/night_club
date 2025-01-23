@@ -155,7 +155,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               Nightclub Manager:
             </Text>
             <Text style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venue?.manger_id}
+              {venue?.manager_name}
             </Text>
           </View>
           <View style={tw`flex-row justify-between`}>
@@ -196,7 +196,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         <View style={tw`px-4 py-10 gap-5`}>
           <TButton
             onPress={() => {
-              navigation?.navigate('VenueEvent', {item: venue});
+              navigation?.navigate('VenueEvent', {venueId: venue?.id});
             }}
             title="See Venues Events"
             titleStyle={tw`text-base text-white50 font-RobotoBold`}

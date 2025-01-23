@@ -1,11 +1,32 @@
-export interface IUser {
-  uid?: string;
+interface IUser {
+  aud: string;
+  auth_time: number;
+  company: string;
+  email: string;
+  email_verified: boolean;
+  exp: number;
+  photoURL: string;
+  iat: number;
+  iss: string;
+  name: string;
+  phoneNumber: string;
+  role: 'super-owner' | 'owner' | 'manager' | 'promoters' | 'guard';
+  sub: string;
+  user_id: string;
+  super_owner_id?: string;
+  owner_id?: string;
+  manager_id?: string;
+}
+
+export interface IMangeUser {
+  uid: string;
   email: string;
   displayName: string;
-  password: string;
-  phoneNumber: string;
-  photoURL?: string | null;
-  role: 'super-owner' | 'owner' | 'manager' | 'promoters' | 'guard';
+  role: string;
+  company: string;
+  photoURL: string;
+  manager_id: string;
+  owner_id: string;
 }
 
 export interface IVenue {
@@ -17,7 +38,8 @@ export interface IVenue {
   description: string;
   image: any;
   video?: any;
-  manger_id?: string;
+  manager_id: string;
+  manager_name: string;
   openingTime: string;
   closingTime: string;
   capacity: string;
@@ -39,6 +61,7 @@ export interface IEvent {
   venue: string;
   start_time: string;
   end_time: string;
+  manager_id: string;
   capacity: string;
   entry_fee: string;
   resident_dj: string;
@@ -54,6 +77,7 @@ export interface IGuest {
   free_entry: string;
   added_by: string;
   event?: string;
+  // venue firebase refer on firestore type
   venue?: string;
   guestList: string;
   free_entry_time: any;

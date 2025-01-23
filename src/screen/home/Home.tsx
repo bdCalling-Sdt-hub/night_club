@@ -18,7 +18,7 @@ const Home = ({navigation}: NavigProps<null>) => {
   const [selectOption, setSelectOption] = React.useState('Current Venues');
   const [search, setSearch] = React.useState('');
   const {user} = useAuth();
-  console.log(user?.user_id);
+  // console.log(user?.user_id);
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithHeader navigation={navigation} offBack title="Your Venues" />

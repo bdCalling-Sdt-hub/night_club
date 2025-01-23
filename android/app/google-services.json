@@ -1,169 +1,26 @@
 {
   "project_info": {
-    "project_number": "351876329586",
-    "firebase_url": "https://pushnotifiation-d1bcb-default-rtdb.firebaseio.com",
-    "project_id": "pushnotifiation-d1bcb",
-    "storage_bucket": "pushnotifiation-d1bcb.appspot.com"
+    "project_number": "417062302373",
+    "project_id": "nightclubapp",
+    "storage_bucket": "nightclubapp.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:351876329586:android:92103e7ad29c0bbf3a52eb",
-        "android_client_info": {
-          "package_name": "com.animateproject"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "351876329586-3h7bdhnsuvqol4tmt0vus8amgtclffl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDki76panqoBLLmyuwcBtmEx6ZjcLEWkJs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "351876329586-03stm1blcgmja19atsfi7a5t53f86l44.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:351876329586:android:df962012303f758e3a52eb",
+        "mobilesdk_app_id": "1:417062302373:android:3fb599e155caf42deed34c",
         "android_client_info": {
           "package_name": "com.night_club"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "351876329586-csfulhhcar5ditjcj0t7kcsk9ffquko1.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.night_club",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "351876329586-3h7bdhnsuvqol4tmt0vus8amgtclffl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDki76panqoBLLmyuwcBtmEx6ZjcLEWkJs"
+          "current_key": "AIzaSyBFovU1thSRrZc-ga8O9r2gkh5S2FA67Ow"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "351876329586-03stm1blcgmja19atsfi7a5t53f86l44.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:351876329586:android:0877dc9bbaca74303a52eb",
-        "android_client_info": {
-          "package_name": "com.seaverchan.educoin"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "351876329586-3h7bdhnsuvqol4tmt0vus8amgtclffl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDki76panqoBLLmyuwcBtmEx6ZjcLEWkJs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "351876329586-03stm1blcgmja19atsfi7a5t53f86l44.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:351876329586:android:d224335cd5089e3e3a52eb",
-        "android_client_info": {
-          "package_name": "com.seaverchan.quokki"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "351876329586-blbs2cmanm5ltlk8fg1n3igjvc2jmtqg.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.seaverchan.quokki",
-            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
-          }
-        },
-        {
-          "client_id": "351876329586-3h7bdhnsuvqol4tmt0vus8amgtclffl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDki76panqoBLLmyuwcBtmEx6ZjcLEWkJs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "351876329586-03stm1blcgmja19atsfi7a5t53f86l44.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:351876329586:android:0dbd0cd1cae716eb3a52eb",
-        "android_client_info": {
-          "package_name": "com.video.calling"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "351876329586-3h7bdhnsuvqol4tmt0vus8amgtclffl4.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDki76panqoBLLmyuwcBtmEx6ZjcLEWkJs"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "351876329586-03stm1blcgmja19atsfi7a5t53f86l44.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

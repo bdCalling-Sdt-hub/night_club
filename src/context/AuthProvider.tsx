@@ -19,6 +19,8 @@ interface firebaseClaimUser {
   sub: string;
   user_id: string;
   super_owner_id: string;
+  owner_id: string;
+  manager_id: string;
 }
 
 interface AuthContextProps {
@@ -28,6 +30,9 @@ interface AuthContextProps {
   setInitialLoading: React.Dispatch<React.SetStateAction<boolean>>;
   userId: string | undefined;
   setUserId: React.Dispatch<React.SetStateAction<string | undefined>>;
+  // allUser: IMangeUser[];
+  // setAllUser: React.Dispatch<React.SetStateAction<IMangeUser[]>>;
+  // handleLoader: () => Promise<void>;
 }
 
 const AuthContext = React.createContext<AuthContextProps | undefined>(
@@ -45,6 +50,7 @@ export const useAuth = () => {
 const AuthProvider = ({children}: {children: React.ReactNode}) => {
   const [user, setUser] = React.useState<any | undefined>();
   const [userId, setUserId] = React.useState<string | undefined>();
+  // const [allUser, setAllUser] = React.useState<IMangeUser[]>([]);
   const [initialLoading, setInitialLoading] = React.useState(true);
   const logUserClaims = async () => {
     setInitialLoading(true);
@@ -82,9 +88,24 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
     }
   };
 
+  // const handleLoader = React.useCallback(async () => {
+  //   const res = await fetch(
+  //     `${ApiUrl}users?super_owner_id=${
+  //       user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
+  //     }`,
+  //   );
+  //   const resData = await res.json();
+  //   // console.log(resData?.users);
+
+  //   setAllUser(resData?.users);
+  // }, [user]);
+
   React.useEffect(() => {
     logUserClaims();
   }, []);
+  // React.useEffect(() => {
+  //   handleLoader();
+  // }, [user?.role]);
   return (
     <AuthContext.Provider
       value={{
@@ -94,6 +115,9 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
         setInitialLoading,
         userId,
         setUserId,
+        // allUser,
+        // setAllUser,
+        // handleLoader,
       }}>
       {children}
     </AuthContext.Provider>

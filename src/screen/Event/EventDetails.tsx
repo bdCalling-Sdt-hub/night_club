@@ -1,5 +1,6 @@
 import {ScrollView, Text, View} from 'react-native';
 import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
+import {WebUrl, height} from '../../utils/utils';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import moment from 'moment';
@@ -10,16 +11,18 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {IEvent} from '../../firebase/interface';
 import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import {height} from '../../utils/utils';
 import Background from '../components/Background';
 
 const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const {closeToast, showToast} = useToast();
+
+  const {user} = useAuth();
 
   const [event, setEvent] = React.useState<IEvent>();
 
@@ -28,14 +31,14 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const handleShearPress = () => {
     showToast({
       title: 'Share link:',
-      content: `http://127.0.0.1:5500/index.html?event=${event?.id}`,
+      content: `${WebUrl}?event=${event?.id}&user_id=${user?.user_id}`,
       contentStyle: tw`text-blue-400 `,
       buttonStyle: tw`bg-primary w-1/3 self-center`,
       buttonText: 'Copy link',
       buttonTextStyle: tw`text-white font-RobotoBlack text-sm`,
       onPress() {
         Clipboard.setString(
-          `http://127.0.0.1:5500/index.html?event=${event?.id}`,
+          `${WebUrl}?event=${event?.id}&user_id=${user?.user_id}`,
         );
         closeToast();
       },
@@ -54,7 +57,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
     });
   }, [route?.params?.id]);
 
-  // console.log(event);
+  // event?.venue?.doc()
 
   return (
     <Background style={tw`flex-1`}>

@@ -9,6 +9,7 @@ import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
@@ -17,6 +18,7 @@ import {height} from '../../../utils/utils';
 
 const CurrentVenues = ({navigation}: NavigProps<null>) => {
   const [data, setData] = React.useState<Array<IVenue>>();
+  const {user} = useAuth();
 
   const {listenToData} = useFireStore();
   React.useEffect(() => {
@@ -31,9 +33,30 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
           operator: '==',
           value: 'Open',
         },
-      ],
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ].filter(Boolean) as any,
       onUpdate: (data: any[]) => {
-        setData(data);
+        if (user?.role === 'manager') {
+          data = data.filter(
+            (item: IVenue) => item?.manager_id === user?.user_id,
+          );
+          setData(data);
+          return;
+        }
+        if (user?.role === 'guard' || user?.role === 'promoters') {
+          data = data.filter(
+            (item: IVenue) => item?.manager_id === user?.manager_id,
+          );
+          setData(data);
+        } else {
+          setData(data);
+        }
       },
     });
 
@@ -42,6 +65,8 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
       unsubscribe();
     };
   }, []);
+
+  console.log(user?.role);
 
   return (
     <FlatList

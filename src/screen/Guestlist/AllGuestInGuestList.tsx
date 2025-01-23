@@ -2,25 +2,27 @@ import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import {Checkbox} from 'react-native-ui-lib';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {NavigProps} from '../../interfaces/NaviProps';
-import NormalModal from '../../components/modals/NormalModal';
 import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
+import {Checkbox} from 'react-native-ui-lib';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
-import {useExportFile} from '../../hook/useExportFile';
-import useFireStore from '../../firebase/database/helper';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import NormalModal from '../../components/modals/NormalModal';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
+import {useExportFile} from '../../hook/useExportFile';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const AllGuestInGuestList = ({
   navigation,
   route,
 }: NavigProps<{item: IGuestsList}>) => {
+  const {user} = useAuth();
   const {closeToast, showToast} = useToast();
   const [selectGuest, setSelectGuest] = React.useState<IGuest[]>([]);
   const [selectEvent, setSelectEvent] = React.useState<IEvent>();
@@ -62,6 +64,11 @@ const AllGuestInGuestList = ({
           field: 'event',
           operator: '==',
           value: null,
+        },
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
         },
       ],
       onUpdate: (data: any[]) => {

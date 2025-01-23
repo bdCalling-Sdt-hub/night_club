@@ -1,4 +1,4 @@
-import {BaseColor, lStorage} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -7,21 +7,21 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, lStorage} from '../../utils/utils';
 
-import AniImage from '../../components/animate/AniImage';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
 import {DrawerActions} from '@react-navigation/native';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import tw from '../../lib/tailwind';
+import {Picker} from 'react-native-ui-lib';
+import AniImage from '../../components/animate/AniImage';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import IwtButton from '../../components/buttons/IwtButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const {user, setUser} = useAuth();
@@ -48,12 +48,19 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           operator: '!=',
           value: null,
         },
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
         {
           field: 'event_date',
           operator: '>=',
           value: new Date().toISOString(),
         },
-      ],
+      ]?.filter(Boolean) as any,
       onUpdate: (data: any[]) => {
         setAllGuest(
           data
@@ -79,6 +86,20 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     loadAllData({
       collectType: 'Venues',
+      filters: [
+        {
+          field: 'status',
+          operator: '==',
+          value: 'Open',
+        },
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ]?.filter(Boolean) as any,
       setLoad: setVenueData,
     });
   }, []);
@@ -95,7 +116,14 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           operator: '>=',
           value: new Date().toISOString(),
         },
-      ],
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ]?.filter(Boolean) as any,
 
       onUpdate: (data: any[]) => {
         setEventData(data);
