@@ -7,6 +7,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {IGuestsList} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
@@ -16,6 +17,7 @@ import Background from '../components/Background';
 
 const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
+  const {user} = useAuth();
   const [search, setSearch] = React.useState('');
   const [guestList, setGuestList] = React.useState('');
   const [guestListAvailable, setGuestListAvailable] = React.useState<
@@ -45,17 +47,20 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'GuestsList',
-
-        onUpdate: (data: any[]) => {
-          setGuestListAvailable(data);
+    listenToData({
+      unsubscribe,
+      collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
         },
-      });
-    };
-
-    initializeListener();
+      ],
+      onUpdate: (data: any[]) => {
+        setGuestListAvailable(data);
+      },
+    });
 
     // Cleanup the listener on component unmount
     return () => {

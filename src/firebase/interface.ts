@@ -71,6 +71,7 @@ export interface IGuest {
   id: string;
   fullName: string;
   tag: string;
+  tag_name: string;
   people: string;
   check_in: string;
   entry_fee: string;

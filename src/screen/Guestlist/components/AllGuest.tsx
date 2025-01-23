@@ -42,6 +42,13 @@ const AllGuest = ({navigation}: Props) => {
   React.useEffect(() => {
     loadAllData({
       collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
       setLoad: setGuestListAvailable,
     });
   }, []);
@@ -80,8 +87,10 @@ const AllGuest = ({navigation}: Props) => {
     };
   }, []);
   const tagsData = Array.from(
-    new Set(guestListData?.map(guest => guest.tag)),
-  ).map(tag => ({label: tag, value: tag}));
+    new Set(guestListData?.map(guest => guest?.tag && guest.tag)),
+  )
+    .map(tag => tag && {label: tag, value: tag})
+    ?.filter(Boolean);
 
   const handleAddGuestOnGuestList = async () => {
     selectGuest?.forEach((id: string) => {
@@ -235,7 +244,7 @@ const AllGuest = ({navigation}: Props) => {
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: item?.tag,
+                  title: item?.tag_name,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}
@@ -277,16 +286,16 @@ const AllGuest = ({navigation}: Props) => {
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectGuestList(item.name);
+                  setSelectGuestList(item.id);
                 }}
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={15}
                   iconColor="#000000"
-                  value={selectGuestList === item.name}
+                  value={selectGuestList === item.id}
                   onValueChange={() => {
-                    setSelectGuestList(item?.name);
+                    setSelectGuestList(item?.id);
                   }}
                   style={tw``}
                   color={'#fff'}

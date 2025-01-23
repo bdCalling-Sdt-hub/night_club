@@ -1,30 +1,30 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DatePicker from 'react-native-date-picker';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import {Formik} from 'formik';
+import moment from 'moment';
+import React from 'react';
+import DatePicker from 'react-native-date-picker';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -95,9 +95,26 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
   };
 
   React.useEffect(() => {
-    loadAllData({collectType: 'Tags', setLoad: setTags});
+    loadAllData({
+      collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
+      setLoad: setTags,
+    });
     loadAllData({
       collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
       setLoad: setGuestListAvailable,
     });
   }, []);

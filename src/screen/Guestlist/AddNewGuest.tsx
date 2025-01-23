@@ -76,11 +76,25 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   React.useEffect(() => {
     loadAllData({
       collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
       setLoad: setTags,
     });
 
     loadAllData({
       collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
       setLoad: setGuestListAvailable,
     });
 
@@ -105,6 +119,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             free_entry_time: '',
             guest_list: '',
             tag: '',
+            tag_name: '',
             added_by: user?.name || '',
             event: route?.params?.item?.name || '',
             venue: route?.params?.item?.venue || '',
@@ -112,6 +127,10 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           }}
           onSubmit={values => {
             // console.log(values);
+            if (values?.tag) {
+              values.tag_name = tags?.find(item => item.id === values.tag)
+                ?.name as string;
+            }
             createFireData({
               collectType: 'Guests',
               data: values,
@@ -152,7 +171,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.tag}
+                      value={tags?.find(item => item.id === values.tag)?.name}
                       label="Tag"
                       placeholder="Select tag"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -167,7 +186,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -187,7 +206,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   paddingH
                   items={tags?.map((item: any) => ({
                     label: item.name,
-                    value: item.name,
+                    value: item.id,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
@@ -377,7 +396,11 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.guest_list}
+                      value={
+                        guestListAvailable?.find(
+                          item => item.id === values.guest_list,
+                        )?.name
+                      }
                       label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -392,7 +415,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items.label}
                         </Text>
                       </View>
                     );
@@ -412,7 +435,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   paddingH
                   items={guestListAvailable?.map(item => ({
                     label: item.name,
-                    value: item.name,
+                    value: item.id,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,

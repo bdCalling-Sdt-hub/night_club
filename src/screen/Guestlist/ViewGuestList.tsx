@@ -1,34 +1,35 @@
-import {BaseColor, height} from '../../utils/utils';
 import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import {IEvent, IGuest} from '../../firebase/interface';
+import {IEvent, IGuest, IVenue} from '../../firebase/interface';
 import {
   IconBigPlusCyan,
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
+import {BaseColor, height} from '../../utils/utils';
 
+import moment from 'moment';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {useToast} from '../../components/modals/Toaster';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFIle';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
   const [addedBy, setAddedBy] = React.useState('Added by');
+  const [venueData, setVenueData] = React.useState<IVenue | null>(null);
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [tags, setTags] = React.useState('Tags');
   const [loading, setLoading] = React.useState(false);
@@ -71,7 +72,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         {
           field: 'event',
           operator: '==',
-          value: route?.params?.item?.name,
+          value: route?.params?.item?.id,
         },
       ],
       onUpdate: (data: any[]) => {
@@ -124,6 +125,16 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
   // console.log(guestListData);
 
+  React.useEffect(() => {
+    loadSingleData({
+      id: route?.params?.item?.venue as string,
+      collectType: 'Venues',
+      setLoad: setVenueData,
+    });
+  }, []);
+
+  // console.log(venueData);
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithComponent
@@ -144,8 +155,9 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
       <View style={tw`px-4 mb-4 `}>
         <Text style={tw`text-white60 text-xs font-RobotoMedium`}>
-          {route?.params?.item?.venue} {'>'} {route?.params?.item?.name} {'>'}{' '}
-          {moment(route?.params?.item?.date).format('DD-MM-YYYY')}
+          {venueData?.name} {'>'} {route?.params?.item?.name} {'>'}{' '}
+          {moment(route?.params?.item?.date).format('DD-MM-YYYY')} {'>'}
+          {moment(route?.params?.item?.date).format(' h:mm A')}
         </Text>
       </View>
 

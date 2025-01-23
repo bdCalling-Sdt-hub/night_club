@@ -2,6 +2,7 @@ import React from 'react';
 import {FlatList} from 'react-native';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
 import {IGuestsList} from '../../../firebase/interface';
 import tw from '../../../lib/tailwind';
@@ -15,12 +16,21 @@ const SavedGuestList = ({navigation}: Props) => {
     [] as Array<IGuestsList>,
   );
 
+  const {user} = useAuth();
+
   const {loadAllData} = useFireStore();
 
   React.useEffect(() => {
     //get all guest
     loadAllData({
       collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ]?.filter(Boolean) as any,
       setLoad: setGuestListAvailable,
     });
   }, []);

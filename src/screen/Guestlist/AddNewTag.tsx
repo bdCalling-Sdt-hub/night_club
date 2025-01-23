@@ -7,6 +7,7 @@ import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {ITags} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
@@ -20,6 +21,8 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
   const [tags, setTags] = React.useState<Array<ITags>>([]);
 
   const {createFireData, listenToData} = useFireStore();
+
+  const {user} = useAuth();
 
   const handleNewTag = () => {
     if (!newTag) {
@@ -44,17 +47,20 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
 
-    const initializeListener = async () => {
-      unsubscribe = await listenToData({
-        collectType: 'Tags',
-
-        onUpdate: (data: any[]) => {
-          setTags(data);
+    listenToData({
+      unsubscribe,
+      collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
         },
-      });
-    };
-
-    initializeListener();
+      ],
+      onUpdate: (data: any[]) => {
+        setTags(data);
+      },
+    });
 
     // Cleanup the listener on component unmount
     return () => {

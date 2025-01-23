@@ -92,9 +92,26 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
   };
 
   React.useEffect(() => {
-    loadAllData({collectType: 'Tags', setLoad: setTags});
+    loadAllData({
+      collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
+      setLoad: setTags,
+    });
     loadAllData({
       collectType: 'GuestsList',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
       setLoad: setGuestListAvailable,
     });
   }, []);

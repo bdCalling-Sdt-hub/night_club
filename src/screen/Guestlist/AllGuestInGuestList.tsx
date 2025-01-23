@@ -44,7 +44,14 @@ const AllGuestInGuestList = ({
           operator: '>=',
           value: new Date().toISOString(),
         },
-      ],
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ]?.filter(Boolean) as any,
       setLoad: setGuestListAvailable,
     });
   }, []);
@@ -58,7 +65,7 @@ const AllGuestInGuestList = ({
         {
           field: 'guest_list',
           operator: '==',
-          value: route?.params?.item?.name,
+          value: route?.params?.item?.id,
         },
         {
           field: 'event',
@@ -127,7 +134,7 @@ const AllGuestInGuestList = ({
           collectType: 'Guests',
           id: item.id,
           data: {
-            event: selectEvent?.name,
+            event: selectEvent?.id,
             venue: selectEvent?.venue,
             event_date: selectEvent?.date,
           },
@@ -234,7 +241,7 @@ const AllGuestInGuestList = ({
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
-                  title: item.tag,
+                  title: item.tag_name,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}
