@@ -97,6 +97,8 @@ export const useFireAuth = () => {
     }
   };
 
+  // delete account
+
   return {
     SignInWithEmailPass,
     SignOut,

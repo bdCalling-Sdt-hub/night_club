@@ -4,18 +4,19 @@ import {
   IconSmallPlusWhite,
   IconSmallUserCyan,
 } from '../../icons/icons';
+import {PrimaryColor, height} from '../../utils/utils';
 
 import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IwtButton from '../../components/buttons/IwtButton';
 import Card from '../../components/cards/Card';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {IMangeUser} from '../../firebase/interface';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const ManageUsers = ({navigation}: NavigProps<null>) => {
@@ -43,6 +44,9 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
             refreshing={loading}
             colors={[PrimaryColor]}
           />
+        }
+        ListEmptyComponent={
+          <EmptyCard title="No User Found" hight={height * 0.6} />
         }
         data={allUser}
         contentContainerStyle={tw`px-4 pb-5 gap-3`}

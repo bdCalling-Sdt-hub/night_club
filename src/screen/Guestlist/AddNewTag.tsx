@@ -51,12 +51,14 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
       unsubscribe,
       collectType: 'Tags',
       filters: [
-        {
-          field: 'createdBy',
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
           operator: '==',
-          value: user?.user_id,
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
-      ],
+      ]?.filter(Boolean) as any,
       onUpdate: (data: any[]) => {
         setTags(data);
       },

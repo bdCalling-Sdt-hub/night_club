@@ -1,4 +1,5 @@
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCloseGray,
   IconCompanyGray,
@@ -8,23 +9,22 @@ import {
   IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {updateProfile} from '@react-native-firebase/auth';
 import {Formik} from 'formik';
-import {IUser} from '../../firebase/interface';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import TButton from '../../components/buttons/TButton';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import countries from './countries.json';
-import tw from '../../lib/tailwind';
-import {updateProfile} from '@react-native-firebase/auth';
-import {useAuth} from '../../context/AuthProvider';
-import {useFireAuth} from '../../firebase/useFireAuth';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import {IUser} from '../../firebase/interface';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import countries from './countries.json';
 
 const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
@@ -61,7 +61,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
       if (res.user?.email) {
         // added role to manually
         data.role = 'super-owner';
-        console.log(data);
+        // console.log(data);
         handleVerifyEmail(data)
           .then(res => {
             // console.log(res);
@@ -70,7 +70,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             if (res.success) {
               (navigation as any)?.replace('SendMailSuccess');
             } else {
-              console.log(res);
+              // console.log(res);
               showToast({
                 title: 'Wrong',
                 content: res?.message,
@@ -90,8 +90,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
             setLoading(false);
           });
       }
-
-      setLoading(false);
     } catch (error) {
       console.log(error);
 

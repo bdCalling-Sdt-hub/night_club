@@ -77,12 +77,14 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     loadAllData({
       collectType: 'Tags',
       filters: [
-        {
-          field: 'createdBy',
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
           operator: '==',
-          value: user?.user_id,
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
-      ],
+      ]?.filter(Boolean) as any,
       setLoad: setTags,
     });
 
@@ -121,7 +123,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             tag: '',
             tag_name: '',
             added_by: user?.name || '',
-            event: route?.params?.item?.name || '',
+            event: route?.params?.item?.id || '',
             venue: route?.params?.item?.venue || '',
             event_date: route?.params?.item?.date || '',
           }}

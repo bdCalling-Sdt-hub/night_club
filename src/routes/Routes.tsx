@@ -1,5 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import React from 'react';
 import CreateNewPassword from '../screen/auth/CreateNewPassword';
 import ForgetPassword from '../screen/auth/ForgetPassword';
 import LoginScreen from '../screen/auth/LoginScreen';
@@ -47,12 +48,11 @@ const linking = {
 };
 
 function Routes() {
-  // useEffect(() => {
+  // React.useEffect(() => {
   //   const handleDeepLink = event => {
   //     const url = event.url;
-
-  //     if (url.includes('email-verified')) {
-  //       console.log('Email verified', url);
+  //     if (url) {
+  //       console.log(url);
   //     }
   //   };
 

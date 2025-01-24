@@ -49,18 +49,9 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
       },
     });
-    loadAllData({
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event',
-          operator: '==',
-          value: route?.params?.item?.name,
-        },
-      ],
-      setLoad: setGuestListData,
-    });
   };
+
+  // console.log(route?.params?.item?.id);
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function

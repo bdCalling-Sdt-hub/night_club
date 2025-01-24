@@ -100,6 +100,15 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
   React.useEffect(() => {
     loadAllData({
       collectType: 'Venues',
+      filters: [
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ].filter(Boolean) as any,
       setLoad: setAllVenues,
     });
   }, []);
@@ -133,7 +142,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
             capacity: '',
             entry_fee: '',
             resident_dj: '',
-            createdBy: '',
+
             manager_id: user?.role === 'manager' ? user?.user_id : '',
           }}
           onSubmit={async values => {

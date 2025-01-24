@@ -1,13 +1,17 @@
+import {ActivityIndicator, View} from 'react-native';
+
 import React from 'react';
-import {View} from 'react-native';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
-import AllGuest from './components/AllGuest';
-import SavedGuestList from './components/SavedGuestList';
+
+// Lazy Load Component
+const AllGuest = React.lazy(() => import('./components/AllGuest'));
+const SavedGuestList = React.lazy(() => import('./components/SavedGuestList'));
 
 const GuestListScreen = ({navigation}: NavigProps<null>) => {
   // const {closeToast, showToast} = useToast();
@@ -58,9 +62,23 @@ const GuestListScreen = ({navigation}: NavigProps<null>) => {
       </View> */}
 
       {selectOption === 'All Guest' ? (
-        <AllGuest navigation={navigation} />
+        <React.Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <AllGuest navigation={navigation} />
+        </React.Suspense>
       ) : (
-        <SavedGuestList navigation={navigation} />
+        <React.Suspense
+          fallback={
+            <View style={tw`flex-1 justify-center items-center`}>
+              <ActivityIndicator color={PrimaryColor} size={'large'} />
+            </View>
+          }>
+          <SavedGuestList navigation={navigation} />
+        </React.Suspense>
       )}
     </Background>
   );

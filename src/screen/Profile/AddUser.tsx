@@ -56,6 +56,16 @@ const AddUser = ({navigation}: NavigProps<null>) => {
 
   const handleOnSubmit = async (values: any) => {
     setLoading(true);
+    if (values?.loginType === 'password' && !values?.password) {
+      showToast({
+        content: 'Password is required',
+        title: 'Warning',
+        onPress: () => {
+          closeToast();
+        },
+      });
+      return;
+    }
     values.company = user?.company;
     values.super_owner_id =
       user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
@@ -73,6 +83,8 @@ const AddUser = ({navigation}: NavigProps<null>) => {
     // console.log(resData);
 
     if (resData?.success) {
+      console.log(resData);
+
       setLoading(false);
       if (resData?.loginType === 'email') {
         showToast({
@@ -123,6 +135,12 @@ const AddUser = ({navigation}: NavigProps<null>) => {
     if (values?.loginType === 'password' && !values?.password) {
       errors.password = 'Password is required';
     }
+    if (
+      (values?.role == 'promoters' || values?.role == 'guard') &&
+      !values?.manager_id
+    ) {
+      errors.manager_id = 'Manager is required';
+    }
 
     return errors;
   };
@@ -145,6 +163,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
             manager_id: '',
             phoneNumber: '',
             loginType: 'email',
+            password: '',
           }}
           onSubmit={values => {
             handleOnSubmit(values);

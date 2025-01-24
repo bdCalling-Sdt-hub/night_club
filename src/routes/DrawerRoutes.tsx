@@ -6,22 +6,36 @@ import {
   DrawerItemList,
   createDrawerNavigator,
 } from '@react-navigation/drawer';
-import {IconCloseGray, IconLoginRed} from '../icons/icons';
 import {Text, View} from 'react-native';
+import {IconCloseGray, IconLoginRed} from '../icons/icons';
 
-import BottomRoutes from './BottomRoutes';
+import auth from '@react-native-firebase/auth';
 import IwtButton from '../components/buttons/IwtButton';
 import TButton from '../components/buttons/TButton';
-import tw from '../lib/tailwind';
+import {useToast} from '../components/modals/Toaster';
 import {useAuth} from '../context/AuthProvider';
 import {useFireAuth} from '../firebase/useFireAuth';
-import {useToast} from '../components/modals/Toaster';
+import tw from '../lib/tailwind';
+import BottomRoutes from './BottomRoutes';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   // console.log(user);
   const {closeToast, showToast} = useToast();
   const {setUser, setUserId, user} = useAuth();
   const {SignOut, handleResetPassword} = useFireAuth();
+  const currentUser = auth().currentUser;
+
+  const deletedAccount = async () => {
+    try {
+      await currentUser?.delete();
+      setUserId(undefined);
+      setUser(undefined);
+      (props.navigation as any).replace('Loading');
+      props.navigation.closeDrawer();
+    } catch (error) {
+      currentUser?.delete();
+    }
+  };
 
   const handleDeleteAccount = () => {
     showToast({
@@ -36,6 +50,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
+            deletedAccount();
             closeToast();
           },
         },

@@ -62,7 +62,8 @@ const AuthProvider = ({children}: {children: React.ReactNode}) => {
       setUserId(currentUser.uid);
 
       // Fetch the refreshed token with claims
-      const idTokenResult = await currentUser?.getIdTokenResult();
+      const idTokenResult = await currentUser?.getIdTokenResult(true);
+      // console.log(idTokenResult?.claims);
 
       idTokenResult?.claims &&
         setUser({

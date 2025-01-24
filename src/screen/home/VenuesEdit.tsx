@@ -94,14 +94,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     })
       .then(() => {
         setLoading(false);
-        showToast({
-          title: 'success',
-          content: 'Venue Delete successfully',
-          onPress: () => {
-            (navigation as any)?.replace('Home');
-            closeToast();
-          },
-        });
+        navigation?.goBack();
       })
       .catch(err => {
         setLoading(false);

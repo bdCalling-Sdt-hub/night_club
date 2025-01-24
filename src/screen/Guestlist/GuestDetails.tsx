@@ -95,12 +95,14 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     loadAllData({
       collectType: 'Tags',
       filters: [
-        {
-          field: 'createdBy',
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
           operator: '==',
-          value: user?.user_id,
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
-      ],
+      ]?.filter(Boolean) as any,
       setLoad: setTags,
     });
     loadAllData({
@@ -149,14 +151,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               id: route?.params?.guest?.id as string,
               data: values,
             }).then(() => {
-              showToast({
-                title: 'Success',
-                content: 'Update guest successfully',
-                onPress() {
-                  closeToast();
-                  navigation?.goBack();
-                },
-              });
+              navigation?.goBack();
             });
           }}
           validate={(values: createProps) => handleValidate(values)}>

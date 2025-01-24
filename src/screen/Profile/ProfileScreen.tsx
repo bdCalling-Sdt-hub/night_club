@@ -9,6 +9,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, lStorage} from '../../utils/utils';
 
+import auth from '@react-native-firebase/auth';
 import {DrawerActions} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
@@ -24,66 +25,26 @@ import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<null>) => {
+  const currentUser = auth().currentUser;
   const {user, setUser} = useAuth();
   const [venueData, setVenueData] = React.useState<IVenue[]>([]);
   const [eventData, setEventData] = React.useState<IEvent[]>([]);
-  const [selectVenue, setSelectVenue] = React.useState('Select venue');
-  const [selectEvent, setSelectEvent] = React.useState('Select event');
+  const [selectVenue, setSelectVenue] = React.useState<string | null>(null);
+  const [selectEvent, setSelectEvent] = React.useState<string | null>(null);
 
   const [allGuest, setAllGuest] = React.useState<IGuest[]>([]);
+
+  const [totalGuest, setTotalGuest] = React.useState(0);
+  const [freeGuest, setFreeGuest] = React.useState(0);
+  const [check_inGuest, setCheck_inGuest] = React.useState(0);
+  const [paidGuest, setPaidGuest] = React.useState(0);
 
   // console.log(user);
 
   const {listenToData, loadAllData} = useFireStore();
 
   React.useEffect(() => {
-    let unsubscribe = () => {};
-
-    listenToData({
-      unsubscribe,
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event',
-          operator: '!=',
-          value: null,
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-        {
-          field: 'event_date',
-          operator: '>=',
-          value: new Date().toISOString(),
-        },
-      ]?.filter(Boolean) as any,
-      onUpdate: (data: any[]) => {
-        setAllGuest(
-          data
-            ?.filter((guest: any) => {
-              return selectEvent === 'Select event'
-                ? guest
-                : selectEvent === guest.event;
-            })
-            .filter((guest: any) => {
-              return selectVenue === 'Select venue'
-                ? guest
-                : selectVenue === guest.venue;
-            }),
-        );
-      },
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [selectEvent, selectVenue]);
-
-  React.useEffect(() => {
+    // Step 1: Load Venues
     loadAllData({
       collectType: 'Venues',
       filters: [
@@ -100,61 +61,111 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ]?.filter(Boolean) as any,
-      setLoad: setVenueData,
-    });
-  }, []);
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
-
-    listenToData({
-      unsubscribe,
-      collectType: 'Events',
-
-      filters: [
-        {
-          field: 'date',
-          operator: '>=',
-          value: new Date().toISOString(),
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
-
-      onUpdate: (data: any[]) => {
-        setEventData(data);
+      setLoad: (venues: IVenue[]) => {
+        // Filter venues by manager
+        setVenueData(venues);
       },
     });
 
-    // Cleanup the listener on component unmount
-    return () => {
-      unsubscribe();
-    };
+    // Cleanup all listeners on component unmount
   }, []);
 
-  // console.log(allGuest);
+  React.useEffect(() => {
+    let unsubscribeEvents = () => {};
+    const venueIds = venueData.map(venue => venue.id);
+    // console.log(venueIds);
+    // Step 2: Load Events based on filtered venues
+    listenToData({
+      unsubscribe: unsubscribeEvents,
+      collectType: 'Events',
+      filters: [
+        {
+          field: 'venue',
+          operator: 'in',
+          value: venueIds, // Filter events where venue matches the filtered venues
+        },
+      ]?.filter(Boolean) as any,
+      onUpdate: (events: IEvent[]) => {
+        setEventData(events?.filter(i => i.date > new Date().toISOString()));
 
-  const totalGuest = allGuest?.reduce(
-    (acc, cur) => acc + Number(cur.people),
-    0,
-  );
+        // const eventIds = events.map((event: any) => event.id);
+      },
+    });
 
-  const freeGuest = allGuest?.reduce(
-    (acc, cur) => acc + Number(cur.free_entry),
-    0,
-  );
+    // Cleanup all listeners on component unmount
+    return () => {
+      unsubscribeEvents();
+    };
+  }, [venueData]);
 
-  const check_inGuest = allGuest
-    ?.filter(item => item?.check_in)
-    ?.reduce((acc, cur) => acc + Number(cur.check_in), 0);
+  React.useEffect(() => {
+    let unsubscribeGuests = () => {};
 
-  const paidGuest = totalGuest - freeGuest;
+    // Step 3: Load Guests based on filtered events
+    listenToData({
+      unsubscribe: unsubscribeGuests,
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event',
+          operator: 'in',
+          value: eventData.map((event: any) => event.id), // Filter events where venue matches the filtered venues
+        },
+      ]?.filter(Boolean) as any,
+      onUpdate: (data: any[]) => {
+        // console.log(data);
+        setAllGuest(
+          data
+
+            ?.filter((guest: any) => {
+              return !selectEvent ? guest : selectEvent === guest.event;
+            })
+            ?.filter((guest: any) => {
+              return !selectVenue ? guest : selectVenue === guest.venue;
+            }),
+        );
+      },
+    });
+
+    // Cleanup all listeners on component unmount
+    return () => {
+      unsubscribeGuests();
+    };
+  }, [selectEvent, selectVenue, eventData]);
 
   // console.log(check_inGuest);
+
+  // console.log(selectEvent, selectVenue);
+
+  React.useEffect(() => {
+    setTotalGuest(allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0));
+    setFreeGuest(
+      allGuest?.reduce((acc, cur) => acc + Number(cur.free_entry), 0),
+    );
+    setCheck_inGuest(
+      allGuest
+        ?.filter(item => item?.check_in)
+        ?.reduce((acc, cur) => acc + Number(cur.check_in), 0),
+    );
+    setPaidGuest(totalGuest - freeGuest);
+  }, [allGuest]);
+
+  // console.log(allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0));
+
+  // console.log(user);
+
+  React.useEffect(() => {
+    if (!user?.role) {
+      currentUser?.getIdTokenResult(true).then(idTokenResult => {
+        if (idTokenResult?.claims) {
+          setUser({
+            ...idTokenResult.claims,
+            photoURL: currentUser?.photoURL,
+          });
+        }
+      });
+    }
+  }, []);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -212,7 +223,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
               <View style={tw`px-4 flex-row items-center gap-2`}>
                 <Picker
                   useSafeArea
-                  value={selectVenue}
+                  value={selectVenue || 'Select venue'}
                   onChange={text => setSelectVenue(text as string)}
                   renderInput={(preps: any) => {
                     return (
@@ -222,7 +233,9 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         <Text
                           numberOfLines={1}
                           style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                          {selectVenue}
+                          {selectVenue
+                            ? venueData?.find(i => i.id === selectVenue)?.name
+                            : 'Select venue'}
                         </Text>
                         <SvgXml
                           xml={IconDownArrayGray}
@@ -238,7 +251,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -254,7 +267,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            setSelectVenue('Select venue');
+                            setSelectVenue(null);
                             preps.onCancel();
                           }}
                           style={tw` py-1 px-4 border border-primary rounded-lg `}>
@@ -271,7 +284,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                   items={venueData?.map(item => {
                     return {
                       label: item?.name,
-                      value: item?.name,
+                      value: item?.id,
                     };
                   })}
                   pickerModalProps={{
@@ -280,7 +293,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                 />
                 <Picker
                   useSafeArea
-                  value={selectEvent}
+                  value={selectEvent || 'Select event'}
                   onChange={text => setSelectEvent(text as string)}
                   renderInput={(preps: any) => {
                     return (
@@ -290,7 +303,10 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         <Text
                           numberOfLines={1}
                           style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                          {selectEvent}
+                          {selectEvent
+                            ? eventData?.find(i => i.id === selectEvent)
+                                ?.name || 'Select event'
+                            : 'Select event'}
                         </Text>
                         <SvgXml
                           xml={IconDownArrayGray}
@@ -306,7 +322,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -322,7 +338,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         </TouchableOpacity>
                         <TouchableOpacity
                           onPress={() => {
-                            setSelectEvent('Select event');
+                            setSelectEvent(null);
                             preps.onCancel();
                           }}
                           style={tw` py-1 px-4 border border-primary rounded-lg `}>
@@ -339,7 +355,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                   items={eventData?.map(item => {
                     return {
                       label: item?.name,
-                      value: item?.name,
+                      value: item?.id,
                     };
                   })}
                   pickerModalProps={{

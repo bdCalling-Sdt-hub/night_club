@@ -140,6 +140,8 @@ const AllGuestInGuestList = ({
           },
         });
         setAddToGuests(false);
+        setSelectGuest([]);
+        setSelectEvent(undefined);
       });
 
       // console.log(selectGuestList);

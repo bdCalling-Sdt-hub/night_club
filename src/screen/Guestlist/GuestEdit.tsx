@@ -98,12 +98,19 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     loadAllData({
       collectType: 'Tags',
       filters: [
-        {
-          field: 'createdBy',
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
           operator: '==',
-          value: user?.user_id,
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
-      ],
+        // {
+        //   field: 'manager_id',
+        //   operator: '==',
+        //   value: null,
+        // },
+      ]?.filter(Boolean) as any,
       setLoad: setTags,
     });
     loadAllData({

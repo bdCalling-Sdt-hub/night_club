@@ -1,11 +1,21 @@
-import {Text, View} from 'react-native';
+import {Linking, Text, View} from 'react-native';
 
-import {IconEmailSending} from '../../icons/icons';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {IconEmailSending} from '../../icons/icons';
 import tw from '../../lib/tailwind';
 
 const SendMailSuccess = () => {
+  const openGmailWeb = () => {
+    const url = 'https://mail.google.com/';
+    Linking.openURL(url).catch(err => {
+      console.error('Failed to open Gmail in browser', err);
+    });
+  };
+
+  // setTimeout(() => {
+  //   openGmailWeb();
+  // }, 5000);
   return (
     <View style={tw`flex-1 bg-base justify-center items-center`}>
       <View style={tw`gap-5 px-4 justify-center items-center`}>

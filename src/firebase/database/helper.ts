@@ -52,6 +52,12 @@ const useFireStore = () => {
       let query: FirebaseFirestoreTypes.Query<FirebaseFirestoreTypes.DocumentData> =
         firestore().collection(collectType);
 
+      // Check for data after default filter
+      const checkSnapshot = await query.limit(1).get();
+      if (checkSnapshot.empty) {
+        console.log(`No data found in ${collectType} for the default filter.`);
+        return null;
+      }
       // Apply default filter for super_owner_id
       query = query.where(
         'super_owner_id',
@@ -229,7 +235,6 @@ const useFireStore = () => {
       // console.log(data);
       const docData = {
         id: docRef.id,
-        createdBy: user?.user_id,
         super_owner_id:
           user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
         owner_id:
@@ -241,6 +246,7 @@ const useFireStore = () => {
             ? user.manager_id
             : null,
         ...data,
+        createdBy: user?.user_id,
         ...getServerTimestamps(),
       };
       await docRef.set(docData);

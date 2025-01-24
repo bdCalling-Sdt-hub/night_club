@@ -104,6 +104,8 @@ const AllGuest = ({navigation}: Props) => {
     });
 
     setAddToGuests(false);
+    setSelectGuest([]);
+    setSelectGuestList('');
   };
 
   return (

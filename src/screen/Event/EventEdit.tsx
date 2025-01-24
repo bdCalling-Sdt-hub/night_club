@@ -1,4 +1,5 @@
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
   IconCloseGray,
@@ -7,7 +8,6 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -20,8 +20,8 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
-import {IEvent} from '../../firebase/database/events.doc';
-import {IVenue} from '../../firebase/database/venues.doc';
+import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
 import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -30,13 +30,13 @@ import Background from '../components/Background';
 
 const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {showToast, closeToast} = useToast();
-  const [open, setOpen] = React.useState({
-    openTime: false,
-    closeTime: false,
-  });
-
+  const {user} = useAuth();
+  const [allManager, setManger] = React.useState<IMangeUser[]>([]);
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+
+  const {loadAllData, deleteFireData, getAllUser, updateFireData} =
+    useFireStore();
 
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
@@ -53,23 +53,6 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     const imageUrl = await uploadFileToFirebase(image[0]);
     setImageUpdateLoad(false);
     return imageUrl;
-  };
-
-  const handleDeleteEvent = () => {
-    firestore()
-      .collection('Events')
-      .doc(route?.params?.item.id)
-      .delete()
-      .then(() => {
-        showToast({
-          title: 'success',
-          content: 'Event deleted successfully',
-          onPress: () => {
-            (navigation as any)?.pop(2) && navigation?.goBack();
-            closeToast();
-          },
-        });
-      });
   };
 
   const handleValidate = (values: IEvent) => {
@@ -106,46 +89,75 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     if (!values.resident_dj) {
       errors.resident_dj = 'Required';
     }
+    if (user?.role === 'owner' || user?.role === 'super-owner') {
+      if (!values.manager_id) {
+        errors.manager_id = 'Required';
+      }
+    }
 
     return errors;
   };
 
   React.useEffect(() => {
-    const venues = async () => {
-      const venues = await firestore().collection('Venues').get();
-      setAllVenues(venues.docs.map(doc => doc.data() as IVenue));
-    };
-    venues();
+    loadAllData({
+      collectType: 'Venues',
+      filters: [
+        (user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager') && {
+          field: 'manager_id',
+          operator: '==',
+          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        },
+      ].filter(Boolean) as any,
+      setLoad: setAllVenues,
+    });
+  }, []);
+
+  const handleDeleteEvent = () => {
+    deleteFireData({
+      collectType: 'Events',
+      id: route?.params?.item.id as string,
+    }).then(() => {
+      navigation?.goBack();
+    });
+  };
+
+  React.useEffect(() => {
+    getAllUser(data => {
+      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
+    });
   }, []);
 
   // console.log(allVenues);
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Edit event" onPress={() => navigation?.goBack()} />
+      <BackWithTitle
+        title="Create Event"
+        onPress={() => navigation?.goBack()}
+      />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
           initialValues={route?.params?.item}
-          onSubmit={values => {
-            // console.log(values);
-            firestore()
-              .collection('Events')
-              .doc(values.id)
-              .update(values)
-              .then(() => {
-                showToast({
-                  title: 'success',
-                  content: 'Event updated successfully',
-                  onPress: () => {
-                    (navigation as any)?.pop(2);
-                    closeToast();
-                  },
-                });
-              });
+          onSubmit={async values => {
+            // console.log(values.venue);
+            // const refer = await createRefer({
+            //   collectType: 'Venues',
+            //   id: values.venue,
+            // });
+            // values.venue = refer as any;
+            updateFireData({
+              id: route?.params?.item.id,
+              collectType: 'Events',
+              data: values,
+            }).then(() => {
+              navigation?.goBack();
+            });
           }}
-          validate={(values: IEvent) => handleValidate(values)}>
+          validate={values => handleValidate(values as any)}>
           {({
             handleChange,
             handleBlur,
@@ -254,6 +266,65 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   }}
                 />
               </View>
+              {(user?.role === 'super-owner' || user?.role === 'owner') && (
+                <View style={tw`bg-base `}>
+                  <Picker
+                    useSafeArea
+                    value={values.manager_id}
+                    onChange={handleChange('manager_id')}
+                    onBlur={handleBlur('manager_id')}
+                    renderInput={() => (
+                      <InputTextWL
+                        cursorColor={PrimaryColor}
+                        value={
+                          allManager.find(
+                            item => item?.uid === values.manager_id,
+                          )?.displayName
+                        }
+                        editable={false}
+                        label="Nightclub manager"
+                        placeholder="select nightclub manager"
+                        containerStyle={tw`h-12 border-0 rounded-lg`}
+                        svgSecondIcon={IconDownArrayGray}
+                        errorText={errors.manager_id}
+                        touched={touched.manager_id}
+                      />
+                    )}
+                    renderItem={(value, items) => {
+                      return (
+                        <View
+                          // onPress={() => setValue(value)}
+                          style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items?.label}
+                          </Text>
+                        </View>
+                      );
+                    }}
+                    renderCustomDialogHeader={preps => {
+                      return (
+                        <TouchableOpacity
+                          onPress={preps.onCancel}
+                          style={tw`self-start py-3 px-4`}>
+                          <SvgXml xml={IconCloseGray} height={20} width={20} />
+                        </TouchableOpacity>
+                      );
+                    }}
+                    fieldType={Picker.fieldTypes.filter}
+                    paddingH
+                    items={allManager.map(item => {
+                      return {
+                        label: item?.displayName,
+                        value: item?.uid,
+                      };
+                    })}
+                    pickerModalProps={{
+                      overlayBackgroundColor: BaseColor,
+                    }}
+                  />
+                </View>
+              )}
 
               <View>
                 <InputTextWL
@@ -287,16 +358,14 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
               <DateTimePicker
                 value={
-                  values.date
-                    ? moment(values.date || new Date()).format('d MMMM, YYYY')
-                    : ''
+                  values.date ? moment(values.date).format('D MMMM, YYYY') : ''
                 }
                 dateProps={{
                   mode: 'date',
                 }}
                 svgSecondIcon={!values?.date && IconCalendarGay}
                 label="Event date"
-                placeholder="Enter event date name"
+                placeholder="Enter event date"
                 containerStyle={tw`border-0 h-12 rounded-lg`}
                 onChangeText={handleChange('date')}
                 onBlur={handleBlur('date')}
@@ -304,11 +373,16 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 touched={touched.date}
                 onClear={() => {
                   handleChange('date')('');
+                  handleChange('start_time')('');
+                  handleChange('end_time')('');
                 }}
                 getCurrentDate={date => {
-                  handleChange('date')(date);
+                  handleChange('date')(new Date(date).toISOString());
+                  handleChange('start_time')(''); // Reset times if a new date is selected
+                  handleChange('end_time')('');
                 }}
               />
+
               <DateTimePicker
                 value={
                   values.start_time
@@ -325,10 +399,18 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 onClear={() => {
                   handleChange('start_time')('');
                 }}
-                getCurrentDate={date => {
-                  handleChange('start_time')(date);
+                getCurrentDate={time => {
+                  // Combine the selected date with the start time
+                  const combinedStartDateTime = moment(values.date)
+                    .set({
+                      hour: moment(time).hour(),
+                      minute: moment(time).minute(),
+                    })
+                    .toISOString();
+                  handleChange('start_time')(combinedStartDateTime);
                 }}
               />
+
               <DateTimePicker
                 value={
                   values.end_time
@@ -345,8 +427,16 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 onClear={() => {
                   handleChange('end_time')('');
                 }}
-                getCurrentDate={date => {
-                  handleChange('end_time')(date);
+                getCurrentDate={time => {
+                  // Combine the selected date with the end time
+                  const combinedEndDateTime = moment(values.date)
+                    .set({
+                      hour: moment(time).hour(),
+                      minute: moment(time).minute(),
+                    })
+                    .toISOString();
+                  handleChange('end_time')(combinedEndDateTime);
+                  handleChange('date')(combinedEndDateTime);
                 }}
               />
 
