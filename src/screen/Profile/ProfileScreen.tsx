@@ -16,6 +16,7 @@ import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import {useAuth} from '../../context/AuthProvider';
@@ -211,16 +212,16 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           user?.role === 'owner' ||
           user?.role === 'manager') && (
           <View
-            style={tw`p-3 bg-primary900   mx-4 rounded-lg mt-3 bg-opacity-10 gap-3`}>
+            style={tw`p-3 bg-primary900  mx-4 rounded-lg mt-3 bg-opacity-10 gap-3`}>
             <View
-              style={tw` flex-row bg-secondary60 h-10  rounded-lg items-center justify-between gap-1`}>
-              <IwtButton
-                title="Filter"
+              style={tw`flex-row flex-1 justify-between bg-secondary60  rounded-lg items-center   px-4 py-2`}>
+              <IButton
+                // title="Filter"
                 svg={IconFilterGray}
-                containerStyle={tw`p-0 bg-transparent items-center   w-20`}
+                containerStyle={tw`p-0 m-0  bg-transparent items-center`}
               />
 
-              <View style={tw`px-4 flex-row items-center gap-2`}>
+              <View style={tw`  flex-row   items-center gap-2`}>
                 <Picker
                   useSafeArea
                   value={selectVenue || 'Select venue'}
@@ -229,10 +230,10 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                     return (
                       <TouchableOpacity
                         onPress={preps.onPress}
-                        style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
+                        style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2  `}>
                         <Text
                           numberOfLines={1}
-                          style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                          style={tw`text-white100   font-RobotoMedium text-[10px]`}>
                           {selectVenue
                             ? venueData?.find(i => i.id === selectVenue)?.name
                             : 'Select venue'}
@@ -302,7 +303,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
                         style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
                         <Text
                           numberOfLines={1}
-                          style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                          style={tw`text-white100  font-RobotoMedium text-[10px]`}>
                           {selectEvent
                             ? eventData?.find(i => i.id === selectEvent)
                                 ?.name || 'Select event'

@@ -16,8 +16,8 @@ export const Android = Platform.OS === 'android';
 
 export const Ios = Platform.OS === 'ios';
 
-export const ApiUrl = 'http://10.0.80.14:5001/nightclubapp/us-central1/';
-export const WebUrl = 'http://localhost:5173/';
+export const ApiUrl = 'https://us-central1-nightclubapp.cloudfunctions.net/';
+export const WebUrl = 'https://nightclubapp.web.app/';
 
 export const {width, height} = Dimensions.get('screen');
 //  three size like sm md or tablet
