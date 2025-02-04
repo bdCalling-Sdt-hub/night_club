@@ -4,6 +4,7 @@ import {
   IconCloseGray,
   IconCompanyGray,
   IconEmailGay,
+  IconEyeCloseGray,
   IconEyeGray,
   IconLockGray,
   IconSearchGray,
@@ -128,7 +129,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
         {/*================= login title and subtitle ================= */}
         <View style={tw`px-[4%] gap-3`}>
           <Text style={tw`text-[24px] text-white100 font-RobotoBlack `}>
-            Sign Up.
+            Sign up.
           </Text>
         </View>
         {/*================= inputs fields email or password  ================= */}
@@ -209,7 +210,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
 
                 <InputTextWL
                   cursorColor={PrimaryColor}
-                  label="Full Name"
+                  label="Full name"
                   value={values.displayName}
                   onChangeText={handleChange('displayName')}
                   onBlur={handleBlur('displayName')}
@@ -224,7 +225,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
 
                 <InputTextWL
                   cursorColor={PrimaryColor}
-                  label="Company Name, if applicable"
+                  label="Company name, if applicable"
                   value={values.company}
                   onChangeText={handleChange('company')}
                   onBlur={handleBlur('company')}
@@ -333,11 +334,11 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                   onChangeText={handleChange('password')}
                   onBlur={handleBlur('password')}
                   onSvgPress={() => setShowPass(!showPass)}
-                  placeholder="Enter Your Password"
+                  placeholder="Enter your password"
                   containerStyle={tw`h-12`}
                   secureTextEntry={!showPass}
                   svgFirstIcon={IconLockGray}
-                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
+                  svgSecondIcon={showPass ? IconEyeCloseGray : IconEyeGray}
                 />
                 {errors.password && touched.password && (
                   <Text style={tw`text-red-500`}>{errors.password}</Text>
@@ -358,7 +359,7 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
                     handleSubmit();
                     // (navigation as any)?.replace('VerifyEmail');
                   }}
-                  title="Sign Up"
+                  title="Sign up"
                   containerStyle={tw`w-full h-12 py-0 items-center ${
                     !values.email ||
                     !values.password ||

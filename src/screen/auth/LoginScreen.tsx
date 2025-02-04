@@ -1,5 +1,10 @@
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {IconEmailGay, IconEyeGray, IconLockGray} from '../../icons/icons';
+import {
+  IconEmailGay,
+  IconEyeCloseGray,
+  IconEyeGray,
+  IconLockGray,
+} from '../../icons/icons';
 import {PrimaryColor, lStorage} from '../../utils/utils';
 
 import {Formik} from 'formik';
@@ -45,7 +50,6 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               setLoading(false);
               (navigation as any)?.replace('Home');
             });
-            
           } else {
             setLoading(false);
             showToast({
@@ -181,7 +185,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                     check && lStorage.setString('email', text);
                   }}
                   onBlur={handleBlur('email')}
-                  placeholder="Enter Your Email"
+                  placeholder="Enter you email"
                   defaultValue={lStorage.getString('email') || ''}
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
@@ -203,12 +207,12 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
                     check && lStorage.setString('password', text);
                   }}
                   onBlur={handleBlur('password')}
-                  placeholder="Enter Your Password"
+                  placeholder="Enter your password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   secureTextEntry={!showPass}
                   svgFirstIcon={IconLockGray}
-                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
+                  svgSecondIcon={showPass ? IconEyeCloseGray : IconEyeGray}
                 />
 
                 {errors.password && touched.password && (
@@ -264,7 +268,7 @@ const LoginScreen = ({navigation}: NavigProps<null>) => {
               navigation.navigate('ForgetPassword');
             }}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
-              Forgot password?
+              Forget password?
             </Text>
           </TouchableOpacity>
         </View>
