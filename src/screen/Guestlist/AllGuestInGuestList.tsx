@@ -52,7 +52,9 @@ const AllGuestInGuestList = ({
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ]?.filter(Boolean) as any,
-      setLoad: setGuestListAvailable,
+      setLoad: data => {
+        setGuestListAvailable(data);
+      },
     });
   }, []);
 
@@ -269,9 +271,14 @@ const AllGuestInGuestList = ({
         visible={addToGuests}
         setVisible={setAddToGuests}>
         <View style={tw`flex-row justify-between items-center px-4 mb-4`}>
-          <Text style={tw`text-white60 font-RobotoBold text-base`}>
-            Selected Event
-          </Text>
+          <View>
+            <Text style={tw`text-white60 font-RobotoBold text-base`}>
+              Selected Event
+            </Text>
+            <Text style={tw`text-white60 text-xs font-RobotoBold `}>
+              (All upcoming events)
+            </Text>
+          </View>
         </View>
         <View>
           {guestListAvailable?.map((item, index) => {

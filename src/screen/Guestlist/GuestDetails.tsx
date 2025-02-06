@@ -138,6 +138,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   people: '',
                   entry_fee: '',
                   free_entry: '',
+                  check_in: '0',
                   free_entry_time: '',
                   free_entry_end_time: '',
                   guest_list: '',
@@ -284,11 +285,14 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 />
               </View>
               <TButton
+                disabled={!values?.people}
                 onPress={() => {
-                  handleChange('check_in')(`${parseInt(values?.check_in) + 1}`);
+                  handleChange('check_in')(
+                    `${parseInt(values?.check_in || 0) + 1}`,
+                  );
                 }}
-                title={`Check in ${parseInt(values?.check_in || 0)}/${
-                  values?.people
+                title={`Check in ${parseInt(values?.check_in ?? 0)}/${
+                  values?.people ?? 0
                 }`}
                 containerStyle={tw`bg-green-600`}
               />

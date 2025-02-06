@@ -1,4 +1,10 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {IEvent, IGuest, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -7,7 +13,7 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
-import {BaseColor, lStorage} from '../../utils/utils';
+import {BaseColor, PrimaryColor, lStorage} from '../../utils/utils';
 
 import auth from '@react-native-firebase/auth';
 import {DrawerActions} from '@react-navigation/native';
@@ -39,13 +45,14 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const [freeGuest, setFreeGuest] = React.useState(0);
   const [check_inGuest, setCheck_inGuest] = React.useState(0);
   const [paidGuest, setPaidGuest] = React.useState(0);
-
+  const [loading, setLoading] = React.useState(false);
   // console.log(user);
 
   const {listenToData, loadAllData} = useFireStore();
 
   React.useEffect(() => {
     // Step 1: Load Venues
+    setLoading(true);
     loadAllData({
       collectType: 'Venues',
       filters: [
@@ -62,14 +69,15 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ]?.filter(Boolean) as any,
+
       setLoad: (venues: IVenue[]) => {
         // Filter venues by manager
         setVenueData(venues);
       },
     });
-
+    setLoading(false);
     // Cleanup all listeners on component unmount
-  }, []);
+  }, [loading]);
 
   React.useEffect(() => {
     let unsubscribeEvents = () => {};
@@ -166,7 +174,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
         }
       });
     }
-  }, []);
+  }, [loading]);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -181,7 +189,18 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           </TouchableOpacity>
         }
       />
-      <ScrollView keyboardShouldPersistTaps="always">
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            progressBackgroundColor={PrimaryColor}
+            onRefresh={() => {
+              setLoading(true);
+            }}
+            refreshing={loading}
+            colors={['white']}
+          />
+        }
+        keyboardShouldPersistTaps="always">
         {/* //profile sections */}
         <View style={tw`gap-4 justify-center items-center`}>
           <AniImage

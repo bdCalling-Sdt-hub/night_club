@@ -31,7 +31,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const handleShearPress = () => {
     showToast({
       title: 'Share link:',
-      content: `${WebUrl}?event=${event?.id}&user_id=${user?.user_id}`,
+      // content: `${WebUrl}?event=${event?.id}&user_id=${user?.user_id}`,
       contentStyle: tw`text-blue-400 `,
       buttonStyle: tw`bg-primary w-1/3 self-center`,
       buttonText: 'Copy link',
@@ -114,9 +114,11 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>
               Date:
             </Text>
-            <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
-              {moment(event?.date).format('DD/MM/YYYY')}
-            </Text>
+            {event?.date && (
+              <Text style={tw`text-white60 text-sm font-RobotoMedium`}>
+                {moment(event?.date).format('DD/MM/YYYY')}
+              </Text>
+            )}
           </View>
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-sm font-RobotoRegular`}>

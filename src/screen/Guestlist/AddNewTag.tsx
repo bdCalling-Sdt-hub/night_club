@@ -1,4 +1,4 @@
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, RefreshControl, Text, View} from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -13,13 +13,14 @@ import {ITags} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const AddNewTag = ({navigation}: NavigProps<null>) => {
   const {closeToast, showToast} = useToast();
   const [newTag, setNewTag] = React.useState('');
   const [tags, setTags] = React.useState<Array<ITags>>([]);
-
+  const [loading, setLoading] = React.useState(false);
   const {createFireData, listenToData} = useFireStore();
 
   const {user} = useAuth();
@@ -46,7 +47,7 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'Tags',
@@ -63,12 +64,12 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
         setTags(data);
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -92,6 +93,16 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
         <Text style={tw`text-white400 text-base font-RobotoBold`}>Tags</Text>
       </View>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            progressBackgroundColor={PrimaryColor}
+            colors={['white']}
+            onRefresh={() => {
+              setLoading(!loading);
+            }}
+          />
+        }
         keyboardShouldPersistTaps="always"
         data={tags}
         renderItem={({item, index}) => (

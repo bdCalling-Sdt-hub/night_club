@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "night_club.app"
-               BlueprintName = "night_club"
-               ReferencedContainer = "container:night_club.xcodeproj">
+               BuildableName = "nite.app"
+               BlueprintName = "nite"
+               ReferencedContainer = "container:nite.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "night_club.app"
-            BlueprintName = "night_club"
-            ReferencedContainer = "container:night_club.xcodeproj">
+            BuildableName = "nite.app"
+            BlueprintName = "nite"
+            ReferencedContainer = "container:nite.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "night_club.app"
-            BlueprintName = "night_club"
-            ReferencedContainer = "container:night_club.xcodeproj">
+            BuildableName = "nite.app"
+            BlueprintName = "nite"
+            ReferencedContainer = "container:nite.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

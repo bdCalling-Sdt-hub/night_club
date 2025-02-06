@@ -1,12 +1,18 @@
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
-import {IEvent, IGuest, IVenue} from '../../firebase/interface';
+import {
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import {IEvent, IGuest, ITags, IVenue} from '../../firebase/interface';
 import {
   IconBigPlusCyan,
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import {BaseColor, height} from '../../utils/utils';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
 import moment from 'moment';
 import React from 'react';
@@ -20,6 +26,7 @@ import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFIle';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -28,6 +35,7 @@ import Background from '../components/Background';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
+  const {user} = useAuth();
   const [addedBy, setAddedBy] = React.useState('Added by');
   const [venueData, setVenueData] = React.useState<IVenue | null>(null);
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
@@ -38,7 +46,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
   const {loadAllData, updateFireData, listenToData, loadSingleData} =
     useFireStore();
-
+  const [TagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
   const handleCheckIn = (guest: IGuest) => {
@@ -51,11 +59,25 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     });
   };
 
+  React.useEffect(() => {
+    loadAllData({
+      collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
+      setLoad: setTagsData,
+    });
+  }, []);
+
   // console.log(route?.params?.item?.id);
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'Guests',
@@ -70,12 +92,12 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         setGuestListData(data);
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
   const totalGuest = guestListData.reduce(
     (acc, guest) => acc + Number(guest.people),
     0,
@@ -84,10 +106,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     (acc, guest) => acc + (guest?.check_in ? Number(guest.check_in) : 0),
     0,
   );
-
-  const tagsData = Array.from(
-    new Set(guestListData?.map(guest => guest.tag)),
-  ).map(tag => ({label: tag, value: tag}));
 
   const addedByData = Array.from(
     new Set(guestListData?.map(guest => guest.added_by)),
@@ -147,8 +165,11 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       <View style={tw`px-4 mb-4 `}>
         <Text style={tw`text-white60 text-xs font-RobotoMedium`}>
           {venueData?.name} {'>'} {route?.params?.item?.name} {'>'}{' '}
-          {moment(route?.params?.item?.date).format('DD-MM-YYYY')} {'>'}
-          {moment(route?.params?.item?.date).format(' h:mm A')}
+          {route?.params?.item?.date &&
+            moment(route?.params?.item?.date).format('DD-MM-YYYY')}{' '}
+          {'>'}
+          {route?.params?.item?.date &&
+            moment(route?.params?.item?.date).format(' h:mm A')}
         </Text>
       </View>
 
@@ -274,7 +295,12 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             }}
             fieldType={Picker.fieldTypes.filter}
             paddingH
-            items={tagsData}
+            items={TagsData?.map(item => {
+              return {
+                label: item?.name,
+                value: item?.name,
+              };
+            })}
             pickerModalProps={{
               overlayBackgroundColor: BaseColor,
             }}
@@ -291,6 +317,16 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       </View>
 
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            progressBackgroundColor={PrimaryColor}
+            colors={['white']}
+            onRefresh={() => {
+              setLoading(!loading);
+            }}
+          />
+        }
         contentContainerStyle={tw`px-4 pb-14 gap-3`}
         data={guestListData
           ?.filter(item => {
@@ -334,7 +370,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 {
                   title: `Guests ${
                     item?.check_in ? item?.check_in : 0
-                  } out of ${item?.people} `,
+                  } out of ${item?.people ?? 0} `,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
               ]}

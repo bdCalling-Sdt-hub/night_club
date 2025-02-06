@@ -1,9 +1,10 @@
-import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {FlatList, RefreshControl, Text, TouchableOpacity} from 'react-native';
 import {
   IconBuildingCyan,
   IconClockCyan,
   IconLocationV2Cyan,
 } from '../../../icons/icons';
+import {PrimaryColor, height} from '../../../utils/utils';
 
 import moment from 'moment';
 import React from 'react';
@@ -14,16 +15,15 @@ import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
-import {height} from '../../../utils/utils';
 
 const VHistory = ({navigation}: NavigProps<null>) => {
   const {user} = useAuth();
   const [data, setData] = React.useState<Array<IVenue>>();
   const {listenToData} = useFireStore();
-
+  const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'Venues',
@@ -45,15 +45,25 @@ const VHistory = ({navigation}: NavigProps<null>) => {
         setData(data);
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
 
   return (
     <FlatList
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          progressBackgroundColor={PrimaryColor}
+          colors={['white']}
+          onRefresh={() => {
+            setLoading(!loading);
+          }}
+        />
+      }
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
       data={data}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}

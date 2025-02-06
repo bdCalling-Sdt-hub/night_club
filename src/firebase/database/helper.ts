@@ -152,7 +152,7 @@ const useFireStore = () => {
       operator: FirebaseFirestoreTypes.WhereFilterOp;
       value: any;
     }>;
-    setLoad?: Function;
+    setLoad?: (data: any[]) => void;
   }) => {
     try {
       const query = await initializeQuery(collectType, filters);

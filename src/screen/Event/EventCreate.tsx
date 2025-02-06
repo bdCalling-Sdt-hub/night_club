@@ -60,39 +60,39 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
     if (!values.name) {
       errors.name = 'Required';
     }
-    if (!values.description) {
-      errors.description = 'Required';
-    }
-    if (!values.image) {
-      errors.image = 'Required';
-    }
-    if (!values.venue) {
-      errors.venue = 'Required';
-    }
-    if (!values.date) {
-      errors.date = 'Required';
-    }
-    if (!values.start_time) {
-      errors.start_time = 'Required';
-    }
-    if (!values.end_time) {
-      errors.end_time = 'Required';
-    }
-    if (!values.capacity) {
-      errors.capacity = 'Required';
-    }
-    if (!values.entry_fee) {
-      errors.entry_fee = 'Required';
-    }
+    // if (!values.description) {
+    //   errors.description = 'Required';
+    // }
+    // if (!values.image) {
+    //   errors.image = 'Required';
+    // }
+    // if (!values.venue) {
+    //   errors.venue = 'Required';
+    // }
+    // if (!values.date) {
+    //   errors.date = 'Required';
+    // }
+    // if (!values.start_time) {
+    //   errors.start_time = 'Required';
+    // }
+    // if (!values.end_time) {
+    //   errors.end_time = 'Required';
+    // }
+    // if (!values.capacity) {
+    //   errors.capacity = 'Required';
+    // }
+    // if (!values.entry_fee) {
+    //   errors.entry_fee = 'Required';
+    // }
 
-    if (!values.resident_dj) {
-      errors.resident_dj = 'Required';
-    }
-    if (user?.role === 'owner' || user?.role === 'super-owner') {
-      if (!values.manager_id) {
-        errors.manager_id = 'Required';
-      }
-    }
+    // if (!values.resident_dj) {
+    //   errors.resident_dj = 'Required';
+    // }
+    // if (user?.role === 'owner' || user?.role === 'super-owner') {
+    //   if (!values.manager_id) {
+    //     errors.manager_id = 'Required';
+    //   }
+    // }
 
     return errors;
   };

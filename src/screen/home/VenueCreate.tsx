@@ -80,42 +80,42 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
     if (!values.name) {
       errors.name = 'Required';
     }
-    if (!values.location) {
-      errors.location = 'Required';
-    }
-    if (!values.description) {
-      errors.description = 'Required';
-    }
-    if (!values.image) {
-      errors.image = 'Required';
-    }
-    if (!values.video) {
-      errors.video = 'Required';
-    }
-    if (!values.openingTime) {
-      errors.openingTime = 'Required';
-    }
-    if (!values.manager_id) {
-      errors.manager_id = 'Required';
-    }
-    if (!values.closingTime) {
-      errors.closingTime = 'Required';
-    }
-    if (!values.capacity) {
-      errors.capacity = 'Required';
-    }
-    if (!values.bars) {
-      errors.bars = 'Required';
-    }
-    if (!values.danceFloor) {
-      errors.danceFloor = 'Required';
-    }
-    if (!values.residentDj) {
-      errors.residentDj = 'Required';
-    }
-    if (!values.status) {
-      errors.status = 'Required';
-    }
+    // if (!values.location) {
+    //   errors.location = 'Required';
+    // }
+    // if (!values.description) {
+    //   errors.description = 'Required';
+    // }
+    // if (!values.image) {
+    //   errors.image = 'Required';
+    // }
+    // if (!values.video) {
+    //   errors.video = 'Required';
+    // }
+    // if (!values.openingTime) {
+    //   errors.openingTime = 'Required';
+    // }
+    // if (!values.manager_id) {
+    //   errors.manager_id = 'Required';
+    // }
+    // if (!values.closingTime) {
+    //   errors.closingTime = 'Required';
+    // }
+    // if (!values.capacity) {
+    //   errors.capacity = 'Required';
+    // }
+    // if (!values.bars) {
+    //   errors.bars = 'Required';
+    // }
+    // if (!values.danceFloor) {
+    //   errors.danceFloor = 'Required';
+    // }
+    // if (!values.residentDj) {
+    //   errors.residentDj = 'Required';
+    // }
+    // if (!values.status) {
+    //   errors.status = 'Required';
+    // }
 
     return errors;
   };
@@ -150,16 +150,18 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             manager_id: '',
             manager_name: '',
             residentDj: '',
-            status: '',
+            status: 'Open',
             createdBy: user?.user_id || '',
           }}
           onSubmit={(values, {resetForm}) => {
             if (userId) {
               values.createdBy = userId;
             }
-            values.manager_name = allManager.find(
-              item => item?.uid === values.manager_id,
-            )?.displayName;
+            if (values.manager_id) {
+              values.manager_name = allManager.find(
+                item => item?.uid === values.manager_id,
+              )?.displayName;
+            }
 
             // console.log(values);
 

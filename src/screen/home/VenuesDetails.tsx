@@ -73,8 +73,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
           onScroll={handleScroll} // Handle scroll to update page
           scrollEventThrottle={16} // Throttle scroll for better performance
           keyboardShouldPersistTaps="always">
-          <View style={tw`mx-4 my-2`}>
-            {venue?.video && (
+          {venue?.video && (
+            <View style={tw`mx-4 my-2`}>
               <Video
                 // muted={false}
                 // controls
@@ -98,52 +98,61 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
                 }] self-center rounded-lg overflow-hidden`}
                 source={{uri: venue?.video}}
               />
-            )}
-          </View>
-          <View style={tw`mx-4 my-2`}>
-            {venue?.image && (
+            </View>
+          )}
+
+          {venue?.image && (
+            <View style={tw`mx-4 my-2`}>
               <AniImage
                 imageStyle={tw`aspect-video h-[${
                   height * 0.058
                 }] self-center rounded-lg overflow-hidden`}
                 source={{uri: venue?.image}}
               />
-            )}
-          </View>
+            </View>
+          )}
         </ScrollView>
 
         {/* PageControl to show the current page */}
-        <PageControl
-          numOfPages={venue?.image && venue?.video ? 2 : 1}
-          currentPage={currentPage} // Bind current page from state
-          color={PrimaryColor}
-          inactiveColor="white"
-          enlargeActive
-          spacing={5}
-          size={4}
-          limitShownPages
-          containerStyle={tw``}
-        />
+        {venue?.image && venue?.video && (
+          <PageControl
+            numOfPages={venue?.image && venue?.video ? 2 : 1}
+            currentPage={currentPage} // Bind current page from state
+            color={PrimaryColor}
+            inactiveColor="white"
+            enlargeActive
+            spacing={5}
+            size={4}
+            limitShownPages
+            containerStyle={tw``}
+          />
+        )}
 
         {/*============================ Clubs Details parts here ==================== */}
 
         <View style={tw`px-4 mb-1 mt-4 gap-3`}>
-          <Text style={tw`text-white50 font-RobotoBlack text-base `}>
-            {venue?.name}
-          </Text>
+          {venue?.name && (
+            <Text style={tw`text-white50 font-RobotoBlack text-base `}>
+              {venue?.name}
+            </Text>
+          )}
 
           <View style={tw`gap-3 my-1`}>
-            <View style={tw`flex-row gap-2 items-center`}>
-              <SvgXml xml={IconLocationV2Cyan} />
-              <Text style={tw`text-white50 text-sm`}>{venue?.location}</Text>
-            </View>
-            <View style={tw`flex-row gap-2 items-center`}>
-              <SvgXml xml={IconClockCyan} />
-              <Text style={tw`text-white50 text-sm`}>
-                {moment(venue?.openingTime).format('LT')} -{' '}
-                {moment(venue?.closingTime).format('LT')}
-              </Text>
-            </View>
+            {venue?.location && (
+              <View style={tw`flex-row gap-2 items-center`}>
+                <SvgXml xml={IconLocationV2Cyan} />
+                <Text style={tw`text-white50 text-sm`}>{venue?.location}</Text>
+              </View>
+            )}
+            {venue?.openingTime && venue?.closingTime && (
+              <View style={tw`flex-row gap-2 items-center`}>
+                <SvgXml xml={IconClockCyan} />
+                <Text style={tw`text-white50 text-sm`}>
+                  {moment(venue?.openingTime).format('LT')} -{' '}
+                  {moment(venue?.closingTime).format('LT')}
+                </Text>
+              </View>
+            )}
           </View>
 
           <Text style={tw`text-white60`}>{venue?.description}</Text>
@@ -158,6 +167,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               {venue?.manager_name}
             </Text>
           </View>
+
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Capacity:
@@ -166,6 +176,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               {venue?.capacity}
             </Text>
           </View>
+
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Bars:
@@ -174,6 +185,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               {venue?.bars}
             </Text>
           </View>
+
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Dancefloors:
@@ -182,6 +194,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
               {venue?.danceFloor}
             </Text>
           </View>
+
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Resident dj:

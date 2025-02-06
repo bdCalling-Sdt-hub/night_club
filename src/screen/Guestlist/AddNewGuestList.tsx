@@ -1,4 +1,4 @@
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, RefreshControl, Text, View} from 'react-native';
 
 import firestore from '@react-native-firebase/firestore';
 import React from 'react';
@@ -13,6 +13,7 @@ import {IGuestsList} from '../../firebase/interface';
 import {IconTrashGray} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
 const AddNewGuestList = ({navigation}: NavigProps<null>) => {
@@ -20,6 +21,7 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
   const {user} = useAuth();
   const [search, setSearch] = React.useState('');
   const [guestList, setGuestList] = React.useState('');
+  const [loading, setLoading] = React.useState(false);
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
@@ -46,7 +48,7 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'GuestsList',
@@ -61,12 +63,12 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
         setGuestListAvailable(data);
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
 
   // console.log(guestListAvailable);
 
@@ -97,6 +99,16 @@ const AddNewGuestList = ({navigation}: NavigProps<null>) => {
         </Text>
       </View>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            progressBackgroundColor={PrimaryColor}
+            colors={['white']}
+            onRefresh={() => {
+              setLoading(!loading);
+            }}
+          />
+        }
         keyboardShouldPersistTaps="always"
         data={guestListAvailable}
         renderItem={({item, index}) => (

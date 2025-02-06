@@ -1,6 +1,12 @@
-import {FlatList, Text, TouchableOpacity, View} from 'react-native';
+import {
+  FlatList,
+  RefreshControl,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Checkbox, Picker} from 'react-native-ui-lib';
-import {IGuest, IGuestsList} from '../../../firebase/interface';
+import {IGuest, IGuestsList, ITags} from '../../../firebase/interface';
 import {
   IconBigPlusCyan,
   IconCloseGray,
@@ -29,10 +35,11 @@ const AllGuest = ({navigation}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState<any>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<string>('');
   const [addToGuests, setAddToGuests] = React.useState(false);
-
+  const [loading, setLoading] = React.useState(false);
   const {user} = useAuth();
 
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
+  const [TagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
@@ -52,10 +59,23 @@ const AllGuest = ({navigation}: Props) => {
       setLoad: setGuestListAvailable,
     });
   }, []);
+  React.useEffect(() => {
+    loadAllData({
+      collectType: 'Tags',
+      filters: [
+        {
+          field: 'createdBy',
+          operator: '==',
+          value: user?.user_id,
+        },
+      ],
+      setLoad: setTagsData,
+    });
+  }, []);
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'Guests',
@@ -80,17 +100,12 @@ const AllGuest = ({navigation}: Props) => {
         setGuestListData(data);
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
-  const tagsData = Array.from(
-    new Set(guestListData?.map(guest => guest?.tag && guest.tag)),
-  )
-    .map(tag => tag && {label: tag, value: tag})
-    ?.filter(Boolean);
+  }, [loading]);
 
   const handleAddGuestOnGuestList = async () => {
     selectGuest?.forEach((id: string) => {
@@ -111,6 +126,16 @@ const AllGuest = ({navigation}: Props) => {
   return (
     <>
       <FlatList
+        refreshControl={
+          <RefreshControl
+            refreshing={loading}
+            progressBackgroundColor={PrimaryColor}
+            colors={['white']}
+            onRefresh={() => {
+              setLoading(!loading);
+            }}
+          />
+        }
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={() => {
           return (
@@ -181,7 +206,12 @@ const AllGuest = ({navigation}: Props) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={tagsData}
+                  items={TagsData?.map(item => {
+                    return {
+                      label: item?.name,
+                      value: item?.name,
+                    };
+                  })}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}

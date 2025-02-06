@@ -88,7 +88,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
       setLoading(false);
       if (resData?.loginType === 'email') {
         showToast({
-          content: 'Please check your email',
+          content: 'The invitation has successfully been sent to the user',
           title: 'Success',
           onPress: () => {
             closeToast();
@@ -113,7 +113,6 @@ const AddUser = ({navigation}: NavigProps<null>) => {
         title: 'Warning',
         onPress: () => {
           closeToast();
-          navigation.goBack();
         },
       });
     }

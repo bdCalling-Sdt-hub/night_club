@@ -14,7 +14,7 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
-target 'night_club' do
+target 'nite' do
   config = use_native_modules!
   # right after `use_frameworks! :linkage => :static`
 $RNFirebaseAsStaticFramework = true
@@ -25,7 +25,7 @@ $RNFirebaseAsStaticFramework = true
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
 
-  target 'night_clubTests' do
+  target 'niteTests' do
     inherit! :complete
     # Pods for testing
   end

@@ -60,10 +60,15 @@ Card.Image = ({
               containerStyle,
             ]}
             errorSource={source}
+            // onError={e => console.log(e)}
             animationDuration={500}
             style={[tw`aspect-square  rounded-md`, imageStyle]}
             loader={<ActivityIndicator color="white" size={'small'} />}
-            source={source}
+            source={
+              source?.uri
+                ? source
+                : require('../../assets/images/icons/no_image.png')
+            }
           />
         </>
       )}
@@ -78,7 +83,7 @@ export interface ICardDetailsProps {
   svgStyle?: any;
   textStyle?: any;
   data?: Array<{
-    title: string;
+    title?: string;
     icons?: React.ReactNode;
     titleStyle?: any;
   }>;
@@ -106,8 +111,8 @@ Card.Details = ({
                   tw`flex-row items-center gap-1.5`,
                   detailsContainerStyle,
                 ]}>
-                {item.icons && <SvgXml xml={item.icons} {...svgStyle} />}
-                {item.title && (
+                {item?.icons && <SvgXml xml={item.icons} {...svgStyle} />}
+                {item?.title && (
                   <Text
                     numberOfLines={1}
                     style={[

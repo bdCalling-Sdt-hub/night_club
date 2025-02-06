@@ -264,7 +264,7 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
                     containerStyle={tw`h-12 border-0 opacity-50`}
                     placeholder="Enter your email"
                     value={values?.email}
-                    // editable={false}
+                    editable={false}
                     onChangeText={handleChange('email')}
                     onBlur={handleBlur('email')}
                     errorText={errors.email}

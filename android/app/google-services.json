@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:417062302373:android:3fb599e155caf42deed34c",
+        "mobilesdk_app_id": "1:417062302373:android:a3fa2aa95bd0f335eed34c",
         "android_client_info": {
-          "package_name": "com.night_club"
+          "package_name": "com.nite"
         }
       },
       "oauth_client": [],

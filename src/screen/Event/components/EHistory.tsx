@@ -1,9 +1,10 @@
-import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {FlatList, RefreshControl, Text, TouchableOpacity} from 'react-native';
 import {
   IconMultiUserCyan,
   IconSmallCalendarCyan,
   IconSmallCalendarV2Cyan,
 } from '../../../icons/icons';
+import {PrimaryColor, height} from '../../../utils/utils';
 
 import moment from 'moment';
 import React from 'react';
@@ -14,7 +15,6 @@ import useFireStore from '../../../firebase/database/helper';
 import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
-import {height} from '../../../utils/utils';
 
 interface Props extends NavigProps<null> {
   search?: string;
@@ -25,9 +25,11 @@ const EHistory = ({navigation, search, venueId}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
   const {user} = useAuth();
   const {listenToData} = useFireStore();
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
+    setLoading(true);
 
     listenToData({
       unsubscribe,
@@ -52,18 +54,28 @@ const EHistory = ({navigation, search, venueId}: Props) => {
         );
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
 
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
       data={data}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          progressBackgroundColor={PrimaryColor}
+          colors={['white']}
+          onRefresh={() => {
+            setLoading(!loading);
+          }}
+        />
+      }
       renderItem={({item, index}) => (
         <Card
           containerStyle={tw` flex-row gap-3 items-center`}
@@ -88,7 +100,7 @@ const EHistory = ({navigation, search, venueId}: Props) => {
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
               {
-                title: '55 people',
+                title: `${item.capacity} people`,
                 icons: IconMultiUserCyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },

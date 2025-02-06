@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* night_clubTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* night_clubTests.m */; };
+		00E356F31AD99517003FC87E /* niteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* niteTests.m */; };
 		01D6D89F1DF04D3E91CD4FE2 /* Roboto-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9469FE50ACD04C2693C50B49 /* Roboto-MediumItalic.ttf */; };
 		04227ED1AF2A4D97A64E36F0 /* PoppinsSemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 731F3073554A4AC585703874 /* PoppinsSemiBoldItalic.ttf */; };
 		05369614CAE44CEDB6FED60D /* PoppinsExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6B618A064906408884704FE4 /* PoppinsExtraLightItalic.ttf */; };
@@ -37,7 +37,7 @@
 		A5A49ABCAC0F4D8B8475DC78 /* PoppinsSemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE40222A3DDB4DA6B03D2934 /* PoppinsSemiBold.ttf */; };
 		AF1694D46C9F415896B9C905 /* Roboto-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0ED8BC72E3C94239AFDE909B /* Roboto-Thin.ttf */; };
 		B4A23F49042D4E0BA19A6C79 /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72F783BF172D44C6A544F3DB /* Roboto-Bold.ttf */; };
-		B70C7C94955FF58012FE71DA /* Pods_night_club.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2980C6DAF07B69B6B208E702 /* Pods_night_club.framework */; };
+		B70C7C94955FF58012FE71DA /* Pods_nite.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2980C6DAF07B69B6B208E702 /* Pods_nite.framework */; };
 		B9EAD4E33D8A49AA87C36F8D /* Roboto-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF9DAB8B1C514914812ADD5C /* Roboto-ThinItalic.ttf */; };
 		BA9F6ECD91C94F3BAE70E68A /* PoppinsExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 88DC7BE4CD4341DB96E8AABD /* PoppinsExtraBold.ttf */; };
 		CB56DB840FB04D9CB9BD3CB2 /* PoppinsExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 07DA3769592C411491C13809 /* PoppinsExtraLight.ttf */; };
@@ -46,7 +46,7 @@
 		E11CB2182AF34A19BF4A13BF /* PoppinsBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9B463FF59E7A4EB0948B2DC2 /* PoppinsBoldItalic.ttf */; };
 		F6BDD7C42D3A26D3003398A8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */; };
 		F6BDD7C52D3A26D3003398A8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */; };
-		F751FBB20D4659B8EEDD04E3 /* Pods_night_club_night_clubTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3957AE9CF67BE36E274E263 /* Pods_night_club_night_clubTests.framework */; };
+		F751FBB20D4659B8EEDD04E3 /* Pods_nite_niteTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F3957AE9CF67BE36E274E263 /* Pods_nite_niteTests.framework */; };
 		F79C8359AEB64BAFA5BF4E0F /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3E5D101860B94A7FA0B2AE03 /* Roboto-Light.ttf */; };
 /* End PBXBuildFile section */
 
@@ -56,45 +56,45 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = night_club;
+			remoteInfo = nite;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		00E356EE1AD99517003FC87E /* night_clubTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = night_clubTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* niteTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = niteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* night_clubTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = night_clubTests.m; sourceTree = "<group>"; };
+		00E356F21AD99517003FC87E /* niteTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = niteTests.m; sourceTree = "<group>"; };
 		07DA3769592C411491C13809 /* PoppinsExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsExtraLight.ttf; path = ../src/assets/fonts/Poppins/PoppinsExtraLight.ttf; sourceTree = "<group>"; };
 		0ED8BC72E3C94239AFDE909B /* Roboto-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Thin.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Thin.ttf"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* night_club.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = night_club.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = night_club/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = night_club/AppDelegate.mm; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = night_club/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = night_club/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = night_club/main.m; sourceTree = "<group>"; };
-		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = night_club/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		13B07F961A680F5B00A75B9A /* nite.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = nite.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = nite/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = nite/AppDelegate.mm; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = nite/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = nite/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = nite/main.m; sourceTree = "<group>"; };
+		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = nite/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		25A389909FCA432592EF4DA9 /* PoppinsMedium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsMedium.ttf; path = ../src/assets/fonts/Poppins/PoppinsMedium.ttf; sourceTree = "<group>"; };
 		2806B3A871104935853FD556 /* Roboto-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Italic.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Italic.ttf"; sourceTree = "<group>"; };
-		2980C6DAF07B69B6B208E702 /* Pods_night_club.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_night_club.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2980C6DAF07B69B6B208E702 /* Pods_nite.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_nite.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A94769B8CA34548A19C86BC /* LICENSE.txt */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = LICENSE.txt; path = ../src/assets/fonts/Roboto/LICENSE.txt; sourceTree = "<group>"; };
-		3B4392A12AC88292D35C810B /* Pods-night_club.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-night_club.debug.xcconfig"; path = "Target Support Files/Pods-night_club/Pods-night_club.debug.xcconfig"; sourceTree = "<group>"; };
+		3B4392A12AC88292D35C810B /* Pods-nite.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nite.debug.xcconfig"; path = "Target Support Files/Pods-nite/Pods-nite.debug.xcconfig"; sourceTree = "<group>"; };
 		3E5D101860B94A7FA0B2AE03 /* Roboto-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Light.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Light.ttf"; sourceTree = "<group>"; };
-		3F2D66002797060496E3BF37 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = night_club/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		3F2D66002797060496E3BF37 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = nite/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4553F1E7AEB54DD1B93E0733 /* PoppinsThin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsThin.ttf; path = ../src/assets/fonts/Poppins/PoppinsThin.ttf; sourceTree = "<group>"; };
 		461953960A714B22A3B3F152 /* PoppinsLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsLight.ttf; path = ../src/assets/fonts/Poppins/PoppinsLight.ttf; sourceTree = "<group>"; };
 		530AA03F35CE45718D911963 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Regular.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Regular.ttf"; sourceTree = "<group>"; };
-		5709B34CF0A7D63546082F79 /* Pods-night_club.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-night_club.release.xcconfig"; path = "Target Support Files/Pods-night_club/Pods-night_club.release.xcconfig"; sourceTree = "<group>"; };
+		5709B34CF0A7D63546082F79 /* Pods-nite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nite.release.xcconfig"; path = "Target Support Files/Pods-nite/Pods-nite.release.xcconfig"; sourceTree = "<group>"; };
 		574981BE3010429BA22770CD /* Roboto-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-LightItalic.ttf"; path = "../src/assets/fonts/Roboto/Roboto-LightItalic.ttf"; sourceTree = "<group>"; };
-		5B7EB9410499542E8C5724F5 /* Pods-night_club-night_clubTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-night_club-night_clubTests.debug.xcconfig"; path = "Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5B7EB9410499542E8C5724F5 /* Pods-nite-niteTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nite-niteTests.debug.xcconfig"; path = "Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5C559F2CE47C473488513C2E /* Roboto-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Black.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Black.ttf"; sourceTree = "<group>"; };
 		6B618A064906408884704FE4 /* PoppinsExtraLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsExtraLightItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsExtraLightItalic.ttf; sourceTree = "<group>"; };
 		72F783BF172D44C6A544F3DB /* Roboto-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Bold.ttf"; path = "../src/assets/fonts/Roboto/Roboto-Bold.ttf"; sourceTree = "<group>"; };
 		731F3073554A4AC585703874 /* PoppinsSemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsSemiBoldItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsSemiBoldItalic.ttf; sourceTree = "<group>"; };
 		7B201C1F1B904EF082DFC135 /* PoppinsLightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsLightItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsLightItalic.ttf; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = night_club/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = nite/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		83763D14388E4AF5B3513298 /* PoppinsBlackItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsBlackItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsBlackItalic.ttf; sourceTree = "<group>"; };
 		88DC7BE4CD4341DB96E8AABD /* PoppinsExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsExtraBold.ttf; path = ../src/assets/fonts/Poppins/PoppinsExtraBold.ttf; sourceTree = "<group>"; };
-		89C6BE57DB24E9ADA2F236DE /* Pods-night_club-night_clubTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-night_club-night_clubTests.release.xcconfig"; path = "Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests.release.xcconfig"; sourceTree = "<group>"; };
+		89C6BE57DB24E9ADA2F236DE /* Pods-nite-niteTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-nite-niteTests.release.xcconfig"; path = "Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests.release.xcconfig"; sourceTree = "<group>"; };
 		8C27954C42A94CEBBEA022DD /* PoppinsBlack.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsBlack.ttf; path = ../src/assets/fonts/Poppins/PoppinsBlack.ttf; sourceTree = "<group>"; };
 		935FD52F9D05434FAB94F291 /* Roboto-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-BoldItalic.ttf"; path = "../src/assets/fonts/Roboto/Roboto-BoldItalic.ttf"; sourceTree = "<group>"; };
 		9469FE50ACD04C2693C50B49 /* Roboto-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-MediumItalic.ttf"; path = "../src/assets/fonts/Roboto/Roboto-MediumItalic.ttf"; sourceTree = "<group>"; };
@@ -109,7 +109,7 @@
 		CF9DAB8B1C514914812ADD5C /* Roboto-ThinItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-ThinItalic.ttf"; path = "../src/assets/fonts/Roboto/Roboto-ThinItalic.ttf"; sourceTree = "<group>"; };
 		D2B012F5E15E46DCA4E8E0BF /* PoppinsMediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsMediumItalic.ttf; path = ../src/assets/fonts/Poppins/PoppinsMediumItalic.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		F3957AE9CF67BE36E274E263 /* Pods_night_club_night_clubTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_night_club_night_clubTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3957AE9CF67BE36E274E263 /* Pods_nite_niteTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_nite_niteTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6BDD7C22D3A26D3003398A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = "Base.lproj/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		FE40222A3DDB4DA6B03D2934 /* PoppinsSemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = PoppinsSemiBold.ttf; path = ../src/assets/fonts/Poppins/PoppinsSemiBold.ttf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -119,7 +119,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F751FBB20D4659B8EEDD04E3 /* Pods_night_club_night_clubTests.framework in Frameworks */,
+				F751FBB20D4659B8EEDD04E3 /* Pods_nite_niteTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,20 +127,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B70C7C94955FF58012FE71DA /* Pods_night_club.framework in Frameworks */,
+				B70C7C94955FF58012FE71DA /* Pods_nite.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* night_clubTests */ = {
+		00E356EF1AD99517003FC87E /* niteTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* night_clubTests.m */,
+				00E356F21AD99517003FC87E /* niteTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = night_clubTests;
+			path = niteTests;
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -151,7 +151,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* night_club */ = {
+		13B07FAE1A68108700A75B9A /* nite */ = {
 			isa = PBXGroup;
 			children = (
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -163,15 +163,15 @@
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
 				3F2D66002797060496E3BF37 /* PrivacyInfo.xcprivacy */,
 			);
-			name = night_club;
+			name = nite;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				2980C6DAF07B69B6B208E702 /* Pods_night_club.framework */,
-				F3957AE9CF67BE36E274E263 /* Pods_night_club_night_clubTests.framework */,
+				2980C6DAF07B69B6B208E702 /* Pods_nite.framework */,
+				F3957AE9CF67BE36E274E263 /* Pods_nite_niteTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -225,9 +225,9 @@
 			isa = PBXGroup;
 			children = (
 				F6BDD7C32D3A26D3003398A8 /* GoogleService-Info.plist */,
-				13B07FAE1A68108700A75B9A /* night_club */,
+				13B07FAE1A68108700A75B9A /* nite */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* night_clubTests */,
+				00E356EF1AD99517003FC87E /* niteTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
@@ -241,8 +241,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* night_club.app */,
-				00E356EE1AD99517003FC87E /* night_clubTests.xctest */,
+				13B07F961A680F5B00A75B9A /* nite.app */,
+				00E356EE1AD99517003FC87E /* niteTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -250,10 +250,10 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				3B4392A12AC88292D35C810B /* Pods-night_club.debug.xcconfig */,
-				5709B34CF0A7D63546082F79 /* Pods-night_club.release.xcconfig */,
-				5B7EB9410499542E8C5724F5 /* Pods-night_club-night_clubTests.debug.xcconfig */,
-				89C6BE57DB24E9ADA2F236DE /* Pods-night_club-night_clubTests.release.xcconfig */,
+				3B4392A12AC88292D35C810B /* Pods-nite.debug.xcconfig */,
+				5709B34CF0A7D63546082F79 /* Pods-nite.release.xcconfig */,
+				5B7EB9410499542E8C5724F5 /* Pods-nite-niteTests.debug.xcconfig */,
+				89C6BE57DB24E9ADA2F236DE /* Pods-nite-niteTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -261,9 +261,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* night_clubTests */ = {
+		00E356ED1AD99517003FC87E /* niteTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "night_clubTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "niteTests" */;
 			buildPhases = (
 				A55EABD7B0C7F3A422A6CC61 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -277,14 +277,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = night_clubTests;
-			productName = night_clubTests;
-			productReference = 00E356EE1AD99517003FC87E /* night_clubTests.xctest */;
+			name = niteTests;
+			productName = niteTests;
+			productReference = 00E356EE1AD99517003FC87E /* niteTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* night_club */ = {
+		13B07F861A680F5B00A75B9A /* nite */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "night_club" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "nite" */;
 			buildPhases = (
 				C38B50BA6285516D6DCD4F65 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -299,9 +299,9 @@
 			);
 			dependencies = (
 			);
-			name = night_club;
-			productName = night_club;
-			productReference = 13B07F961A680F5B00A75B9A /* night_club.app */;
+			name = nite;
+			productName = nite;
+			productReference = 13B07F961A680F5B00A75B9A /* nite.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -321,7 +321,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "night_club" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "nite" */;
 			compatibilityVersion = "Xcode 12.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -334,8 +334,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* night_club */,
-				00E356ED1AD99517003FC87E /* night_clubTests */,
+				13B07F861A680F5B00A75B9A /* nite */,
+				00E356ED1AD99517003FC87E /* niteTests */,
 			);
 		};
 /* End PBXProject section */
@@ -416,15 +416,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		7EDB602C6A759EC151578BEC /* [CP-User] [RNFB] Core Configuration */ = {
@@ -455,7 +455,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-night_club-night_clubTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-nite-niteTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -477,7 +477,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-night_club-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-nite-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -490,15 +490,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-frameworks.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		E235C05ADACE081382539298 /* [CP] Copy Pods Resources */ = {
@@ -507,15 +507,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-night_club/Pods-night_club-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nite/Pods-nite-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		F6A41C54EA430FDDC6A6ED99 /* [CP] Copy Pods Resources */ = {
@@ -524,15 +524,15 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+				"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-night_club-night_clubTests/Pods-night_club-night_clubTests-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-nite-niteTests/Pods-nite-niteTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -542,7 +542,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E356F31AD99517003FC87E /* night_clubTests.m in Sources */,
+				00E356F31AD99517003FC87E /* niteTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -560,7 +560,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* night_club */;
+			target = 13B07F861A680F5B00A75B9A /* nite */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -572,7 +572,7 @@
 				F6BDD7C22D3A26D3003398A8 /* Base */,
 			);
 			name = "GoogleService-Info.plist";
-			path = ../../../../../../../../Desktop/projects/night_club/ios;
+			path = ../../../../../../../../Desktop/projects/nite/ios;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXVariantGroup section */
@@ -580,14 +580,14 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-night_club-night_clubTests.debug.xcconfig */;
+			baseConfigurationReference = 5B7EB9410499542E8C5724F5 /* Pods-nite-niteTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = night_clubTests/Info.plist;
+				INFOPLIST_FILE = niteTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -601,17 +601,17 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/night_club.app/night_club";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/nite.app/nite";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-night_club-night_clubTests.release.xcconfig */;
+			baseConfigurationReference = 89C6BE57DB24E9ADA2F236DE /* Pods-nite-niteTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
-				INFOPLIST_FILE = night_clubTests/Info.plist;
+				INFOPLIST_FILE = niteTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -625,19 +625,19 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/night_club.app/night_club";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/nite.app/nite";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-night_club.debug.xcconfig */;
+			baseConfigurationReference = 3B4392A12AC88292D35C810B /* Pods-nite.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
-				INFOPLIST_FILE = night_club/Info.plist;
+				INFOPLIST_FILE = nite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -649,7 +649,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = night_club;
+				PRODUCT_NAME = nite;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
@@ -658,12 +658,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-night_club.release.xcconfig */;
+			baseConfigurationReference = 5709B34CF0A7D63546082F79 /* Pods-nite.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				INFOPLIST_FILE = night_club/Info.plist;
+				INFOPLIST_FILE = nite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -675,7 +675,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = night_club;
+				PRODUCT_NAME = nite;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -866,7 +866,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "night_clubTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "niteTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -875,7 +875,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "night_club" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "nite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -884,7 +884,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "night_club" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "nite" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

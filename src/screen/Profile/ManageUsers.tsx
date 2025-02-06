@@ -3,15 +3,18 @@ import {
   IconSmallEmailCyan,
   IconSmallPlusWhite,
   IconSmallUserCyan,
+  IconTrashCyan,
 } from '../../icons/icons';
-import {PrimaryColor, height} from '../../utils/utils';
+import {ApiUrl, PrimaryColor, height} from '../../utils/utils';
 
 import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import Card from '../../components/cards/Card';
 import EmptyCard from '../../components/Empty/EmptyCard';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {IMangeUser} from '../../firebase/interface';
@@ -21,6 +24,8 @@ import Background from '../components/Background';
 
 const ManageUsers = ({navigation}: NavigProps<null>) => {
   const {user} = useAuth();
+  const {closeToast, showToast} = useToast();
+
   const [allUser, setAllUser] = React.useState<IMangeUser[]>([]);
   const {getAllUser} = useFireStore();
   const [loading, setLoading] = React.useState(false);
@@ -29,6 +34,38 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
     getAllUser(setAllUser);
   }, []);
 
+  const handleDeleteUser = async (id: string) => {
+    showToast({
+      title: 'Are you sure?',
+      content: 'You want to delete this user?',
+
+      multipleBTNStyle: tw`flex-col gap-2 mt-2`,
+      multipleButton: [
+        {
+          buttonText: 'Yes',
+          buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
+          onPress: async () => {
+            const res = await fetch(`${ApiUrl}users/?user_id=${id}`, {
+              method: 'DELETE',
+            });
+            const resData = await res.json();
+            if (resData?.success) {
+              getAllUser(setAllUser);
+              closeToast();
+            }
+          },
+        },
+        {
+          buttonText: 'No',
+          buttonStyle: tw`border-primary bg-transparent border w-full self-center`,
+          buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
+          onPress: () => closeToast(),
+        },
+      ],
+    });
+  };
+
   return (
     <Background style={tw`flex-1 `}>
       <BackWithTitle title="Manage Users" onPress={() => navigation.goBack()} />
@@ -36,13 +73,14 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
       <FlatList
         refreshControl={
           <RefreshControl
+            progressBackgroundColor={PrimaryColor}
             onRefresh={() => {
               setLoading(true);
               getAllUser(setAllUser);
               setLoading(false);
             }}
             refreshing={loading}
-            colors={[PrimaryColor]}
+            colors={['white']}
           />
         }
         ListEmptyComponent={
@@ -56,7 +94,7 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
               onPress={() => navigation.navigate('UpdateUser', {item})}
               containerStyle={tw`flex-row gap-3 items-center justify-center`}
               component={
-                <View>
+                <View style={tw`flex-row items-center gap-2`}>
                   <Text style={tw`text-primary font-RobotoBold`}>
                     {item.role === 'super-owner'
                       ? 'Super Owner'
@@ -68,6 +106,13 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
                       ? 'Promoters'
                       : item.role === 'guard' && 'Guard'}
                   </Text>
+                  <IButton
+                    svg={IconTrashCyan}
+                    onPress={() => {
+                      handleDeleteUser(item.uid);
+                    }}
+                    containerStyle={tw` p-2 rounded-md bg-primary600`}
+                  />
                 </View>
               }>
               <Card.Image

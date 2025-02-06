@@ -1,14 +1,14 @@
 import React, {useCallback} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 
-import {IconEmailGay} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {PrimaryColor} from '../../utils/utils';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
-import {useFireAuth} from '../../firebase/useFireAuth';
+import InputTextWL from '../../components/inputs/InputTextWL';
 import {useToast} from '../../components/modals/Toaster';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {IconEmailGay} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 
 const ForgetPassword = ({navigation}: NavigProps<null>) => {
   const [email, setEmail] = React.useState('');
@@ -67,7 +67,7 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
                   label="Email"
                   value={email}
                   onChangeText={text => setEmail(text)}
-                  placeholder="Enter New Password"
+                  placeholder="Enter your email"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   svgFirstIcon={IconEmailGay}

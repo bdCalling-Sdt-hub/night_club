@@ -1,9 +1,10 @@
-import {FlatList, Text, TouchableOpacity} from 'react-native';
+import {FlatList, RefreshControl, Text, TouchableOpacity} from 'react-native';
 import {
   IconBuildingCyan,
   IconClockCyan,
   IconLocationV2Cyan,
 } from '../../../icons/icons';
+import {PrimaryColor, height} from '../../../utils/utils';
 
 import moment from 'moment';
 import React from 'react';
@@ -14,16 +15,15 @@ import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
-import {height} from '../../../utils/utils';
 
 const CurrentVenues = ({navigation}: NavigProps<null>) => {
   const [data, setData] = React.useState<Array<IVenue>>();
   const {user} = useAuth();
-
+  const [loading, setLoading] = React.useState(false);
   const {listenToData} = useFireStore();
   React.useEffect(() => {
     let unsubscribe = () => {}; // Default to a no-op function
-
+    setLoading(true);
     listenToData({
       unsubscribe,
       collectType: 'Venues',
@@ -59,17 +59,27 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
         }
       },
     });
-
+    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [loading]);
 
   console.log(user?.role);
 
   return (
     <FlatList
+      refreshControl={
+        <RefreshControl
+          refreshing={loading}
+          progressBackgroundColor={PrimaryColor}
+          colors={['white']}
+          onRefresh={() => {
+            setLoading(!loading);
+          }}
+        />
+      }
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
       data={data}
       ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
@@ -96,20 +106,21 @@ const CurrentVenues = ({navigation}: NavigProps<null>) => {
                 icons: IconBuildingCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
-              {
+              item?.location && {
                 title: item?.location,
                 icons: IconLocationV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
-              {
-                title:
-                  moment(item?.openingTime).format('hh:mm A') +
-                  ' - ' +
-                  moment(item?.closingTime).format('hh:mm A'),
-                icons: IconClockCyan,
-                titleStyle: tw`text-white60 font-RobotoBold text-xs`,
-              },
-            ]}
+              item?.closingTime &&
+                item?.openingTime && {
+                  title:
+                    moment(item?.openingTime).format('hh:mm A') +
+                    ' - ' +
+                    moment(item?.closingTime).format('hh:mm A'),
+                  icons: IconClockCyan,
+                  titleStyle: tw`text-white60 font-RobotoBold text-xs`,
+                },
+            ].filter(Boolean)}
           />
         </Card>
       )}
