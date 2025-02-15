@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {ApiUrl, PrimaryColor, height} from '../../utils/utils';
 
+import {useFocusEffect} from '@react-navigation/native';
 import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
@@ -22,7 +23,7 @@ import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
-const ManageUsers = ({navigation}: NavigProps<null>) => {
+const ManageUsers = ({navigation}: NavigProps<any>) => {
   const {user} = useAuth();
   const {closeToast, showToast} = useToast();
 
@@ -30,15 +31,14 @@ const ManageUsers = ({navigation}: NavigProps<null>) => {
   const {getAllUser} = useFireStore();
   const [loading, setLoading] = React.useState(false);
 
-  React.useEffect(() => {
+  useFocusEffect(() => {
     getAllUser(setAllUser);
-  }, []);
+  });
 
   const handleDeleteUser = async (id: string) => {
     showToast({
       title: 'Are you sure?',
       content: 'You want to delete this user?',
-
       multipleBTNStyle: tw`flex-col gap-2 mt-2`,
       multipleButton: [
         {

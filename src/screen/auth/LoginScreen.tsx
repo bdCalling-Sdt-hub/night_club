@@ -24,7 +24,7 @@ interface ISingInForm {
   password: string;
 }
 
-const LoginScreen = ({navigation}: NavigProps<null>) => {
+const LoginScreen = ({navigation}: NavigProps<any>) => {
   const {closeToast, showToast} = useToast();
   const {SignInWithEmailPass, handleResetPassword, handleVerifyEmail} =
     useFireAuth();

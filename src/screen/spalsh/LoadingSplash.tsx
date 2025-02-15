@@ -29,7 +29,7 @@ const LoadingSplash = ({navigation, route}: NavigProps<null>) => {
         <FastImage
           style={tw`w-36 h-36 flex-1 `}
           resizeMode={FastImage.resizeMode.contain}
-          source={require('../../assets/images/logo/logo.png')}
+          source={require('../../assets/images/logo/logo2.png')}
         />
       </View>
     </Background>

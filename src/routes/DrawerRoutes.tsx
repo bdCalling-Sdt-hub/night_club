@@ -79,7 +79,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
           buttonTextStyle: tw`text-white50 font-RobotoBold text-base`,
           onPress: () => {
             closeToast();
-            handleResetPassword(user?.email).then(res => {
+            handleResetPassword(user?.email as string).then(res => {
               // console.log(res);
               showToast({
                 title: 'Reset password',

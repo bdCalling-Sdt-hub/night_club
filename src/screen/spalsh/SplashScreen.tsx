@@ -21,7 +21,7 @@ const SplashScreen = ({navigation}: SplashProps) => {
         <FastImage
           style={tw`w-60 h-60 flex-1 `}
           resizeMode={FastImage.resizeMode.cover}
-          source={require('../../assets/images/logo/logo.png')}
+          source={require('../../assets/images/logo/logo2.png')}
         />
       </View>
     </Background>

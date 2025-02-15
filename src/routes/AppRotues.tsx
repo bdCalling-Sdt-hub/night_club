@@ -14,7 +14,6 @@ const App = () => {
         <AuthProvider>
           <SafeAreaProvider>
             {/* Set the status bar behavior */}
-
             <SafeAreaView style={{flex: 1, backgroundColor: BaseColor}}>
               <Routes />
             </SafeAreaView>

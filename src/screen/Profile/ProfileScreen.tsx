@@ -200,6 +200,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
             colors={['white']}
           />
         }
+        contentContainerStyle={tw`px-4 pb-4`}
         keyboardShouldPersistTaps="always">
         {/* //profile sections */}
         <View style={tw`gap-4 justify-center items-center`}>
@@ -231,7 +232,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           user?.role === 'owner' ||
           user?.role === 'manager') && (
           <View
-            style={tw`p-3 bg-primary900  mx-4 rounded-lg mt-3 bg-opacity-10 gap-3`}>
+            style={tw`p-3 bg-primary900  rounded-lg mt-3 bg-opacity-10 gap-3`}>
             <View
               style={tw`flex-row flex-1 justify-between bg-secondary60  rounded-lg items-center   px-4 py-2`}>
               <IButton

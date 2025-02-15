@@ -6,67 +6,77 @@ import {
 } from '../../../icons/icons';
 import {PrimaryColor, height} from '../../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import {useAuth} from '../../../context/AuthProvider';
-import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 
-const VHistory = ({navigation}: NavigProps<null>) => {
-  const {user} = useAuth();
+interface VHistoryProps extends NavigProps<any> {
+  search?: string;
+}
+
+const VHistory = ({navigation, search}: VHistoryProps) => {
   const [data, setData] = React.useState<Array<IVenue>>();
-  const {listenToData} = useFireStore();
+  const {user} = useAuth();
   const [loading, setLoading] = React.useState(false);
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
+  const isFocused = useIsFocused();
+  const fetchData = async () => {
     setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Venues',
-      filters: [
-        {
-          field: 'status',
-          operator: '==',
-          value: 'Closed',
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ].filter(Boolean) as any,
-      onUpdate: (data: any[]) => {
-        setData(data);
-      },
-    });
-    setLoading(false);
-    // Cleanup the listener on component unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [loading]);
+    try {
+      const collectionRef = firestore().collection('Venues');
+      let query = collectionRef.where('status', '==', 'Closed');
+
+      if (user?.role === 'manager') {
+        query = query.where('manager_id', '==', user?.user_id);
+      } else if (user?.role === 'guard' || user?.role === 'promoters') {
+        query = query.where('manager_id', '==', user?.manager_id);
+      }
+
+      const snapshot = await query.get();
+      const fetchedData: IVenue[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as IVenue[];
+
+      setData(fetchedData);
+    } catch (error) {
+      console.log('Error fetching venues:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchData();
+  }, [isFocused]);
+
+  // console.log(user?.role);
 
   return (
     <FlatList
       refreshControl={
         <RefreshControl
-          refreshing={loading}
+          refreshing={!isFocused && loading}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {
-            setLoading(!loading);
+            fetchData();
           }}
         />
       }
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data}
-      ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
+      data={data?.filter((item: IVenue) =>
+        item?.name?.toLowerCase().includes(search?.toLowerCase() as string),
+      )}
+      ListEmptyComponent={
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+      }
       renderItem={({item, index}) => (
         <Card
           containerStyle={tw` flex-row gap-3 items-center`}
@@ -90,20 +100,21 @@ const VHistory = ({navigation}: NavigProps<null>) => {
                 icons: IconBuildingCyan,
                 titleStyle: tw`text-white50 font-RobotoBold text-sm`,
               },
-              {
+              item?.location && {
                 title: item?.location,
                 icons: IconLocationV2Cyan,
                 titleStyle: tw`text-white60 font-RobotoBold text-xs`,
               },
-              {
-                title:
-                  moment(item?.openingTime).format('hh:mm A') +
-                  ' - ' +
-                  moment(item?.closingTime).format('hh:mm A'),
-                icons: IconClockCyan,
-                titleStyle: tw`text-white60 font-RobotoBold text-xs`,
-              },
-            ]}
+              item?.closingTime &&
+                item?.openingTime && {
+                  title:
+                    moment(item?.openingTime).format('hh:mm A') +
+                    ' - ' +
+                    moment(item?.closingTime).format('hh:mm A'),
+                  icons: IconClockCyan,
+                  titleStyle: tw`text-white60 font-RobotoBold text-xs`,
+                },
+            ].filter(Boolean)}
           />
         </Card>
       )}

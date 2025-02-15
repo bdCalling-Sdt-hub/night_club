@@ -43,7 +43,7 @@ const Home = ({navigation}: NavigProps<null>) => {
               <ActivityIndicator color={PrimaryColor} size={'large'} />
             </View>
           }>
-          <VHistory navigation={navigation} />
+          <VHistory navigation={navigation} search={search} />
         </Suspense>
       ) : (
         <Suspense
@@ -52,7 +52,7 @@ const Home = ({navigation}: NavigProps<null>) => {
               <ActivityIndicator color={PrimaryColor} size={'large'} />
             </View>
           }>
-          <CurrentVenues navigation={navigation} />
+          <CurrentVenues navigation={navigation} search={search} />
         </Suspense>
       )}
     </Background>

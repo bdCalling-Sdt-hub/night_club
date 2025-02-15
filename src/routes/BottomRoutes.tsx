@@ -29,7 +29,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
   return (
     <Background style={tw`bg-base`}>
       <View style={tw`flex-row justify-around px-4 h-16 items-center`}>
-        {state.routes.map((route, index) => {
+        {state.routes.map((route: any, index: any) => {
           const {options} = descriptors[route.key];
           const label =
             options.tabBarLabel !== undefined
@@ -167,11 +167,11 @@ function BottomRoutes() {
     <Tab.Navigator
       screenOptions={{headerShown: false}}
       tabBar={props => <CustomTabBar {...props} />}>
-      <Tab.Screen name="Venue" component={Home} />
-      <Tab.Screen name="Event" component={EventScreen} />
-      <Tab.Screen name="Button" component={Button} />
-      <Tab.Screen name="GuestList" component={GuestListScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Venue" component={Home as any} />
+      <Tab.Screen name="Event" component={EventScreen as any} />
+      <Tab.Screen name="Button" component={Button as any} />
+      <Tab.Screen name="GuestList" component={GuestListScreen as any} />
+      <Tab.Screen name="Profile" component={ProfileScreen as any} />
     </Tab.Navigator>
   );
 }

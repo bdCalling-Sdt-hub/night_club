@@ -7,7 +7,6 @@ import {
 } from '../../icons/icons';
 import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
-import {useFocusEffect} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -153,15 +152,6 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
 
     return errors;
   };
-
-  useFocusEffect(() => {
-    if (route?.params?.item?.video) {
-      setIsPlaying(false);
-    }
-    return () => {
-      setIsPlaying(true);
-    };
-  });
 
   const handleLoader = async () => {
     const res = await fetch(

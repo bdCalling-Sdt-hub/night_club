@@ -3,6 +3,7 @@ import {ScrollView, Text, View} from 'react-native';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
 
+import {useFocusEffect} from '@react-navigation/native';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
 import {PageControl} from 'react-native-ui-lib';
@@ -32,7 +33,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   const {loadSingleData} = useFireStore();
 
-  useEffect(() => {
+  useFocusEffect(() => {
     if (route?.params?.id) {
       loadSingleData({
         collectType: 'Venues',
@@ -40,11 +41,16 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         setLoad: setVenue,
       });
     }
-    setPaused(false);
+  });
+
+  useEffect(() => {
+    if (venue?.video) {
+      setPaused(false);
+    }
     return () => {
       setPaused(true);
     };
-  }, [route?.params?.id]);
+  });
 
   // console.log(venues);
 

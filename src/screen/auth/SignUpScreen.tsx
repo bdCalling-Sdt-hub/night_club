@@ -27,7 +27,7 @@ import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import countries from './countries.json';
 
-const SignUpScreen = ({navigation}: NavigProps<null>) => {
+const SignUpScreen = ({navigation}: NavigProps<any>) => {
   const {closeToast, showToast} = useToast();
   const {setUser, user, setUserId} = useAuth();
   const {SignUpWithEmailPass, handleVerifyEmail} = useFireAuth();
@@ -38,10 +38,6 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
   const [open, setOpen] = useState(false);
   const [phoneCode, setPhoneCode] = useState('+46');
   const onSubmitHandler = async (data: IUser) => {
-    if (!data.phoneNumber.startsWith('+')) {
-      data.phoneNumber = phoneCode + data.phoneNumber;
-    }
-
     // console.log(data);
     try {
       setLoading(true);
@@ -63,12 +59,16 @@ const SignUpScreen = ({navigation}: NavigProps<null>) => {
         // added role to manually
         data.role = 'super-owner';
         // console.log(data);
-        handleVerifyEmail(data)
+        handleVerifyEmail({
+          ...data,
+          phoneNumber: phoneCode + data.phoneNumber,
+        })
           .then(res => {
             // console.log(res);
             // reset form data
             // console.log(res);
             if (res.success) {
+              setLoading(false);
               (navigation as any)?.replace('SendMailSuccess');
             } else {
               // console.log(res);

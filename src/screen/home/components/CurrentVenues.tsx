@@ -6,83 +6,78 @@ import {
 } from '../../../icons/icons';
 import {PrimaryColor, height} from '../../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import {useAuth} from '../../../context/AuthProvider';
-import useFireStore from '../../../firebase/database/helper';
 import {IVenue} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 
-const CurrentVenues = ({navigation}: NavigProps<null>) => {
+interface CurrentVenueProps extends NavigProps<any> {
+  search?: string;
+}
+
+const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
   const [data, setData] = React.useState<Array<IVenue>>();
   const {user} = useAuth();
   const [loading, setLoading] = React.useState(false);
-  const {listenToData} = useFireStore();
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
-    setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Venues',
-      filters: [
-        {
-          field: 'status',
-          operator: '==',
-          value: 'Open',
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ].filter(Boolean) as any,
-      onUpdate: (data: any[]) => {
-        if (user?.role === 'manager') {
-          data = data.filter(
-            (item: IVenue) => item?.manager_id === user?.user_id,
-          );
-          setData(data);
-          return;
-        }
-        if (user?.role === 'guard' || user?.role === 'promoters') {
-          data = data.filter(
-            (item: IVenue) => item?.manager_id === user?.manager_id,
-          );
-          setData(data);
-        } else {
-          setData(data);
-        }
-      },
-    });
-    setLoading(false);
-    // Cleanup the listener on component unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [loading]);
 
-  console.log(user?.role);
+  const isFocused = useIsFocused();
+
+  const fetchData = async () => {
+    setLoading(true);
+    try {
+      const collectionRef = firestore().collection('Venues');
+      let query = collectionRef.where('status', '==', 'Open');
+
+      if (user?.role === 'manager') {
+        query = query.where('manager_id', '==', user?.user_id);
+      } else if (user?.role === 'guard' || user?.role === 'promoters') {
+        query = query.where('manager_id', '==', user?.manager_id);
+      }
+
+      const snapshot = await query.get();
+      const fetchedData: IVenue[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as IVenue[];
+
+      setData(fetchedData);
+    } catch (error) {
+      console.error('Error fetching venues:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  React.useEffect(() => {
+    fetchData();
+  }, [isFocused]);
+
+  // console.log(user?.role);
 
   return (
     <FlatList
       refreshControl={
         <RefreshControl
-          refreshing={loading}
+          refreshing={!isFocused && loading}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {
-            setLoading(!loading);
+            fetchData();
           }}
         />
       }
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data}
-      ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
+      data={data?.filter((item: IVenue) =>
+        item?.name?.toLowerCase().includes(search?.toLowerCase() as string),
+      )}
+      ListEmptyComponent={
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+      }
       renderItem={({item, index}) => (
         <Card
           containerStyle={tw` flex-row gap-3 items-center`}
