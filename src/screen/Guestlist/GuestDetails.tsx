@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -19,6 +20,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -36,6 +38,7 @@ interface createProps {
   added_by: string;
   guest_list: string;
   tag: string;
+  tag_name: string;
 }
 
 const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
@@ -47,7 +50,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     note: '',
     email: '',
   });
-
+  const isFocused = useIsFocused();
   const {loadAllData, updateFireData, deleteFireData} = useFireStore();
 
   const [date, setDate] = React.useState(new Date());
@@ -55,7 +58,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     free_entry_time: false,
     free_entry_end_time: false,
   });
-
+  const [loading, setLoading] = React.useState(false);
   const [guest, setGuest] = React.useState<IGuest | null>(null);
   const [tags, setTags] = React.useState<Array<ITags> | []>([]);
   const [guestListAvailable, setGuestListAvailable] = React.useState<
@@ -92,6 +95,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
   };
 
   React.useEffect(() => {
+    setLoading(true);
     loadAllData({
       collectType: 'Tags',
       filters: [
@@ -103,7 +107,10 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ]?.filter(Boolean) as any,
-      setLoad: setTags,
+      setLoad: data => {
+        setTags(data);
+        setLoading(false);
+      },
     });
     loadAllData({
       collectType: 'GuestsList',
@@ -114,9 +121,12 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
           value: user?.user_id,
         },
       ],
-      setLoad: setGuestListAvailable,
+      setLoad: data => {
+        setGuestListAvailable(data);
+        setLoading(false);
+      },
     });
-  }, []);
+  }, [isFocused]);
 
   // console.log(guest);
 
@@ -138,22 +148,27 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   people: '',
                   entry_fee: '',
                   free_entry: '',
-                  check_in: '0',
+                  check_in: 0,
                   free_entry_time: '',
                   free_entry_end_time: '',
                   guest_list: '',
                   tag: '',
+                  tag_name: '',
                 }
           }
-          onSubmit={values => {
+          onSubmit={async values => {
             // console.log(values);
-            updateFireData({
+            setLoading(true);
+            if (values?.tag && !values?.tag_name) {
+              values.tag_name = tags?.find(item => item.id === values.tag)
+                ?.name as string;
+            }
+            await updateFireData({
               collectType: 'Guests',
               id: route?.params?.guest?.id as string,
               data: values,
-            }).then(() => {
-              navigation?.goBack();
             });
+            setLoading(false);
           }}
           validate={(values: createProps) => handleValidate(values)}>
           {({
@@ -182,13 +197,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 <Picker
                   useSafeArea
                   value={values.tag}
-                  onChange={handleChange('tag')}
+                  onChange={handleChange('tag') as any}
                   onBlur={handleBlur('tag')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.tag}
+                      value={tags?.find(item => item.id === values.tag)?.name}
                       label="Tag"
                       placeholder="Select tag"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -203,7 +218,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -223,12 +238,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   paddingH
                   items={tags?.map((item: any) => ({
                     label: item.name,
-                    value: item.name,
+                    value: item.id,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
+                {/* {userAccess({GRole: 'middler'}) && ( */}
                 <TouchableOpacity
                   style={tw`self-end`}
                   onPress={() => {
@@ -238,6 +254,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     Add new Tag
                   </Text>
                 </TouchableOpacity>
+                {/* )} */}
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
@@ -251,6 +268,10 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               </Text>
               <View style={tw`gap-2 flex-row `}>
                 <TButton
+                  disabled={
+                    parseInt(values?.check_in ?? 0) >=
+                    parseInt(values?.people ?? 0)
+                  }
                   onPress={() => {
                     if (parseInt(values.people) > 0) {
                       handleChange('people')(`${parseInt(values.people) - 1}`);
@@ -284,12 +305,17 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   }}
                 />
               </View>
+
               <TButton
-                disabled={!values?.people}
+                disabled={
+                  parseInt(values?.check_in ?? 0) >=
+                  parseInt(values?.people ?? 0)
+                }
                 onPress={() => {
                   handleChange('check_in')(
                     `${parseInt(values?.check_in || 0) + 1}`,
                   );
+                  handleSubmit();
                 }}
                 title={`Check in ${parseInt(values?.check_in ?? 0)}/${
                   values?.people ?? 0
@@ -581,8 +607,9 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   title="Update"
                   titleStyle={tw`font-RobotoBold text-base`}
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
-                  onPress={() => {
+                  onPress={async () => {
                     handleSubmit();
+                    navigation?.goBack();
                   }}
                 />
                 <TButton
@@ -632,6 +659,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
           )}
         </Formik>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

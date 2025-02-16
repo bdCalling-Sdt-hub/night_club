@@ -3,7 +3,7 @@ import {ScrollView, Text, View} from 'react-native';
 import {IconClockCyan, IconLocationV2Cyan} from '../../icons/icons';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import {useFocusEffect} from '@react-navigation/native';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
 import {PageControl} from 'react-native-ui-lib';
@@ -24,6 +24,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const {user} = useAuth();
   const [currentPage, setCurrentPage] = useState(0); // Track current page
   const [paused, setPaused] = useState(true);
+  const isFocused = useIsFocused();
   // Handle scroll and update the current page
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -33,7 +34,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   const {loadSingleData} = useFireStore();
 
-  useFocusEffect(() => {
+  useEffect(() => {
     if (route?.params?.id) {
       loadSingleData({
         collectType: 'Venues',
@@ -41,8 +42,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         setLoad: setVenue,
       });
     }
-  });
-
+  }, [isFocused]);
+  // console.log('hit');
   useEffect(() => {
     if (venue?.video) {
       setPaused(false);
@@ -50,17 +51,9 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
     return () => {
       setPaused(true);
     };
-  });
+  }, [isFocused, venue?.video]);
 
   // console.log(venues);
-
-  // useFocusEffect(() => {
-  //   setPaused(false);
-
-  //   return () => {
-  //     setPaused(true);
-  //   };
-  // });
 
   return (
     <Background style={tw`flex-1`}>

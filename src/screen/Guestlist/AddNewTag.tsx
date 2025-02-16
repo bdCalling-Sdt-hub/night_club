@@ -16,12 +16,12 @@ import tw from '../../lib/tailwind';
 import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
 
-const AddNewTag = ({navigation}: NavigProps<null>) => {
+const AddNewTag = ({navigation}: NavigProps<any>) => {
   const {closeToast, showToast} = useToast();
   const [newTag, setNewTag] = React.useState('');
   const [tags, setTags] = React.useState<Array<ITags>>([]);
   const [loading, setLoading] = React.useState(false);
-  const {createFireData, listenToData} = useFireStore();
+  const {createFireData} = useFireStore();
 
   const {user} = useAuth();
 
@@ -46,30 +46,44 @@ const AddNewTag = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
+    if (!user?.user_id) return; // Ensure user data is available
+
     setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Tags',
-      filters: [
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
-      onUpdate: (data: any[]) => {
-        setTags(data);
+
+    // Build the Firestore query
+    let query = firestore().collection('Tags');
+
+    if (
+      user?.role === 'guard' ||
+      user?.role === 'promoters' ||
+      user?.role === 'manager'
+    ) {
+      const managerId =
+        user?.role === 'manager' ? user?.user_id : user?.manager_id;
+      query = query.where('manager_id', '==', managerId);
+    }
+
+    // Subscribe to real-time updates
+    const unsubscribe = query.onSnapshot(
+      snapshot => {
+        const tagsData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setTags(tagsData);
+        setLoading(false);
       },
-    });
-    setLoading(false);
+      error => {
+        console.error('Error fetching Tags in real-time:', error);
+        setLoading(false);
+      },
+    );
+
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, [loading]);
+  }, [user]);
 
   return (
     <Background style={tw`flex-1 bg-base`}>

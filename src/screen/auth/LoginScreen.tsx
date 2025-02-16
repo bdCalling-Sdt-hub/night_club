@@ -60,8 +60,11 @@ const LoginScreen = ({navigation}: NavigProps<any>) => {
                 {
                   buttonText: 'Resend',
                   onPress: () => {
-                    handleVerifyEmail(data.email).then(res => {
+                    handleVerifyEmail(data).then(res => {
                       // closeToast();
+
+                      console.log(res);
+
                       if (res.success) {
                         showToast({
                           title: 'Success',

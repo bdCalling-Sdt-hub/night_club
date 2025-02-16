@@ -15,6 +15,8 @@ import {
 } from '../../../icons/icons';
 import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import IButton from '../../../components/buttons/IButton';
@@ -43,69 +45,91 @@ const AllGuest = ({navigation}: Props) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
+
+  const isFocused = useIsFocused();
+
+  // console.log(guestListData);
+
   const [tag, setTag] = React.useState('Tags');
-  const {listenToData, loadAllData, updateFireData} = useFireStore();
+  const {updateFireData} = useFireStore();
 
-  React.useEffect(() => {
-    loadAllData({
-      collectType: 'GuestsList',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-      ],
-      setLoad: setGuestListAvailable,
-    });
-  }, []);
-  React.useEffect(() => {
-    loadAllData({
-      collectType: 'Tags',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-      ],
-      setLoad: setTagsData,
-    });
-  }, []);
-
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
+  const fetchGuestsList = async () => {
     setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event',
-          operator: '==',
-          value: null,
-        },
-        {
-          field: 'guest_list',
-          operator: '==',
-          value: null,
-        },
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-      ],
-      onUpdate: (data: any[]) => {
-        setGuestListData(data);
+    try {
+      const snapshot = await firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const guestListData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGuestListAvailable(guestListData);
+    } catch (error) {
+      console.error('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchGuestsList();
+  }, [isFocused]);
+
+  const fetchTags = async () => {
+    setLoading(true);
+    try {
+      const snapshot = await firestore()
+        .collection('Tags')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const tagsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTagsData(tagsData);
+    } catch (error) {
+      console.error('Error fetching Tags:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTags();
+  }, [isFocused]);
+
+  const fetchGuests = () => {
+    setLoading(true);
+    const query = firestore()
+      .collection('Guests')
+      .where('createdBy', '==', user?.user_id);
+
+    const unsubscribe = query.onSnapshot(
+      snapshot => {
+        const guestListData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setGuestListData(guestListData);
+        setLoading(false);
       },
-    });
-    setLoading(false);
-    // Cleanup the listener on component unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [loading]);
+      error => {
+        console.error('Error fetching Guests:', error);
+        setLoading(false);
+      },
+    );
+
+    return unsubscribe; // Return the unsubscribe function for cleanup
+  };
+
+  React.useEffect(() => {
+    setLoading(true);
+    fetchGuests();
+    return () => {};
+  }, [isFocused]);
 
   const handleAddGuestOnGuestList = async () => {
     selectGuest?.forEach((id: string) => {
@@ -123,17 +147,27 @@ const AllGuest = ({navigation}: Props) => {
     setSelectGuestList('');
   };
 
+  // console.log(tag);
+
   return (
     <>
       <FlatList
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={false}
             progressBackgroundColor={PrimaryColor}
             colors={['white']}
             onRefresh={() => {
-              setLoading(!loading);
+              fetchGuests();
+              fetchTags();
             }}
+          />
+        }
+        ListEmptyComponent={
+          <EmptyCard
+            isLoading={loading}
+            hight={height * 0.6}
+            title="No Venues"
           />
         }
         showsVerticalScrollIndicator={false}
@@ -160,7 +194,8 @@ const AllGuest = ({navigation}: Props) => {
                         <Text
                           numberOfLines={1}
                           style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                          {tag}
+                          {TagsData?.find(item => item?.id === tag)?.name ??
+                            'Tags'}
                         </Text>
                         <SvgXml
                           xml={IconDownArrayGray}
@@ -176,7 +211,7 @@ const AllGuest = ({navigation}: Props) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                          {value}
+                          {items?.label}
                         </Text>
                       </View>
                     );
@@ -209,7 +244,7 @@ const AllGuest = ({navigation}: Props) => {
                   items={TagsData?.map(item => {
                     return {
                       label: item?.name,
-                      value: item?.name,
+                      value: item?.id,
                     };
                   })}
                   pickerModalProps={{
@@ -224,9 +259,6 @@ const AllGuest = ({navigation}: Props) => {
         data={guestListData?.filter(item =>
           tag === 'Tags' ? item : item.tag === tag,
         )}
-        ListEmptyComponent={
-          <EmptyCard hight={height * 0.6} title="No Venues" />
-        }
         renderItem={({item, index}) => (
           <Card
             onPress={() => {
@@ -246,7 +278,7 @@ const AllGuest = ({navigation}: Props) => {
           /> */}
                 <Checkbox
                   borderRadius={2}
-                  size={15}
+                  size={20}
                   // iconColor="#000000"
                   value={selectGuest?.includes(item.id)}
                   onValueChange={() => {
@@ -262,7 +294,7 @@ const AllGuest = ({navigation}: Props) => {
                       setSelectGuest([item?.id]);
                     }
                   }}
-                  style={tw``}
+                  style={tw`p-2`}
                   color={PrimaryColor}
                 />
               </>
@@ -272,7 +304,6 @@ const AllGuest = ({navigation}: Props) => {
               data={[
                 {
                   title: item.fullName,
-
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
                 {
@@ -323,7 +354,7 @@ const AllGuest = ({navigation}: Props) => {
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
-                  size={15}
+                  size={20}
                   iconColor="#000000"
                   value={selectGuestList === item.id}
                   onValueChange={() => {

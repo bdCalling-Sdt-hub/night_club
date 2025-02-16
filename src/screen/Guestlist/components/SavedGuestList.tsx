@@ -1,6 +1,8 @@
 import {FlatList, RefreshControl} from 'react-native';
 import {PrimaryColor, height} from '../../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
@@ -21,38 +23,49 @@ const SavedGuestList = ({navigation}: Props) => {
   const [loading, setLoading] = React.useState(false);
   const {loadAllData} = useFireStore();
 
+  const isFocused = useIsFocused();
+
+  const fetchGuestsList = async () => {
+    try {
+      setLoading(true);
+      const snapshot = await firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const guestListData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGuestListAvailable(guestListData);
+    } catch (error) {
+      console.error('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   React.useEffect(() => {
-    //get all guest
-    setLoading(true);
-    loadAllData({
-      collectType: 'GuestsList',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-      ]?.filter(Boolean) as any,
-      setLoad: setGuestListAvailable,
-    });
-    setLoading(false);
-  }, [loading]);
+    fetchGuestsList();
+  }, [isFocused]);
 
   return (
     <FlatList
       refreshControl={
         <RefreshControl
-          refreshing={loading}
+          refreshing={false}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {
-            setLoading(!loading);
+            fetchGuestsList();
           }}
         />
       }
       contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
       data={guestListAvailable}
-      ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
+      ListEmptyComponent={
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+      }
       renderItem={({item, index}) => (
         <Card
           onPress={() => {

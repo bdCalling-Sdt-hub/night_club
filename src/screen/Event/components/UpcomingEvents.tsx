@@ -6,83 +6,93 @@ import {
 } from '../../../icons/icons';
 import {PrimaryColor, height} from '../../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import {useAuth} from '../../../context/AuthProvider';
-import useFireStore from '../../../firebase/database/helper';
 import {IEvent} from '../../../firebase/interface';
 import {NavigProps} from '../../../interfaces/NaviProps';
 import tw from '../../../lib/tailwind';
 
-interface Props extends NavigProps<null> {
+interface Props extends NavigProps<any> {
   search?: string;
   venueId?: string;
 }
 const UpcomingEvents = ({navigation, venueId, search}: Props) => {
   const [data, setData] = React.useState<Array<IEvent>>();
-  const {listenToData, createRefer} = useFireStore();
   const {user} = useAuth();
   const [loading, setLoading] = React.useState(false);
+  const isFocused = useIsFocused();
   // console.log(venue?.id);
-
-  React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
+  const fetchEvents = async () => {
     setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Events',
-      filters: [
-        venueId && {
-          field: 'venue',
-          operator: '==',
-          value: venueId,
-        },
-        user?.user_id && {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ].filter(Boolean) as any,
-      onUpdate: (data: any) => {
-        setData(
-          data?.filter((item: IEvent) =>
-            item?.date ? item.date > new Date().toISOString() : item,
-          ),
-        );
-      },
-    });
-    setLoading(false);
+    try {
+      const collectionRef = firestore().collection('Events');
+      let query = collectionRef;
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
+      if (venueId) {
+        query = query.where('venue', '==', venueId);
+      }
 
-    // Cleanup the listener on component unmount
-    return () => {
-      unsubscribe();
-    };
-  }, [loading]);
+      if (
+        user?.role === 'guard' ||
+        user?.role === 'promoters' ||
+        user?.role === 'manager'
+      ) {
+        const managerId =
+          user?.role === 'manager' ? user?.user_id : user?.manager_id;
+        query = query.where('manager_id', '==', managerId);
+      }
+
+      const snapshot = await query.get();
+      const filteredData = snapshot.docs
+        .map(doc => ({id: doc.id, ...doc.data()}))
+        .filter((item: IEvent) =>
+          item?.date ? item.date > new Date().toISOString() : item,
+        );
+
+      setData(filteredData);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  React.useEffect(() => {
+    fetchEvents();
+
+    // No unsubscribe needed for one-time fetch
+  }, [isFocused]);
 
   return (
     <FlatList
       contentContainerStyle={tw`px-4 pb-5 gap-3`}
-      data={data}
+      data={data?.filter((item: IEvent) => {
+        if (search) {
+          return item.name.toLowerCase().includes(search.toLowerCase());
+        }
+        return item;
+      })}
       refreshControl={
         <RefreshControl
-          refreshing={loading}
+          refreshing={false}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {
-            setLoading(!loading);
+            fetchEvents();
           }}
         />
       }
-      ListEmptyComponent={<EmptyCard hight={height * 0.6} title="No Venues" />}
+      ListEmptyComponent={
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+      }
       renderItem={({item, index}) => (
         <Card
           containerStyle={tw` flex-row gap-3 items-center`}

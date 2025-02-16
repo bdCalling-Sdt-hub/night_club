@@ -31,6 +31,11 @@ const VHistory = ({navigation, search}: VHistoryProps) => {
     try {
       const collectionRef = firestore().collection('Venues');
       let query = collectionRef.where('status', '==', 'Closed');
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
 
       if (user?.role === 'manager') {
         query = query.where('manager_id', '==', user?.user_id);
@@ -62,7 +67,7 @@ const VHistory = ({navigation, search}: VHistoryProps) => {
     <FlatList
       refreshControl={
         <RefreshControl
-          refreshing={!isFocused && loading}
+          refreshing={false}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {

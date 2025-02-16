@@ -218,6 +218,21 @@ const useFireStore = () => {
       return true;
     } catch (error) {
       console.error(`Error updating ${collectType} with ID ${id}:`, error);
+      if (error instanceof Error) {
+        if (error?.message?.includes('permission-denied')) {
+          return {
+            message: "You don't have permission to update this document",
+          };
+        } else if (error?.message?.includes('not-found')) {
+          return {
+            message: 'Document not found',
+          };
+        } else if (error?.message?.includes('invalid-argument')) {
+          return {
+            message: 'Invalid argument',
+          };
+        }
+      }
     }
   };
 
@@ -253,6 +268,21 @@ const useFireStore = () => {
       return docRef.id;
     } catch (error) {
       console.error(`Error creating ${collectType}:`, error);
+      if (error instanceof Error) {
+        if (error?.message?.includes('permission-denied')) {
+          return {
+            message: "You don't have permission to create this document",
+          };
+        } else if (error?.message?.includes('document-already-exists')) {
+          return {
+            message: 'Document already exists',
+          };
+        } else if (error?.message?.includes('invalid-argument')) {
+          return {
+            message: 'Invalid argument',
+          };
+        }
+      }
     }
   };
 

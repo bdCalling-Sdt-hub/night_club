@@ -1,3 +1,5 @@
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import {
   IconSmallEmailCyan,
@@ -7,8 +9,6 @@ import {
 } from '../../icons/icons';
 import {ApiUrl, PrimaryColor, height} from '../../utils/utils';
 
-import {useFocusEffect} from '@react-navigation/native';
-import React from 'react';
 import {RefreshControl} from 'react-native-gesture-handler';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
@@ -31,9 +31,11 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
   const {getAllUser} = useFireStore();
   const [loading, setLoading] = React.useState(false);
 
-  useFocusEffect(() => {
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
     getAllUser(setAllUser);
-  });
+  }, [isFocused]);
 
   const handleDeleteUser = async (id: string) => {
     showToast({

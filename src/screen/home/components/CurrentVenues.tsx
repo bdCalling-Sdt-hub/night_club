@@ -33,6 +33,11 @@ const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
     try {
       const collectionRef = firestore().collection('Venues');
       let query = collectionRef.where('status', '==', 'Open');
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
 
       if (user?.role === 'manager') {
         query = query.where('manager_id', '==', user?.user_id);
@@ -63,7 +68,7 @@ const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
     <FlatList
       refreshControl={
         <RefreshControl
-          refreshing={!isFocused && loading}
+          refreshing={false}
           progressBackgroundColor={PrimaryColor}
           colors={['white']}
           onRefresh={() => {
@@ -95,27 +100,29 @@ const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
             imageStyle={tw`h-16 w-16 rounded-lg`}
           />
           <Card.Details
-            data={[
-              {
-                title: item?.name,
-                icons: IconBuildingCyan,
-                titleStyle: tw`text-white50 font-RobotoBold text-sm`,
-              },
-              item?.location && {
-                title: item?.location,
-                icons: IconLocationV2Cyan,
-                titleStyle: tw`text-white60 font-RobotoBold text-xs`,
-              },
-              item?.closingTime &&
-                item?.openingTime && {
-                  title:
-                    moment(item?.openingTime).format('hh:mm A') +
-                    ' - ' +
-                    moment(item?.closingTime).format('hh:mm A'),
-                  icons: IconClockCyan,
+            data={
+              [
+                {
+                  title: item?.name,
+                  icons: IconBuildingCyan,
+                  titleStyle: tw`text-white50 font-RobotoBold text-sm`,
+                },
+                item?.location && {
+                  title: item?.location,
+                  icons: IconLocationV2Cyan,
                   titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                 },
-            ].filter(Boolean)}
+                item?.closingTime &&
+                  item?.openingTime && {
+                    title:
+                      moment(item?.openingTime).format('hh:mm A') +
+                      ' - ' +
+                      moment(item?.closingTime).format('hh:mm A'),
+                    icons: IconClockCyan,
+                    titleStyle: tw`text-white60 font-RobotoBold text-xs`,
+                  },
+              ].filter(Boolean) as any
+            }
           />
         </Card>
       )}

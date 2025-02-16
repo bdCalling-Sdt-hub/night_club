@@ -1,10 +1,11 @@
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 import {WebUrl, height} from '../../utils/utils';
 
 import Clipboard from '@react-native-clipboard/clipboard';
 import moment from 'moment';
-import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
@@ -26,6 +27,8 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   const [event, setEvent] = React.useState<IEvent>();
 
+  const isFocused = useIsFocused();
+
   // Handle scroll and update the current page
 
   const handleShearPress = () => {
@@ -45,17 +48,17 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
     });
   };
 
-  // console.log('route', route?.params?.id);
+  // console.log('route ', route?.params?.id);
 
   const {loadSingleData} = useFireStore();
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadSingleData({
       collectType: 'Events',
       id: route?.params?.id as string,
       setLoad: setEvent,
     });
-  }, [route?.params?.id]);
+  }, [isFocused]);
 
   // event?.venue?.doc()
 

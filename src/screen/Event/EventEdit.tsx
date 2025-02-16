@@ -1,3 +1,5 @@
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
 import {
@@ -10,7 +12,6 @@ import {BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import moment from 'moment';
-import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
@@ -34,6 +35,8 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [allManager, setManger] = React.useState<IMangeUser[]>([]);
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+
+  const isFocused = useIsFocused();
 
   const {loadAllData, deleteFireData, getAllUser, updateFireData} =
     useFireStore();
@@ -98,7 +101,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     return errors;
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadAllData({
       collectType: 'Venues',
       filters: [
@@ -112,14 +115,14 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       ].filter(Boolean) as any,
       setLoad: setAllVenues,
     });
-  }, []);
+  }, [isFocused]);
 
   const handleDeleteEvent = () => {
     deleteFireData({
       collectType: 'Events',
       id: route?.params?.item.id as string,
     }).then(() => {
-      navigation?.goBack();
+      (navigation as any)?.pop(2);
     });
   };
 
@@ -127,7 +130,8 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     getAllUser(data => {
       setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
     });
-  }, []);
+    return () => {};
+  }, [isFocused]);
 
   // console.log(allVenues);
 

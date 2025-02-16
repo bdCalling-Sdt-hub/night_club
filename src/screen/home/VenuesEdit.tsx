@@ -1,3 +1,5 @@
+import {useIsFocused} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IUser, IVenue} from '../../firebase/interface';
 import {
@@ -9,7 +11,6 @@ import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
 import {Formik} from 'formik';
 import moment from 'moment';
-import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
@@ -52,6 +53,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const [allManager, setManger] = React.useState<IUser[]>([]);
   const {userId, user} = useAuth();
+  const isFocused = useIsFocused();
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
     const image = await useMediaPicker({
@@ -93,7 +95,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     })
       .then(() => {
         setLoading(false);
-        navigation?.goBack();
+        navigation?.pop(2);
       })
       .catch(err => {
         setLoading(false);
@@ -166,9 +168,9 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     );
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     handleLoader();
-  }, []);
+  }, [isFocused]);
 
   return (
     <Background style={tw`flex-1`}>

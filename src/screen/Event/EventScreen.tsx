@@ -13,7 +13,7 @@ import Background from '../components/Background';
 const UpcomingEvents = React.lazy(() => import('./components/UpcomingEvents'));
 const EHistory = React.lazy(() => import('./components/EHistory'));
 
-const VenueEvent = ({navigation}: NavigProps<null>) => {
+const VenueEvent = ({navigation}: NavigProps<any>) => {
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
   return (

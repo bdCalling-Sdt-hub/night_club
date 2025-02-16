@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -19,6 +20,7 @@ import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -46,6 +48,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {user} = useAuth();
   const {closeToast, showToast} = useToast();
   const {createFireData, loadAllData} = useFireStore();
+  const [loading, setLoading] = React.useState(false);
   // console.log(currentUser);
   const [extraFields, setExtraFields] = React.useState({
     note: '',
@@ -63,6 +66,8 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     Array<IGuestsList> | []
   >([]);
 
+  const isFocused = useIsFocused();
+
   const handleValidate = (values: createProps) => {
     const errors: any = {};
 
@@ -74,6 +79,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   };
 
   React.useEffect(() => {
+    setLoading(true);
     loadAllData({
       collectType: 'Tags',
       filters: [
@@ -85,7 +91,10 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ]?.filter(Boolean) as any,
-      setLoad: setTags,
+      setLoad: data => {
+        setTags(data);
+        setLoading(false);
+      },
     });
 
     loadAllData({
@@ -97,11 +106,12 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           value: user?.user_id,
         },
       ],
-      setLoad: setGuestListAvailable,
+      setLoad: data => {
+        setGuestListAvailable(data);
+        setLoading(false);
+      },
     });
-
-    return () => {};
-  }, []);
+  }, [isFocused]);
 
   return (
     <Background style={tw`flex-1`}>
@@ -167,7 +177,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 <Picker
                   useSafeArea
                   value={values.tag}
-                  onChange={handleChange('tag')}
+                  onChange={handleChange('tag') as any}
                   onBlur={handleBlur('tag')}
                   renderInput={() => (
                     <InputTextWL
@@ -392,7 +402,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 <Picker
                   useSafeArea
                   value={values.guest_list}
-                  onChange={handleChange('guest_list')}
+                  onChange={handleChange('guest_list') as any}
                   onBlur={handleBlur('guest_list')}
                   renderInput={() => (
                     <InputTextWL
@@ -572,6 +582,8 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           )}
         </Formik>
       </ScrollView>
+
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

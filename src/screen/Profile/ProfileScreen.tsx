@@ -1,3 +1,4 @@
+import {DrawerActions, useIsFocused} from '@react-navigation/native';
 import {
   RefreshControl,
   ScrollView,
@@ -16,7 +17,6 @@ import {
 import {BaseColor, PrimaryColor, lStorage} from '../../utils/utils';
 
 import auth from '@react-native-firebase/auth';
-import {DrawerActions} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
@@ -25,6 +25,7 @@ import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {NavigProps} from '../../interfaces/NaviProps';
@@ -47,6 +48,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   const [paidGuest, setPaidGuest] = React.useState(0);
   const [loading, setLoading] = React.useState(false);
   // console.log(user);
+  const isFocused = useIsFocused();
 
   const {listenToData, loadAllData} = useFireStore();
 
@@ -77,7 +79,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
     });
     setLoading(false);
     // Cleanup all listeners on component unmount
-  }, [loading]);
+  }, [isFocused]);
 
   React.useEffect(() => {
     let unsubscribeEvents = () => {};
@@ -174,7 +176,7 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
         }
       });
     }
-  }, [loading]);
+  }, [isFocused]);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -463,6 +465,8 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           />
         </View>
       </ScrollView>
+
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

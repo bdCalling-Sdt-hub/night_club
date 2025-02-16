@@ -16,6 +16,7 @@ interface firebaseClaimUser {
   name: string;
   phoneNumber: string;
   role: 'super-owner' | 'owner' | 'manager' | 'promoters' | 'guard';
+
   sub: string;
   user_id: string;
   super_owner_id: string;

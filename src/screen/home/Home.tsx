@@ -1,6 +1,8 @@
 import React, {Suspense} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 
+import auth from '@react-native-firebase/auth';
+import {useIsFocused} from '@react-navigation/native';
 import BackWithHeader from '../../components/backHeader/BackWithHeader';
 import OptionSelect from '../../components/cards/OptionSelect';
 import SearchCard from '../../components/cards/SearchCard';
@@ -14,11 +16,27 @@ import Background from '../components/Background';
 const CurrentVenues = React.lazy(() => import('./components/CurrentVenues'));
 const VHistory = React.lazy(() => import('./components/VHistory'));
 
-const Home = ({navigation}: NavigProps<null>) => {
+const Home = ({navigation}: NavigProps<any>) => {
   const [selectOption, setSelectOption] = React.useState('Current Venues');
   const [search, setSearch] = React.useState('');
-  const {user} = useAuth();
+  const {user, setUser} = useAuth();
   // console.log(user?.user_id);
+  const currentUser = auth().currentUser;
+
+  const isFocused = useIsFocused();
+  React.useEffect(() => {
+    if (!user?.role) {
+      currentUser?.getIdTokenResult(true).then(idTokenResult => {
+        if (idTokenResult?.claims) {
+          setUser({
+            ...idTokenResult.claims,
+            photoURL: currentUser?.photoURL,
+          });
+        }
+      });
+    }
+  }, [isFocused]);
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithHeader navigation={navigation} offBack title="Your Venues" />

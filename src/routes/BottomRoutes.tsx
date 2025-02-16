@@ -18,7 +18,7 @@ import {IconBottomPlusButton} from '../icons/Special.icon';
 import tw from '../lib/tailwind';
 import Background from '../screen/components/Background';
 import EventScreen from '../screen/Event/EventScreen';
-import GuestListScreen from '../screen/Guestlist/GuestListScreen';
+import MyGuestListScreen from '../screen/Guestlist/MyGuestListScreen';
 import Home from '../screen/home/Home';
 import ProfileScreen from '../screen/Profile/ProfileScreen';
 
@@ -170,7 +170,7 @@ function BottomRoutes() {
       <Tab.Screen name="Venue" component={Home as any} />
       <Tab.Screen name="Event" component={EventScreen as any} />
       <Tab.Screen name="Button" component={Button as any} />
-      <Tab.Screen name="GuestList" component={GuestListScreen as any} />
+      <Tab.Screen name="GuestList" component={MyGuestListScreen as any} />
       <Tab.Screen name="Profile" component={ProfileScreen as any} />
     </Tab.Navigator>
   );

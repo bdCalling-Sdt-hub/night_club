@@ -1,3 +1,4 @@
+import React, {useEffect} from 'react';
 import {
   FlatList,
   RefreshControl,
@@ -14,8 +15,8 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
-import React from 'react';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
@@ -25,6 +26,7 @@ import TButton from '../../components/buttons/TButton';
 import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -40,14 +42,22 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [venueData, setVenueData] = React.useState<IVenue | null>(null);
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [tags, setTags] = React.useState('Tags');
-  const [loading, setLoading] = React.useState(false);
-  const [selectOption, setSelectOption] = React.useState('Upcoming Events');
+  const [loading, setLoading] = React.useState(true);
+
   const [search, setSearch] = React.useState('');
 
   const {loadAllData, updateFireData, listenToData, loadSingleData} =
     useFireStore();
   const [TagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
+
+  const isFocused = useIsFocused();
+
+  const [totalGuest, setTotalGuest] = React.useState(0);
+  const [totoCheckIn, setTotalCheckIn] = React.useState(0);
+  const [addedByData, setAddedByData] = React.useState<
+    {label: string; value: string}[]
+  >([]);
 
   const handleCheckIn = (guest: IGuest) => {
     updateFireData({
@@ -60,6 +70,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   };
 
   React.useEffect(() => {
+    setLoading(true);
     loadAllData({
       collectType: 'Tags',
       filters: [
@@ -69,9 +80,11 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           value: user?.user_id,
         },
       ],
-      setLoad: setTagsData,
+      setLoad: data => {
+        setTagsData(data);
+      },
     });
-  }, []);
+  }, [isFocused]);
 
   // console.log(route?.params?.item?.id);
 
@@ -92,24 +105,42 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         setGuestListData(data);
       },
     });
-    setLoading(false);
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, [loading]);
-  const totalGuest = guestListData.reduce(
-    (acc, guest) => acc + Number(guest.people),
-    0,
-  );
-  const totoCheckIn = guestListData.reduce(
-    (acc, guest) => acc + (guest?.check_in ? Number(guest.check_in) : 0),
-    0,
-  );
+  }, [isFocused]);
 
-  const addedByData = Array.from(
-    new Set(guestListData?.map(guest => guest.added_by)),
-  ).map(addedBy => ({label: addedBy, value: addedBy}));
+  React.useEffect(() => {
+    setLoading(true);
+    loadSingleData({
+      id: route?.params?.item?.venue as string,
+      collectType: 'Venues',
+      setLoad: (data: any) => {
+        setVenueData(data);
+      },
+    });
+  }, [isFocused]);
+
+  useEffect(() => {
+    setLoading(true);
+    const totalGuest = guestListData.reduce(
+      (acc, guest) => acc + Number(guest.people),
+      0,
+    );
+    const totalCheckIn = guestListData.reduce(
+      (acc, guest) => acc + (guest?.check_in ? Number(guest.check_in) : 0),
+      0,
+    );
+    const addedByData = Array.from(
+      new Set(guestListData?.map(guest => guest.added_by)),
+    ).map(addedBy => ({label: addedBy, value: addedBy}));
+
+    setTotalGuest(totalGuest);
+    setTotalCheckIn(totalCheckIn);
+    setAddedByData(addedByData);
+    setLoading(false);
+  }, [guestListData]);
 
   // console.log(addedByData);
 
@@ -125,6 +156,16 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           id: guest.id,
           collectType: 'Guests',
           data: guest,
+        }).then(res => {
+          // console.log(res);
+          if (res?.message == 'Document not found') {
+            return showToast({
+              title: 'Warning',
+              content:
+                'Please upload the lalest version of the guest list. I think you have uploaded the wrong guest list and not to match database.',
+              onPress: closeToast,
+            });
+          }
         });
       });
     } catch (err: unknown) {
@@ -133,14 +174,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   };
 
   // console.log(guestListData);
-
-  React.useEffect(() => {
-    loadSingleData({
-      id: route?.params?.item?.venue as string,
-      collectType: 'Venues',
-      setLoad: setVenueData,
-    });
-  }, []);
 
   // console.log(venueData);
 
@@ -164,12 +197,12 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
       <View style={tw`px-4 mb-4 `}>
         <Text style={tw`text-white60 text-xs font-RobotoMedium`}>
-          {venueData?.name} {'>'} {route?.params?.item?.name} {'>'}{' '}
+          {venueData?.name && venueData?.name + '>'}{' '}
+          {route?.params?.item?.name && route?.params?.item?.name}
           {route?.params?.item?.date &&
-            moment(route?.params?.item?.date).format('DD-MM-YYYY')}{' '}
-          {'>'}
+            '>' + moment(route?.params?.item?.date).format('DD-MM-YYYY')}
           {route?.params?.item?.date &&
-            moment(route?.params?.item?.date).format(' h:mm A')}
+            '>' + moment(route?.params?.item?.date).format(' h:mm A')}
         </Text>
       </View>
 
@@ -255,7 +288,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   <Text
                     numberOfLines={1}
                     style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
-                    {tags}
+                    {TagsData?.find(tag => tag?.id === tags)?.name ?? 'Tags'}
                   </Text>
                   <SvgXml xml={IconDownArrayGray} height={10} width={10} />
                 </TouchableOpacity>
@@ -267,7 +300,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                   <Text
                     style={tw`text-white100 py-3  font-RobotoMedium text-base`}>
-                    {value}
+                    {items?.label}
                   </Text>
                 </View>
               );
@@ -298,7 +331,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             items={TagsData?.map(item => {
               return {
                 label: item?.name,
-                value: item?.name,
+                value: item?.id,
               };
             })}
             pickerModalProps={{
@@ -319,12 +352,19 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       <FlatList
         refreshControl={
           <RefreshControl
-            refreshing={loading}
+            refreshing={false}
             progressBackgroundColor={PrimaryColor}
             colors={['white']}
             onRefresh={() => {
               setLoading(!loading);
             }}
+          />
+        }
+        ListEmptyComponent={
+          <EmptyCard
+            isLoading={loading}
+            hight={height * 0.6}
+            title="No Venues"
           />
         }
         contentContainerStyle={tw`px-4 pb-14 gap-3`}
@@ -339,9 +379,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             return item.fullName.toLowerCase().includes(search.toLowerCase());
           })}
         keyExtractor={(item, index) => index.toString()}
-        ListEmptyComponent={
-          <EmptyCard hight={height * 0.6} title="No Venues" />
-        }
         renderItem={({item, index}) => (
           <Card
             onPress={() => navigation.navigate('GuestDetails', {guest: item})}
@@ -388,6 +425,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         svg={IconBigPlusCyan}
         containerStyle={tw`absolute bottom-5 bg-opacity-65 right-6 w-14 h-14 rounded-full  bg-base `}
       />
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

@@ -13,7 +13,7 @@ import Background from '../components/Background';
 const AllGuest = React.lazy(() => import('./components/AllGuest'));
 const SavedGuestList = React.lazy(() => import('./components/SavedGuestList'));
 
-const GuestListScreen = ({navigation}: NavigProps<null>) => {
+const MyGuestListScreen = ({navigation}: NavigProps<any>) => {
   // const {closeToast, showToast} = useToast();
 
   const [search, setSearch] = React.useState('');
@@ -84,4 +84,4 @@ const GuestListScreen = ({navigation}: NavigProps<null>) => {
   );
 };
 
-export default GuestListScreen;
+export default MyGuestListScreen;
