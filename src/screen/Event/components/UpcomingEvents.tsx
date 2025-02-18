@@ -37,18 +37,21 @@ const UpcomingEvents = ({navigation, venueId, search}: Props) => {
       } else {
         query = query.where('super_owner_id', '==', user?.super_owner_id);
       }
+
       if (venueId) {
         query = query.where('venue', '==', venueId);
-      }
-
-      if (
-        user?.role === 'guard' ||
-        user?.role === 'promoters' ||
-        user?.role === 'manager'
-      ) {
-        const managerId =
-          user?.role === 'manager' ? user?.user_id : user?.manager_id;
-        query = query.where('manager_id', '==', managerId);
+      } else {
+        if (
+          user?.role === 'guard' ||
+          user?.role === 'promoters' ||
+          user?.role === 'manager'
+        ) {
+          query = query.where(
+            'manager_id',
+            '==',
+            user?.role === 'manager' ? user?.user_id : user?.manager_id,
+          );
+        }
       }
 
       const snapshot = await query.get();
@@ -134,4 +137,4 @@ const UpcomingEvents = ({navigation, venueId, search}: Props) => {
   );
 };
 
-export default UpcomingEvents;
+export default React.memo(UpcomingEvents);

@@ -8,6 +8,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import React from 'react';
@@ -19,6 +20,7 @@ import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -28,12 +30,15 @@ import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
-const EventCreate = ({navigation}: NavigProps<null>) => {
+const EventCreate = ({navigation}: NavigProps<any>) => {
   const {showToast, closeToast} = useToast();
   const {user} = useAuth();
   const [allManager, setManger] = React.useState<IMangeUser[]>([]);
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+  const [loading, setLoading] = React.useState(false);
+
+  const isFocused = useIsFocused();
 
   const {loadAllData, createFireData, getAllUser} = useFireStore();
 
@@ -98,6 +103,10 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
+    setLoading(true);
+    getAllUser(data => {
+      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
+    });
     loadAllData({
       collectType: 'Venues',
       filters: [
@@ -109,15 +118,12 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ].filter(Boolean) as any,
-      setLoad: setAllVenues,
+      setLoad: data => {
+        setAllVenues(data);
+        setLoading(false);
+      },
     });
-  }, []);
-
-  React.useEffect(() => {
-    getAllUser(data => {
-      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
-    });
-  }, []);
+  }, [isFocused]);
 
   // console.log(allVenues);
 
@@ -218,7 +224,16 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                 <Picker
                   useSafeArea
                   value={values.venue}
-                  onChange={handleChange('venue')}
+                  onChange={value => {
+                    handleChange('venue')(value as string);
+
+                    handleChange('manager_id')(
+                      allVenues?.find(item => item?.id === value)?.manager_id ||
+                        '',
+                    );
+
+                    // handleChange('manager_id')('');
+                  }}
                   onBlur={handleBlur('venue')}
                   shouldRasterizeIOS
                   renderInput={() => (
@@ -268,7 +283,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                   }}
                 />
               </View>
-              {(user?.role === 'super-owner' || user?.role === 'owner') && (
+              {/* {(user?.role === 'super-owner' || user?.role === 'owner') && (
                 <View style={tw`bg-base `}>
                   <Picker
                     useSafeArea
@@ -326,7 +341,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
                     }}
                   />
                 </View>
-              )}
+              )} */}
 
               <View>
                 <InputTextWL
@@ -499,6 +514,7 @@ const EventCreate = ({navigation}: NavigProps<null>) => {
           )}
         </Formik>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

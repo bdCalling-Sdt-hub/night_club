@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -24,6 +25,7 @@ import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -94,38 +96,73 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     return errors;
   };
 
-  React.useEffect(() => {
+  const fetchTags = async () => {
     setLoading(true);
-    loadAllData({
-      collectType: 'Tags',
-      filters: [
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
+    try {
+      // Build the Firestore query
+      let query = firestore().collection('Tags');
+
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
+
+      // if (
+      //   user?.role === 'guard' ||
+      //   user?.role === 'promoters' ||
+      //   user?.role === 'manager'
+      // ) {
+      //   const managerId =
+      //     user?.role === 'manager' ? user?.user_id : user?.manager_id;
+      //   query = query.where('manager_id', '==', managerId);
+      // }
+
+      // Subscribe to real-time updates
+      query.onSnapshot(
+        snapshot => {
+          const tagsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setTags(tagsData);
+          setLoading(false);
         },
-      ]?.filter(Boolean) as any,
-      setLoad: data => {
-        setTags(data);
-        setLoading(false);
-      },
-    });
-    loadAllData({
-      collectType: 'GuestsList',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
+        error => {
+          console.error('Error fetching Tags in real-time:', error);
+          setLoading(false);
         },
-      ],
-      setLoad: data => {
-        setGuestListAvailable(data);
-        setLoading(false);
-      },
-    });
+      );
+    } catch (error) {
+      console.error('Error fetching Tags:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGuestsList = async () => {
+    setLoading(true);
+    try {
+      const snapshot = await firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const guestListData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGuestListAvailable(guestListData);
+    } catch (error) {
+      console.error('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTags();
+    fetchGuestsList();
   }, [isFocused]);
 
   // console.log(guest);
@@ -244,17 +281,17 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
-                {/* {userAccess({GRole: 'middler'}) && ( */}
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewTag');
-                  }}>
-                  <Text style={tw`text-primary pt-2 text-xs text-right`}>
-                    Add new Tag
-                  </Text>
-                </TouchableOpacity>
-                {/* )} */}
+                {userAccess({GRole: 'middler'}) && (
+                  <TouchableOpacity
+                    style={tw`self-end`}
+                    onPress={() => {
+                      navigation.navigate('AddNewTag');
+                    }}>
+                    <Text style={tw`text-primary pt-2 text-xs text-right`}>
+                      Add new Tag
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>

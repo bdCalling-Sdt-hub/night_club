@@ -1,4 +1,3 @@
-import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
@@ -10,6 +9,8 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
@@ -20,6 +21,7 @@ import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -35,6 +37,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [allManager, setManger] = React.useState<IMangeUser[]>([]);
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [allVenues, setAllVenues] = React.useState<IVenue[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   const isFocused = useIsFocused();
 
@@ -102,6 +105,10 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   };
 
   useEffect(() => {
+    setLoading(true);
+    getAllUser(data => {
+      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
+    });
     loadAllData({
       collectType: 'Venues',
       filters: [
@@ -113,7 +120,11 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ].filter(Boolean) as any,
-      setLoad: setAllVenues,
+      setLoad: data => {
+        // console.log(data);
+        setAllVenues(data);
+        setLoading(false);
+      },
     });
   }, [isFocused]);
 
@@ -126,21 +137,11 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     });
   };
 
-  React.useEffect(() => {
-    getAllUser(data => {
-      setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
-    });
-    return () => {};
-  }, [isFocused]);
-
   // console.log(allVenues);
 
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle
-        title="Create Event"
-        onPress={() => navigation?.goBack()}
-      />
+      <BackWithTitle title="Edit Event" onPress={() => navigation?.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
@@ -153,6 +154,27 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             //   id: values.venue,
             // });
             // values.venue = refer as any;
+
+            // console.log(values);
+            if (values?.venue !== route?.params?.item?.venue) {
+              firestore()
+                .collection('Guests')
+                .where('venue', '==', route?.params?.item?.venue)
+                .get()
+                .then(snapshot => {
+                  snapshot.forEach(doc => {
+                    updateFireData({
+                      id: doc.id,
+                      collectType: 'Guests',
+                      data: {
+                        venue: values.venue,
+                      },
+                    });
+                  });
+                });
+              // update replace the previous value id in current id
+            }
+
             updateFireData({
               id: route?.params?.item.id,
               collectType: 'Events',
@@ -220,7 +242,16 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 <Picker
                   useSafeArea
                   value={values.venue}
-                  onChange={handleChange('venue')}
+                  onChange={value => {
+                    handleChange('venue')(value as string);
+
+                    handleChange('manager_id')(
+                      allVenues?.find(item => item?.id === value)?.manager_id ||
+                        '',
+                    );
+
+                    // handleChange('manager_id')('');
+                  }}
                   onBlur={handleBlur('venue')}
                   shouldRasterizeIOS
                   renderInput={() => (
@@ -270,7 +301,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   }}
                 />
               </View>
-              {(user?.role === 'super-owner' || user?.role === 'owner') && (
+              {/* {(user?.role === 'super-owner' || user?.role === 'owner') && (
                 <View style={tw`bg-base `}>
                   <Picker
                     useSafeArea
@@ -328,7 +359,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     }}
                   />
                 </View>
-              )}
+              )} */}
 
               <View>
                 <InputTextWL
@@ -507,6 +538,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           )}
         </Formik>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

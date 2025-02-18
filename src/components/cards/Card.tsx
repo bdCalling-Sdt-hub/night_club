@@ -102,7 +102,7 @@ Card.Details = ({
       {children ? (
         children
       ) : (
-        <View style={[tw`justify-start  gap-1`, containerStyle]}>
+        <View style={[tw`justify-start  gap-1 `, containerStyle]}>
           {data?.map((item, index) => {
             return (
               <View
@@ -116,7 +116,7 @@ Card.Details = ({
                   <Text
                     numberOfLines={1}
                     style={[
-                      tw`text-white font-NunitoSansRegular text-sm`,
+                      tw`text-white font-NunitoSansRegular text-sm text-wrap`,
                       item.titleStyle,
                     ]}>
                     {item.title}

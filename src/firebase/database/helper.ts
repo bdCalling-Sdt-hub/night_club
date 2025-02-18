@@ -85,7 +85,7 @@ const useFireStore = () => {
 
       return query;
     } catch (error) {
-      console.warn(`Error initializing query for ${collectType}:`, error);
+      console.log(`Error initializing query for ${collectType}:`, error);
       return null;
     }
   };
@@ -116,7 +116,7 @@ const useFireStore = () => {
       const query = await initializeQuery(collectType, filters);
       if (!query) {
         console.log(`No data found in ${collectType} for the default filter.`);
-        onUpdate([]);
+        onUpdate?.([]);
         return () => {};
       }
 
@@ -135,6 +135,7 @@ const useFireStore = () => {
 
       return unsubscribe;
     } catch (error) {
+      onUpdate?.([]);
       console.log(`Error initializing listener for ${collectType}:`, error);
       return () => {};
     }
@@ -157,7 +158,8 @@ const useFireStore = () => {
     try {
       const query = await initializeQuery(collectType, filters);
       if (!query) {
-        return [];
+        setLoad?.([]);
+        return () => {};
       }
 
       const snapshot = await query.get();
@@ -169,7 +171,8 @@ const useFireStore = () => {
       setLoad?.(data);
       return data;
     } catch (error) {
-      console.error(`Error getting data from ${collectType}:`, error);
+      console.warn(`Error getting data from ${collectType}:`, error);
+
       return [];
     }
   };
@@ -190,7 +193,8 @@ const useFireStore = () => {
       setLoad?.(data);
       return data;
     } catch (error) {
-      console.error(
+      setLoad?.({});
+      console.warn(
         `Error getting ${collectType} document with ID ${id}:`,
         error,
       );
@@ -217,7 +221,7 @@ const useFireStore = () => {
       });
       return true;
     } catch (error) {
-      console.error(`Error updating ${collectType} with ID ${id}:`, error);
+      console.warn(`Error updating ${collectType} with ID ${id}:`, error);
       if (error instanceof Error) {
         if (error?.message?.includes('permission-denied')) {
           return {
@@ -267,7 +271,7 @@ const useFireStore = () => {
       await docRef.set(docData);
       return docRef.id;
     } catch (error) {
-      console.error(`Error creating ${collectType}:`, error);
+      console.warn(`Error creating ${collectType}:`, error);
       if (error instanceof Error) {
         if (error?.message?.includes('permission-denied')) {
           return {
@@ -298,7 +302,7 @@ const useFireStore = () => {
       const docRef = firestore().collection(collectType).doc(id);
       await docRef.delete();
     } catch (error) {
-      console.error(`Error deleting ${collectType} with ID ${id}:`, error);
+      console.warn(`Error deleting ${collectType} with ID ${id}:`, error);
     }
   };
 
@@ -315,7 +319,7 @@ const useFireStore = () => {
       // console.log(data);
       return docRef;
     } catch (error) {
-      console.error(`Error creating ${collectType}:`, error);
+      console.warn(`Error creating ${collectType}:`, error);
     }
   };
 

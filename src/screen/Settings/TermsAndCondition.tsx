@@ -1,17 +1,19 @@
 import {ScrollView, useWindowDimensions} from 'react-native';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {NavigProps} from '../../interfaces/NaviProps';
+import firestore from '@react-native-firebase/firestore';
 import React from 'react';
 import RenderHtml from 'react-native-render-html';
-import firestore from '@react-native-firebase/firestore';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import GLoading from '../../components/loader/GLoading';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
-const TermsAndCondition = ({navigation}: NavigProps<null>) => {
+const TermsAndCondition = ({navigation}: NavigProps<any>) => {
   const [termsAndCondition, SetTermsAndCondition] = React.useState<any>();
-
+  const [loading, setLoading] = React.useState(false);
   React.useEffect(() => {
+    setLoading(true);
     let unsubscribe = () => {};
     // Cleanup the listener on  component unmount
     const query = firestore().collection('Setting').doc('terms_and_condition');
@@ -19,9 +21,11 @@ const TermsAndCondition = ({navigation}: NavigProps<null>) => {
       snapshot => {
         const data = snapshot?.data();
         data && SetTermsAndCondition(data);
+        setLoading(false);
       },
       error => {
         console.log(error);
+        setLoading(false);
       },
     );
 
@@ -48,6 +52,7 @@ const TermsAndCondition = ({navigation}: NavigProps<null>) => {
           />
         )}
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

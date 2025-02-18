@@ -1,4 +1,3 @@
-import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {FlatList, Text, View} from 'react-native';
 import {
@@ -9,6 +8,7 @@ import {
 } from '../../icons/icons';
 import {ApiUrl, PrimaryColor, height} from '../../utils/utils';
 
+import {useIsFocused} from '@react-navigation/native';
 import {RefreshControl} from 'react-native-gesture-handler';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
@@ -94,9 +94,9 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
           return (
             <Card
               onPress={() => navigation.navigate('UpdateUser', {item})}
-              containerStyle={tw`flex-row gap-3 items-center justify-center`}
+              containerStyle={tw`flex-row gap-3 items-center justify-center `}
               component={
-                <View style={tw`flex-row items-center gap-2`}>
+                <View style={tw`flex-row items-center gap-2 flex-1`}>
                   <Text style={tw`text-primary font-RobotoBold`}>
                     {item.role === 'super-owner'
                       ? 'Super Owner'
@@ -113,7 +113,7 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
                     onPress={() => {
                       handleDeleteUser(item.uid);
                     }}
-                    containerStyle={tw` p-2 rounded-md bg-primary600`}
+                    containerStyle={tw` p-2 rounded-md bg-primary600 `}
                   />
                 </View>
               }>
@@ -126,14 +126,21 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
                 }
               />
               <Card.Details
+                svgStyle={tw`w-4 h-4`}
                 data={[
                   {
-                    title: item.displayName,
+                    title:
+                      item.displayName?.length > 15
+                        ? `${item.displayName?.slice(0, 15)}...`
+                        : item.displayName,
                     icons: IconSmallUserCyan,
                     titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                   },
                   {
-                    title: item.email,
+                    title:
+                      item.email?.length > 15
+                        ? `${item.email?.slice(0, 15)}...`
+                        : item.email,
                     icons: IconSmallEmailCyan,
                     titleStyle: tw`text-white60 font-RobotoBold text-xs`,
                   },

@@ -7,7 +7,6 @@ import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
 import {useAuth} from '../../../context/AuthProvider';
-import useFireStore from '../../../firebase/database/helper';
 import {IGuestsList} from '../../../firebase/interface';
 import tw from '../../../lib/tailwind';
 
@@ -21,13 +20,12 @@ const SavedGuestList = ({navigation}: Props) => {
 
   const {user} = useAuth();
   const [loading, setLoading] = React.useState(false);
-  const {loadAllData} = useFireStore();
 
   const isFocused = useIsFocused();
 
   const fetchGuestsList = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
       const snapshot = await firestore()
         .collection('GuestsList')
         .where('createdBy', '==', user?.user_id)

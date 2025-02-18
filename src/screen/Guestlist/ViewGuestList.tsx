@@ -26,7 +26,6 @@ import TButton from '../../components/buttons/TButton';
 import Card from '../../components/cards/Card';
 import SearchCard from '../../components/cards/SearchCard';
 import EmptyCard from '../../components/Empty/EmptyCard';
-import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -42,7 +41,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const [venueData, setVenueData] = React.useState<IVenue | null>(null);
   // const [tagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [tags, setTags] = React.useState('Tags');
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
 
   const [search, setSearch] = React.useState('');
 
@@ -75,9 +74,10 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       collectType: 'Tags',
       filters: [
         {
-          field: 'createdBy',
+          field: 'super_owner_id',
           operator: '==',
-          value: user?.user_id,
+          value:
+            user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
         },
       ],
       setLoad: data => {
@@ -103,6 +103,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       ],
       onUpdate: (data: any[]) => {
         setGuestListData(data);
+        // setLoading(false);
       },
     });
     // Cleanup the listener on component unmount
@@ -118,20 +119,26 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       collectType: 'Venues',
       setLoad: (data: any) => {
         setVenueData(data);
+        // setLoading(false);
       },
     });
   }, [isFocused]);
 
   useEffect(() => {
-    setLoading(true);
     const totalGuest = guestListData.reduce(
-      (acc, guest) => acc + Number(guest.people),
+      (acc, guest) => acc + (guest.people ? Number(guest.people) : 0),
       0,
     );
+
     const totalCheckIn = guestListData.reduce(
-      (acc, guest) => acc + (guest?.check_in ? Number(guest.check_in) : 0),
+      (acc, guest) =>
+        acc + (parseInt(guest?.check_in) || 0 ? Number(guest.check_in) : 0),
       0,
     );
+
+    // console.log(totalGuest, totalCheckIn);
+    // console.log(guestListData?.map(guest => guest.people));
+
     const addedByData = Array.from(
       new Set(guestListData?.map(guest => guest.added_by)),
     ).map(addedBy => ({label: addedBy, value: addedBy}));
@@ -139,7 +146,9 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     setTotalGuest(totalGuest);
     setTotalCheckIn(totalCheckIn);
     setAddedByData(addedByData);
-    setLoading(false);
+    return () => {
+      setLoading(false);
+    };
   }, [guestListData]);
 
   // console.log(addedByData);
@@ -176,6 +185,8 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   // console.log(guestListData);
 
   // console.log(venueData);
+
+  // console.log(loading);
 
   return (
     <Background style={tw`flex-1 bg-base`}>
@@ -332,7 +343,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               return {
                 label: item?.name,
                 value: item?.id,
-              };
+              } as any;
             })}
             pickerModalProps={{
               overlayBackgroundColor: BaseColor,
@@ -387,7 +398,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               <Card.Button
                 onPress={() => handleCheckIn(item)}
                 checkedIn={Number(item?.check_in || 0)}
-                total={Number(item?.people)}
+                total={Number(item?.people || 0)}
               />
             }>
             <Card.Details
@@ -425,7 +436,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         svg={IconBigPlusCyan}
         containerStyle={tw`absolute bottom-5 bg-opacity-65 right-6 w-14 h-14 rounded-full  bg-base `}
       />
-      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

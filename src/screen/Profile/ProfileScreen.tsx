@@ -1,4 +1,5 @@
 import {DrawerActions, useIsFocused} from '@react-navigation/native';
+import React, {useEffect} from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -17,7 +18,7 @@ import {
 import {BaseColor, PrimaryColor, lStorage} from '../../utils/utils';
 
 import auth from '@react-native-firebase/auth';
-import React from 'react';
+import firestore from '@react-native-firebase/firestore';
 import {SvgXml} from 'react-native-svg';
 import {Picker} from 'react-native-ui-lib';
 import AniImage from '../../components/animate/AniImage';
@@ -27,12 +28,12 @@ import IwtButton from '../../components/buttons/IwtButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
 import GLoading from '../../components/loader/GLoading';
 import {useAuth} from '../../context/AuthProvider';
-import useFireStore from '../../firebase/database/helper';
+import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
 
-const ProfileScreen = ({navigation}: NavigProps<null>) => {
+const ProfileScreen = ({navigation}: NavigProps<any>) => {
   const currentUser = auth().currentUser;
   const {user, setUser} = useAuth();
   const [venueData, setVenueData] = React.useState<IVenue[]>([]);
@@ -50,95 +51,100 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   // console.log(user);
   const isFocused = useIsFocused();
 
-  const {listenToData, loadAllData} = useFireStore();
+  const MiddleRoles = userAccess({GRole: 'middler'});
 
-  React.useEffect(() => {
-    // Step 1: Load Venues
+  const fetchData = async () => {
     setLoading(true);
-    loadAllData({
-      collectType: 'Venues',
-      filters: [
-        {
-          field: 'status',
-          operator: '==',
-          value: 'Open',
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
+    try {
+      const collectionRef = firestore().collection('Venues');
+      let query = collectionRef.where('status', '==', 'Open');
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
 
-      setLoad: (venues: IVenue[]) => {
-        // Filter venues by manager
-        setVenueData(venues);
-      },
-    });
-    setLoading(false);
-    // Cleanup all listeners on component unmount
+      if (user?.role === 'manager') {
+        query = query.where('manager_id', '==', user?.user_id);
+      } else if (user?.role === 'guard' || user?.role === 'promoters') {
+        query = query.where('manager_id', '==', user?.manager_id);
+      }
+
+      const snapshot = await query.get();
+      const fetchedData: IVenue[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as IVenue[];
+
+      setVenueData(fetchedData);
+    } catch (error) {
+      console.error('Error fetching venues:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (MiddleRoles) {
+      if (!isFocused) return;
+
+      // Step 1: Load Venues
+      setLoading(true);
+
+      fetchData();
+    }
   }, [isFocused]);
 
-  React.useEffect(() => {
-    let unsubscribeEvents = () => {};
-    const venueIds = venueData.map(venue => venue.id);
-    // console.log(venueIds);
-    // Step 2: Load Events based on filtered venues
-    listenToData({
-      unsubscribe: unsubscribeEvents,
-      collectType: 'Events',
-      filters: [
-        {
-          field: 'venue',
-          operator: 'in',
-          value: venueIds, // Filter events where venue matches the filtered venues
-        },
-      ]?.filter(Boolean) as any,
-      onUpdate: (events: IEvent[]) => {
-        setEventData(events?.filter(i => i.date > new Date().toISOString()));
+  useEffect(() => {
+    if (!venueData.length) return;
 
-        // const eventIds = events.map((event: any) => event.id);
-      },
+    // Step 2: Load Events based on filtered venues
+    const venueIds = venueData.map(venue => venue.id);
+
+    // console.log(venueData);
+
+    let eventsQuery = firestore()
+      .collection('Events')
+      .where('venue', 'in', venueIds);
+
+    const unsubscribeEvents = eventsQuery.onSnapshot(snapshot => {
+      const events = snapshot.docs
+        .map(doc => ({id: doc.id, ...doc.data()}))
+        .filter(event => new Date(event.date) > new Date());
+      setEventData(events);
+      setLoading(false);
     });
 
-    // Cleanup all listeners on component unmount
     return () => {
       unsubscribeEvents();
     };
   }, [venueData]);
 
-  React.useEffect(() => {
-    let unsubscribeGuests = () => {};
+  useEffect(() => {
+    if (!eventData.length) return;
 
     // Step 3: Load Guests based on filtered events
-    listenToData({
-      unsubscribe: unsubscribeGuests,
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event',
-          operator: 'in',
-          value: eventData.map((event: any) => event.id), // Filter events where venue matches the filtered venues
-        },
-      ]?.filter(Boolean) as any,
-      onUpdate: (data: any[]) => {
-        // console.log(data);
-        setAllGuest(
-          data
+    const eventIds = eventData.map(event => event.id);
 
-            ?.filter((guest: any) => {
-              return !selectEvent ? guest : selectEvent === guest.event;
-            })
-            ?.filter((guest: any) => {
-              return !selectVenue ? guest : selectVenue === guest.venue;
-            }),
-        );
-      },
+    let guestsQuery = firestore()
+      .collection('Guests')
+      .where('event', '!=', null)
+      .where('event', 'in', eventIds);
+
+    const unsubscribeGuests = guestsQuery.onSnapshot(snapshot => {
+      const guests = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as IGuest[];
+      // console.log(guests);
+      const filteredGuests = guests
+        .filter(guest => (!selectEvent ? guest : selectEvent === guest.event))
+        .filter(guest => (!selectVenue ? guest : selectVenue === guest.venue));
+      // console.log(selectVenue, selectEvent);
+      setAllGuest(filteredGuests);
+      setLoading(false);
     });
 
-    // Cleanup all listeners on component unmount
     return () => {
       unsubscribeGuests();
     };
@@ -149,19 +155,51 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
   // console.log(selectEvent, selectVenue);
 
   React.useEffect(() => {
-    setTotalGuest(allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0));
-    setFreeGuest(
-      allGuest?.reduce((acc, cur) => acc + Number(cur.free_entry), 0),
-    );
-    setCheck_inGuest(
-      allGuest
-        ?.filter(item => item?.check_in)
-        ?.reduce((acc, cur) => acc + Number(cur.check_in), 0),
-    );
-    setPaidGuest(totalGuest - freeGuest);
-  }, [allGuest]);
+    if (MiddleRoles) {
+      setTotalGuest(
+        allGuest?.reduce(
+          (acc, cur) => acc + (cur.people ? Number(cur.people) : 0),
+          0,
+        ),
+      );
+      setFreeGuest(
+        allGuest?.reduce(
+          (acc, cur) => (acc + cur.free_entry ? Number(cur.free_entry) : 0),
+          0,
+        ),
+      );
+      setCheck_inGuest(
+        allGuest
+          ?.filter(item => item?.check_in)
+          ?.reduce(
+            (acc, cur) => (acc + cur.check_in ? Number(cur.check_in) : 0),
+            0,
+          ),
+      );
+      // console.log(
+      //   allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0),
+      //   allGuest?.reduce((acc, cur) => acc + Number(cur.free_entry), 0),
+      // );
+      setPaidGuest(
+        allGuest?.reduce(
+          (acc, cur) => acc + (cur.people ? Number(cur.people) : 0),
+          0,
+        ) -
+          allGuest?.reduce(
+            (acc, cur) => acc + (cur.entry_fee ? Number(cur.entry_fee) : 0),
+            0,
+          ),
+      );
+    }
 
-  // console.log(allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0));
+    return () => {
+      setLoading(false);
+    };
+  }, [allGuest, eventData]);
+
+  // console.log(eventData);
+
+  // console.log(venueData?.map((venue: any) => venue.id));
 
   // console.log(user);
 
@@ -176,6 +214,9 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
         }
       });
     }
+    return () => {
+      setLoading(false);
+    };
   }, [isFocused]);
 
   return (
@@ -196,9 +237,9 @@ const ProfileScreen = ({navigation}: NavigProps<null>) => {
           <RefreshControl
             progressBackgroundColor={PrimaryColor}
             onRefresh={() => {
-              setLoading(true);
+              fetchData();
             }}
-            refreshing={loading}
+            refreshing={false}
             colors={['white']}
           />
         }

@@ -191,16 +191,16 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                 <View>
                   {data?.map((item, index) => {
                     return (
-                      <View
+                      <TouchableOpacity
                         key={index}
-                        // onPress={() => {
-                        //   setSelectRole(item);
-                        //   handleChange('role')(item);
-                        // }}
+                        onPress={() => {
+                          setSelectRole(item.value);
+                          handleChange('role')(item.value);
+                        }}
                         style={tw`flex-row gap-3 items-center  mb-4`}>
                         <Checkbox
                           borderRadius={100}
-                          size={15}
+                          size={20}
                           iconColor="#fff"
                           value={selectRole === item.value}
                           onValueChange={() => {
@@ -214,7 +214,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                           style={tw`text-white50 font-RobotoBold text-base`}>
                           {item?.label}
                         </Text>
-                      </View>
+                      </TouchableOpacity>
                     );
                   })}
                 </View>
@@ -316,6 +316,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       value={optionSendMail?.sendMail}
                       onValueChange={value => {
                         handleChange('loginType')('email');
+                        handleChange('password')('');
                         setOptionSendMail({
                           sendMail: value,
                           setPass: false,
@@ -336,6 +337,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       value={optionSendMail?.setPass}
                       onValueChange={value => {
                         handleChange('loginType')('password');
+
                         setOptionSendMail({
                           sendMail: false,
                           setPass: value,
@@ -368,7 +370,10 @@ const AddUser = ({navigation}: NavigProps<null>) => {
 
               <View style={tw`px-4  mt-12 gap-5 `}>
                 <TButton
-                  disabled={optionSendMail.setPass && !values?.password}
+                  disabled={
+                    (optionSendMail.setPass && values?.password?.length < 6) ||
+                    (!optionSendMail?.sendMail && !optionSendMail?.setPass)
+                  }
                   isLoading={loading}
                   title="Save"
                   onPress={handleSubmit}

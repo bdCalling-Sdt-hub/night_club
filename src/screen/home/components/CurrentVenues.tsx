@@ -38,7 +38,7 @@ const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
       } else {
         query = query.where('super_owner_id', '==', user?.super_owner_id);
       }
-
+      console.log(user?.role);
       if (user?.role === 'manager') {
         query = query.where('manager_id', '==', user?.user_id);
       } else if (user?.role === 'guard' || user?.role === 'promoters') {

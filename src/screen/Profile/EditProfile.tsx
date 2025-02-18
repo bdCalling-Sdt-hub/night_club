@@ -57,32 +57,26 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
       setImageLoading(false);
       return setImage({uri: url});
     } catch (error) {
+      setImageLoading(false);
       console.log(error);
     }
   };
 
   const handleUpdate = async () => {
     try {
-      console.log('hit');
+      // console.log('hit');
       setLoading(true);
 
       UpdateCurrentUser(name || '', image?.uri || '').then(res => {
         if (res) {
           setUser({...user, name: name, photoURL: image?.uri});
           setLoading(false);
-          showToast({
-            title: 'Successfully',
-            content: 'Your profile updated successfully',
-            onPress: () => {
-              navigation.goBack();
-              closeToast();
-            },
-          });
+          navigation.goBack();
         }
       });
-      setLoading(false);
     } catch (error) {
       console.log(error);
+      setLoading(false);
     }
   };
 
@@ -148,19 +142,22 @@ const EditProfile = ({navigation}: NavigProps<null>) => {
 
         <View style={tw`px-4 my-12 gap-3 `}>
           <TButton
+            disabled={imageLoading}
             isLoading={loading}
             title="Update"
             containerStyle={tw``}
             onPress={() => handleUpdate()}
           />
           <TButton
-            isLoading={loading}
+            disabled={imageLoading}
+            // isLoading={loading}
             title="Cancel"
             containerStyle={tw`bg-transparent border border-red-800`}
             onPress={() => navigation?.goBack()}
           />
         </View>
       </ScrollView>
+      {/* <GLoading loading={loading} setLoading={setLoading} /> */}
     </Background>
   );
 };

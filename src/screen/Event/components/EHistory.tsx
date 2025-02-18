@@ -137,4 +137,4 @@ const EHistory = ({navigation, search, venueId}: Props) => {
   );
 };
 
-export default EHistory;
+export default React.memo(EHistory);

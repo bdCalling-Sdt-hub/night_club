@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -24,6 +25,7 @@ import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
@@ -98,39 +100,73 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     return errors;
   };
 
-  React.useEffect(() => {
+  const fetchTags = async () => {
     setLoading(true);
-    loadAllData({
-      collectType: 'Tags',
-      filters: [
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
-      setLoad: data => {
-        setTags(data);
-        setLoading(false);
-      },
-    });
+    try {
+      // Build the Firestore query
+      let query = firestore().collection('Tags');
 
-    loadAllData({
-      collectType: 'GuestsList',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
+
+      // if (
+      //   user?.role === 'guard' ||
+      //   user?.role === 'promoters' ||
+      //   user?.role === 'manager'
+      // ) {
+      //   const managerId =
+      //     user?.role === 'manager' ? user?.user_id : user?.manager_id;
+      //   query = query.where('manager_id', '==', managerId);
+      // }
+
+      // Subscribe to real-time updates
+      query.onSnapshot(
+        snapshot => {
+          const tagsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setTags(tagsData);
+          setLoading(false);
         },
-      ],
-      setLoad: data => {
-        setGuestListAvailable(data);
-        setLoading(false);
-      },
-    });
+        error => {
+          console.error('Error fetching Tags in real-time:', error);
+          setLoading(false);
+        },
+      );
+    } catch (error) {
+      console.error('Error fetching Tags:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGuestsList = async () => {
+    setLoading(true);
+    try {
+      const snapshot = await firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const guestListData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGuestListAvailable(guestListData);
+    } catch (error) {
+      console.error('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTags();
+    fetchGuestsList();
   }, [isFocused]);
 
   // console.log(guest);
@@ -246,17 +282,17 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
-                {/* {userAccess({GRole: 'middler'}) && ( */}
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewTag');
-                  }}>
-                  <Text style={tw`text-primary pt-2 text-xs text-right`}>
-                    Add new Tag
-                  </Text>
-                </TouchableOpacity>
-                {/* )} */}
+                {userAccess({GRole: 'middler'}) && (
+                  <TouchableOpacity
+                    style={tw`self-end`}
+                    onPress={() => {
+                      navigation.navigate('AddNewTag');
+                    }}>
+                    <Text style={tw`text-primary pt-2 text-xs text-right`}>
+                      Add new Tag
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
@@ -429,13 +465,17 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 <Picker
                   useSafeArea
                   value={values.guest_list}
-                  onChange={handleChange('guest_list')}
+                  onChange={handleChange('guest_list') as any}
                   onBlur={handleBlur('guest_list')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.guest_list}
+                      value={
+                        guestListAvailable?.find(
+                          item => item.id === values.guest_list,
+                        )?.name
+                      }
                       label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -450,7 +490,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items.label}
                         </Text>
                       </View>
                     );
@@ -470,12 +510,13 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   paddingH
                   items={guestListAvailable?.map(item => ({
                     label: item.name,
-                    value: item.name,
+                    value: item.id,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
+
                 <TouchableOpacity
                   style={tw`self-end`}
                   onPress={() => {

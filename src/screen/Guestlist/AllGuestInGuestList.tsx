@@ -2,6 +2,8 @@ import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import {Checkbox} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
@@ -28,67 +30,84 @@ const AllGuestInGuestList = ({
   const [selectEvent, setSelectEvent] = React.useState<IEvent>();
   const [search, setSearch] = React.useState('');
   const [addToGuests, setAddToGuests] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const [guestListAvailable, setGuestListAvailable] =
     React.useState<Array<IGuestsList>>();
   const [guests, setGuests] = React.useState<Array<IGuest>>();
 
-  const {loadAllData, updateFireData, listenToData} = useFireStore();
+  const {updateFireData} = useFireStore();
+
+  const isFocused = useIsFocused();
+
+  const fetchEvents = async () => {
+    setLoading(true);
+    try {
+      const collectionRef = firestore().collection('Events');
+      let query = collectionRef;
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
+
+      if (
+        user?.role === 'guard' ||
+        user?.role === 'promoters' ||
+        user?.role === 'manager'
+      ) {
+        query = query.where(
+          'manager_id',
+          '==',
+          user?.role === 'manager' ? user?.user_id : user?.manager_id,
+        );
+      }
+
+      const snapshot = await query.get();
+      const filteredData = snapshot.docs
+        .map(doc => ({id: doc.id, ...doc.data()}))
+        .filter((item: IEvent) =>
+          item?.date ? item.date > new Date().toISOString() : item,
+        );
+
+      setGuestListAvailable(filteredData);
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGuests = () => {
+    setLoading(true);
+    const query = firestore()
+      .collection('Guests')
+      .where('guest_list', '==', route?.params?.item?.id)
+      .where('createdBy', '==', user?.user_id);
+
+    const unsubscribe = query.onSnapshot(
+      snapshot => {
+        const guestListData = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setGuests(guestListData);
+        setLoading(false);
+      },
+      error => {
+        console.error('Error fetching Guests:', error);
+        setLoading(false);
+      },
+    );
+
+    return unsubscribe; // Return the unsubscribe function for cleanup
+  };
 
   React.useEffect(() => {
-    loadAllData({
-      collectType: 'Events',
-      filters: [
-        {
-          field: 'date',
-          operator: '>=',
-          value: new Date().toISOString(),
-        },
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
-      setLoad: data => {
-        setGuestListAvailable(data);
-      },
-    });
-  }, []);
-
-  React.useEffect(() => {
-    const unsubscribe = () => {};
-    listenToData({
-      unsubscribe,
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'guest_list',
-          operator: '==',
-          value: route?.params?.item?.id,
-        },
-        {
-          field: 'event',
-          operator: '==',
-          value: null,
-        },
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
-        },
-      ],
-      onUpdate: (data: any[]) => {
-        setGuests(data);
-      },
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    setLoading(true);
+    fetchEvents();
+    fetchGuests();
+  }, [isFocused]);
 
   const handleImportData = () => {
     showToast({
@@ -178,7 +197,9 @@ const AllGuestInGuestList = ({
 
       <FlatList
         contentContainerStyle={tw`px-4 pt-1 pb-8 gap-3`}
-        data={guests}
+        data={guests?.filter((item: IGuest) =>
+          item?.fullName?.toLowerCase().includes(search?.toLowerCase()),
+        )}
         ListHeaderComponent={() => {
           return (
             <TouchableOpacity
@@ -197,7 +218,11 @@ const AllGuestInGuestList = ({
           );
         }}
         ListEmptyComponent={
-          <EmptyCard hight={height * 0.6} title="No Venues" />
+          <EmptyCard
+            isLoading={loading}
+            hight={height * 0.6}
+            title="No Venues"
+          />
         }
         renderItem={({item, index}) => (
           <Card

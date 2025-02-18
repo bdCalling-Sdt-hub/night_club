@@ -1,17 +1,21 @@
 import {ScrollView, useWindowDimensions} from 'react-native';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import {NavigProps} from '../../interfaces/NaviProps';
+import firestore from '@react-native-firebase/firestore';
 import React from 'react';
 import RenderHtml from 'react-native-render-html';
-import firestore from '@react-native-firebase/firestore';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import GLoading from '../../components/loader/GLoading';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
-const PrivacyAndPolicy = ({navigation}: NavigProps<null>) => {
+const PrivacyAndPolicy = ({navigation}: NavigProps<any>) => {
   const [privacyPolicy, setPrivacyPolicy] = React.useState<any>();
 
+  const [loading, setLoading] = React.useState(false);
+
   React.useEffect(() => {
+    setLoading(true);
     let unsubscribe = () => {};
     // Cleanup the listener on  component unmount
     const query = firestore().collection('Setting').doc('privacy_policy');
@@ -19,9 +23,11 @@ const PrivacyAndPolicy = ({navigation}: NavigProps<null>) => {
       snapshot => {
         const data = snapshot?.data();
         data && setPrivacyPolicy(data);
+        setLoading(false);
       },
       error => {
         console.log(error);
+        setLoading(false);
       },
     );
 
@@ -47,6 +53,7 @@ const PrivacyAndPolicy = ({navigation}: NavigProps<null>) => {
           />
         )}
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

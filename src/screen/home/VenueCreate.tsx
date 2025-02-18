@@ -26,6 +26,7 @@ import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -42,6 +43,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const [allManager, setManger] = React.useState<IUser[]>([]);
   const {createFireData, getAllUser} = useFireStore();
+  const [loading, setLoading] = React.useState(false);
   const handleImageUpdate = async () => {
     setImageUpdateLoad(true);
     const image = await useMediaPicker({
@@ -121,8 +123,10 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
   };
 
   React.useEffect(() => {
+    setLoading(true);
     getAllUser(data => {
       setManger(data.filter((item: IUser) => item?.role === 'manager'));
+      setLoading(false);
     });
   }, []);
   // console.log(allManager);
@@ -539,6 +543,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
           )}
         </Formik>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

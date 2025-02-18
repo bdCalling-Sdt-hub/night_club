@@ -7,6 +7,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -78,39 +79,73 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     return errors;
   };
 
-  React.useEffect(() => {
+  const fetchTags = async () => {
     setLoading(true);
-    loadAllData({
-      collectType: 'Tags',
-      filters: [
-        (user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager') && {
-          field: 'manager_id',
-          operator: '==',
-          value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
-        },
-      ]?.filter(Boolean) as any,
-      setLoad: data => {
-        setTags(data);
-        setLoading(false);
-      },
-    });
+    try {
+      // Build the Firestore query
+      let query = firestore().collection('Tags');
 
-    loadAllData({
-      collectType: 'GuestsList',
-      filters: [
-        {
-          field: 'createdBy',
-          operator: '==',
-          value: user?.user_id,
+      if (user?.role === 'super-owner') {
+        query = query.where('super_owner_id', '==', user?.user_id);
+      } else {
+        query = query.where('super_owner_id', '==', user?.super_owner_id);
+      }
+
+      // if (
+      //   user?.role === 'guard' ||
+      //   user?.role === 'promoters' ||
+      //   user?.role === 'manager'
+      // ) {
+      //   const managerId =
+      //     user?.role === 'manager' ? user?.user_id : user?.manager_id;
+      //   query = query.where('manager_id', '==', managerId);
+      // }
+
+      // Subscribe to real-time updates
+      query.onSnapshot(
+        snapshot => {
+          const tagsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          setTags(tagsData);
+          setLoading(false);
         },
-      ],
-      setLoad: data => {
-        setGuestListAvailable(data);
-        setLoading(false);
-      },
-    });
+        error => {
+          console.error('Error fetching Tags in real-time:', error);
+          setLoading(false);
+        },
+      );
+    } catch (error) {
+      console.error('Error fetching Tags:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchGuestsList = async () => {
+    setLoading(true);
+    try {
+      const snapshot = await firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .get();
+
+      const guestListData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setGuestListAvailable(guestListData);
+    } catch (error) {
+      console.error('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchTags();
+    fetchGuestsList();
   }, [isFocused]);
 
   return (
@@ -453,17 +488,16 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
-                {userAccess({GRole: 'middler'}) && (
-                  <TouchableOpacity
-                    style={tw`self-end`}
-                    onPress={() => {
-                      navigation.navigate('AddNewGuestList');
-                    }}>
-                    <Text style={tw`text-primary py-2 text-xs text-right`}>
-                      Add new guest list
-                    </Text>
-                  </TouchableOpacity>
-                )}
+
+                <TouchableOpacity
+                  style={tw`self-end`}
+                  onPress={() => {
+                    navigation.navigate('AddNewGuestList');
+                  }}>
+                  <Text style={tw`text-primary py-2 text-xs text-right`}>
+                    Add new guest list
+                  </Text>
+                </TouchableOpacity>
               </View>
 
               {extraFields?.email && (

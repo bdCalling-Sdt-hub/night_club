@@ -53,15 +53,21 @@ const AddNewTag = ({navigation}: NavigProps<any>) => {
     // Build the Firestore query
     let query = firestore().collection('Tags');
 
-    if (
-      user?.role === 'guard' ||
-      user?.role === 'promoters' ||
-      user?.role === 'manager'
-    ) {
-      const managerId =
-        user?.role === 'manager' ? user?.user_id : user?.manager_id;
-      query = query.where('manager_id', '==', managerId);
+    if (user?.role === 'super-owner') {
+      query = query.where('super_owner_id', '==', user?.user_id);
+    } else {
+      query = query.where('super_owner_id', '==', user?.super_owner_id);
     }
+
+    // if (
+    //   user?.role === 'guard' ||
+    //   user?.role === 'promoters' ||
+    //   user?.role === 'manager'
+    // ) {
+    //   const managerId =
+    //     user?.role === 'manager' ? user?.user_id : user?.manager_id;
+    //   query = query.where('manager_id', '==', managerId);
+    // }
 
     // Subscribe to real-time updates
     const unsubscribe = query.onSnapshot(

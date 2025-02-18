@@ -1,20 +1,21 @@
-import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {ScrollView, Text, View} from 'react-native';
+import {IEvent, IGuest} from '../../firebase/interface';
 import {IconMultiUserCyan, IconShearCyan} from '../../icons/icons';
 import {WebUrl, height} from '../../utils/utils';
 
 import Clipboard from '@react-native-clipboard/clipboard';
+import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
 import IButton from '../../components/buttons/IButton';
 import TButton from '../../components/buttons/TButton';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {IEvent} from '../../firebase/interface';
 import {userAccess} from '../../hook/useAccess';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
@@ -26,6 +27,10 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   const {user} = useAuth();
 
   const [event, setEvent] = React.useState<IEvent>();
+
+  const [allGuest, setAllGuest] = React.useState<IGuest[]>([]);
+
+  const [loading, setLoading] = React.useState(false);
 
   const isFocused = useIsFocused();
 
@@ -50,17 +55,44 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
 
   // console.log('route ', route?.params?.id);
 
-  const {loadSingleData} = useFireStore();
+  const {loadSingleData, loadAllData} = useFireStore();
 
   useEffect(() => {
+    setLoading(true);
     loadSingleData({
       collectType: 'Events',
       id: route?.params?.id as string,
-      setLoad: setEvent,
+      setLoad: data => {
+        setEvent(data);
+        setLoading(false);
+      },
     });
+
+    return () => {};
   }, [isFocused]);
 
+  useEffect(() => {
+    loadAllData({
+      collectType: 'Guests',
+      filters: [
+        {
+          field: 'event',
+          operator: '==',
+          value: event?.id,
+        },
+      ],
+      setLoad: data => {
+        setAllGuest(data);
+        setLoading(false);
+      },
+    });
+  }, [event?.id, isFocused]);
+
+  // console.log(event?.id);
+
   // event?.venue?.doc()
+
+  // console.log(allGuest);
 
   return (
     <Background style={tw`flex-1`}>
@@ -102,7 +134,10 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
             Total RSVP guests
           </Text>
           <Text style={tw`text-white50 text-base font-RobotoBold`}>
-            {event?.capacity}
+            {allGuest?.reduce(
+              (a, b) => (a + b.people ? parseInt(b.people) : 0),
+              0,
+            )}
           </Text>
         </View>
 
@@ -199,6 +234,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
           )}
         </View>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

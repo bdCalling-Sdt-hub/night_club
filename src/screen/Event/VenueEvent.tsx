@@ -17,6 +17,8 @@ const VenueEvent = ({navigation, route}: NavigProps<{venueId: string}>) => {
   const [selectOption, setSelectOption] = React.useState('Upcoming Events');
   const [search, setSearch] = React.useState('');
   // console.log(route?.params?.item);
+  // route?.params.
+
   return (
     <Background style={tw`flex-1 bg-base`}>
       <BackWithTitle

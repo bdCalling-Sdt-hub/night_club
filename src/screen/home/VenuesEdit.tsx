@@ -1,4 +1,3 @@
-import {useIsFocused} from '@react-navigation/native';
 import React, {useEffect} from 'react';
 import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IUser, IVenue} from '../../firebase/interface';
@@ -9,6 +8,8 @@ import {
 } from '../../icons/icons';
 import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
@@ -19,6 +20,7 @@ import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
@@ -35,7 +37,7 @@ interface createProps {
   description: string;
   image: any;
   video?: any;
-  manager?: string;
+  manager_id?: string;
   openingTime: string;
   closingTime: string;
   capacity: string;
@@ -52,6 +54,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   const [imageUpdateLoad, setImageUpdateLoad] = React.useState(false);
   const [videoUpdateLoad, setVideoUpdateLoad] = React.useState(false);
   const [allManager, setManger] = React.useState<IUser[]>([]);
+
   const {userId, user} = useAuth();
   const isFocused = useIsFocused();
   const handleImageUpdate = async () => {
@@ -156,6 +159,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
   };
 
   const handleLoader = async () => {
+    setLoading(true);
     const res = await fetch(
       `${ApiUrl}users?super_owner_id=${
         user?.role === 'super-owner' ? user?.user_id : user?.super_owner_id
@@ -166,10 +170,16 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
     setManger(
       resData?.users?.filter((item: IUser) => item?.role === 'manager'),
     );
+    if (res.ok) {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     handleLoader();
+    return () => {
+      setLoading(false);
+    };
   }, [isFocused]);
 
   return (
@@ -190,6 +200,28 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
           initialValues={route?.params?.item}
           onSubmit={(values, {resetForm}) => {
             setLoading(true);
+
+            if (values.manager_id) {
+              values.manager_name = allManager.find(
+                item => item?.uid === values.manager_id,
+              )?.displayName;
+
+              firestore()
+                .collection('Events')
+                .where('venue', '==', route?.params?.item?.id)
+                .get()
+                .then(snapshot => {
+                  snapshot.forEach(doc => {
+                    updateFireData({
+                      id: doc.id,
+                      collectType: 'Events',
+                      data: {
+                        manager_id: values.manager_id,
+                      },
+                    });
+                  });
+                });
+            }
             updateFireData({
               id: route?.params?.item?.id as string,
               collectType: 'Venues',
@@ -449,14 +481,14 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
-                  value={values.manager}
-                  onChange={handleChange('manager')}
-                  onBlur={handleBlur('manager')}
+                  value={values.manager_id}
+                  onChange={handleChange('manager_id')}
+                  onBlur={handleBlur('manager_id')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       value={
-                        allManager.find(item => item?.uid === values.manager)
+                        allManager.find(item => item?.uid === values.manager_id)
                           ?.displayName
                       }
                       editable={false}
@@ -464,8 +496,8 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                       placeholder="select nightclub manager"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
                       svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.manager}
-                      touched={touched.manager}
+                      errorText={errors.manager_id}
+                      touched={touched.manager_id}
                     />
                   )}
                   renderItem={(value, items) => {
@@ -574,6 +606,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
           )}
         </Formik>
       </ScrollView>
+      <GLoading loading={loading} setLoading={setLoading} />
     </Background>
   );
 };

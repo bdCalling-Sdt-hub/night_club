@@ -162,7 +162,9 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>
               Nightclub Manager:
             </Text>
-            <Text style={tw`text-white60 text-base font-RobotoMedium`}>
+            <Text
+              numberOfLines={1}
+              style={tw`text-white60 text-base font-RobotoMedium`}>
               {venue?.manager_name}
             </Text>
           </View>
