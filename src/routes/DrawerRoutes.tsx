@@ -27,13 +27,24 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
   const deletedAccount = async () => {
     try {
-      await currentUser?.delete();
-      setUserId(undefined);
-      setUser(undefined);
-      (props.navigation as any).replace('Loading');
-      props.navigation.closeDrawer();
+      await currentUser?.delete().then(() => {
+        setUserId(undefined);
+        setUser(undefined);
+        props.navigation.closeDrawer();
+        (props.navigation as any).replace('Loading');
+      });
     } catch (error) {
-      currentUser?.delete();
+      showToast({
+        title: 'Warning',
+        content:
+          'If your login first time then you cannot delete account. Logout your account, Please login again then try.',
+        onPress: () => {
+          SignOut();
+          setUserId(undefined);
+          setUser(undefined);
+          closeToast();
+        },
+      });
     }
   };
 

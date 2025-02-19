@@ -34,7 +34,11 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
   const isFocused = useIsFocused();
 
   useEffect(() => {
-    getAllUser(setAllUser);
+    setLoading(true);
+    getAllUser(data => {
+      setAllUser(data);
+      setLoading(false);
+    });
   }, [isFocused]);
 
   const handleDeleteUser = async (id: string) => {
@@ -78,15 +82,21 @@ const ManageUsers = ({navigation}: NavigProps<any>) => {
             progressBackgroundColor={PrimaryColor}
             onRefresh={() => {
               setLoading(true);
-              getAllUser(setAllUser);
-              setLoading(false);
+              getAllUser(data => {
+                setAllUser(data);
+                setLoading(false);
+              });
             }}
-            refreshing={loading}
+            refreshing={false}
             colors={['white']}
           />
         }
         ListEmptyComponent={
-          <EmptyCard title="No User Found" hight={height * 0.6} />
+          <EmptyCard
+            isLoading={loading}
+            title="No User Found"
+            hight={height * 0.6}
+          />
         }
         data={allUser}
         contentContainerStyle={tw`px-4 pb-5 gap-3`}
