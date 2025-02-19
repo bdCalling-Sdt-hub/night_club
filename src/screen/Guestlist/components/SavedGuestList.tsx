@@ -13,6 +13,7 @@ import tw from '../../../lib/tailwind';
 interface Props {
   navigation: any;
 }
+
 const SavedGuestList = ({navigation}: Props) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState(
     [] as Array<IGuestsList>,
@@ -22,7 +23,6 @@ const SavedGuestList = ({navigation}: Props) => {
   const [loading, setLoading] = React.useState(false);
 
   const isFocused = useIsFocused();
-
   const fetchGuestsList = async () => {
     setLoading(true);
     try {
@@ -62,7 +62,11 @@ const SavedGuestList = ({navigation}: Props) => {
       contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
       data={guestListAvailable}
       ListEmptyComponent={
-        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+        <EmptyCard
+          isLoading={loading}
+          hight={height * 0.6}
+          title="No GuestsList"
+        />
       }
       renderItem={({item, index}) => (
         <Card

@@ -94,7 +94,7 @@ const UpcomingEvents = ({navigation, venueId, search}: Props) => {
         />
       }
       ListEmptyComponent={
-        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Events" />
       }
       renderItem={({item, index}) => (
         <Card

@@ -82,7 +82,7 @@ const EHistory = ({navigation, search, venueId}: Props) => {
         return item;
       })}
       ListEmptyComponent={
-        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Venues" />
+        <EmptyCard isLoading={loading} hight={height * 0.6} title="No Events" />
       }
       refreshControl={
         <RefreshControl

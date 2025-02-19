@@ -1,9 +1,9 @@
-import React, {useEffect} from 'react';
 import {FlatList, RefreshControl, Text, View} from 'react-native';
 import {PrimaryColor, height} from '../../utils/utils';
 
 import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
+import React from 'react';
 import EmptyCard from '../../components/Empty/EmptyCard';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import IButton from '../../components/buttons/IButton';
@@ -27,7 +27,7 @@ const AddNewGuestList = ({navigation}: NavigProps<any>) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState<
     Array<IGuestsList>
   >([]);
-  const {listenToData, createFireData} = useFireStore();
+  const {createFireData} = useFireStore();
 
   const isFocused = useIsFocused();
 
@@ -50,35 +50,39 @@ const AddNewGuestList = ({navigation}: NavigProps<any>) => {
       });
     }
   };
-  useEffect(() => {
-    if (!user?.user_id || !isFocused) return; // Ensure we have a user ID and the screen is focused
 
+  const fetchGuestsList = async (unsubscribe?: any) => {
     setLoading(true);
+    try {
+      unsubscribe = firestore()
+        .collection('GuestsList')
+        .where('createdBy', '==', user?.user_id)
+        .onSnapshot(
+          snapshot => {
+            const guestListData = snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            setGuestListAvailable(guestListData as Array<IGuestsList>);
+          },
+          error => {
+            console.log('Error fetching GuestsList:', error);
+          },
+        );
+    } catch (error) {
+      console.log('Error fetching GuestsList:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    // Subscribe to real-time updates
-    const unsubscribe = firestore()
-      .collection('GuestsList')
-      .where('createdBy', '==', user.user_id)
-      .onSnapshot(
-        snapshot => {
-          const guestListData = snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data(),
-          }));
-          setGuestListAvailable(guestListData);
-          setLoading(false);
-        },
-        error => {
-          console.error('Error fetching GuestsList in real-time:', error);
-          setLoading(false);
-        },
-      );
-
-    // Cleanup the subscription on unmount or when dependencies change
+  React.useEffect(() => {
+    let unsubscribe = () => {};
+    fetchGuestsList(unsubscribe);
     return () => {
       unsubscribe();
     };
-  }, [user?.user_id, isFocused]);
+  }, [isFocused]);
 
   // console.log(guestListAvailable);
 
@@ -111,7 +115,7 @@ const AddNewGuestList = ({navigation}: NavigProps<any>) => {
       <FlatList
         refreshControl={
           <RefreshControl
-            refreshing={!isFocused && loading}
+            refreshing={false}
             progressBackgroundColor={PrimaryColor}
             colors={['white']}
             onRefresh={() => {
@@ -123,7 +127,7 @@ const AddNewGuestList = ({navigation}: NavigProps<any>) => {
           <EmptyCard
             isLoading={loading}
             hight={height * 0.6}
-            title="No Venues"
+            title="No guest list found"
           />
         }
         keyboardShouldPersistTaps="always"

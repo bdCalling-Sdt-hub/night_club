@@ -191,7 +191,7 @@ const AllGuest = ({navigation}: Props) => {
           <EmptyCard
             isLoading={loading}
             hight={height * 0.6}
-            title="No Venues"
+            title="No Guests"
           />
         }
         showsVerticalScrollIndicator={false}

@@ -375,7 +375,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           <EmptyCard
             isLoading={loading}
             hight={height * 0.6}
-            title="No Venues"
+            title="No Guests"
           />
         }
         contentContainerStyle={tw`px-4 pb-14 gap-3`}
