@@ -167,6 +167,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             guest_list: '',
             tag: '',
             tag_name: '',
+            check_in: 0,
             added_by: user?.name || '',
             event: route?.params?.item?.id || '',
             venue: route?.params?.item?.venue || '',

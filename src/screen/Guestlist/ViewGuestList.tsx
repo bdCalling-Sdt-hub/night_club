@@ -194,7 +194,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         onPress={() => {
           navigation.goBack();
         }}
-        title="View Guest List "
+        title="View Guest List"
         containerStyle={tw`justify-between`}
         ComponentBtn={
           <TButton
@@ -241,7 +241,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
                   <Text
                     numberOfLines={1}
-                    style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                    style={tw`text-white100  font-RobotoMedium text-[10px]`}>
                     {addedBy}
                   </Text>
                   <SvgXml xml={IconDownArrayGray} height={10} width={10} />
@@ -298,7 +298,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
                   <Text
                     numberOfLines={1}
-                    style={tw`text-white100 w-15 font-RobotoMedium text-[10px]`}>
+                    style={tw`text-white100  font-RobotoMedium text-[10px]`}>
                     {TagsData?.find(tag => tag?.id === tags)?.name ?? 'Tags'}
                   </Text>
                   <SvgXml xml={IconDownArrayGray} height={10} width={10} />

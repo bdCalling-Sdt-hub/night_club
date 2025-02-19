@@ -56,7 +56,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   // console.log(venues);
 
   return (
-    <Background style={tw`flex-1`}>
+    <Background style={tw`flex-1 bg-base`}>
       <BackWithTitle
         title="Venue Details"
         onPress={() => navigation?.goBack()}
@@ -158,14 +158,18 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         </View>
         {/*=================== Accounts parts =============== */}
         <View style={tw`px-4 gap-5 mt-5`}>
-          <View style={tw`flex-row justify-between`}>
-            <Text style={tw`text-white50 text-base font-RobotoMedium`}>
+          <View style={tw`flex-row justify-between gap-5 `}>
+            <Text
+              numberOfLines={1}
+              style={tw`text-white50 text-base font-RobotoMedium`}>
               Nightclub Manager:
             </Text>
             <Text
               numberOfLines={1}
-              style={tw`text-white60 text-base font-RobotoMedium`}>
-              {venue?.manager_name}
+              style={tw`text-white60 text-base font-RobotoMedium `}>
+              {venue?.manager_name?.length >= 20
+                ? `${venue?.manager_name?.slice(0, 20)}...`
+                : venue?.manager_name}
             </Text>
           </View>
 

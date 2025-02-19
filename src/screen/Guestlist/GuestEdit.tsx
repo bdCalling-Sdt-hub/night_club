@@ -192,6 +192,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   guest_list: '',
                   tag: '',
                   tag_name: '',
+                  check_in: 0,
                 }
           }
           onSubmit={values => {

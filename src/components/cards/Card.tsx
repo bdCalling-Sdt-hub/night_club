@@ -116,7 +116,7 @@ Card.Details = ({
                   <Text
                     numberOfLines={1}
                     style={[
-                      tw`text-white font-NunitoSansRegular text-sm text-wrap`,
+                      tw`text-white font-NunitoSansRegular text-sm `,
                       item.titleStyle,
                     ]}>
                     {item.title}

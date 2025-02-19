@@ -72,6 +72,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
   }, [isFocused]);
 
   useEffect(() => {
+    setLoading(true);
     loadAllData({
       collectType: 'Guests',
       filters: [
@@ -135,7 +136,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
           </Text>
           <Text style={tw`text-white50 text-base font-RobotoBold`}>
             {allGuest?.reduce(
-              (a, b) => (a + b.people ? parseInt(b.people) : 0),
+              (a, b) => a + (parseInt(b.people) ? parseInt(b.people) : 0),
               0,
             )}
           </Text>

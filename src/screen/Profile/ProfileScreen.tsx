@@ -158,35 +158,35 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
     if (MiddleRoles) {
       setTotalGuest(
         allGuest?.reduce(
-          (acc, cur) => acc + (cur.people ? Number(cur.people) : 0),
+          (acc, cur) => acc + (parseInt(cur.people) ? parseInt(cur.people) : 0),
           0,
         ),
       );
       setFreeGuest(
         allGuest?.reduce(
-          (acc, cur) => (acc + cur.free_entry ? Number(cur.free_entry) : 0),
+          (acc, cur) =>
+            acc + (parseInt(cur.free_entry) ? parseInt(cur.free_entry) : 0),
           0,
         ),
       );
       setCheck_inGuest(
-        allGuest
-          ?.filter(item => item?.check_in)
-          ?.reduce(
-            (acc, cur) => (acc + cur.check_in ? Number(cur.check_in) : 0),
-            0,
-          ),
+        allGuest?.reduce(
+          (acc, cur) =>
+            acc + (parseInt(cur.check_in) ? parseInt(cur.check_in) : 0),
+          0,
+        ),
       );
       // console.log(
-      //   allGuest?.reduce((acc, cur) => acc + Number(cur.people), 0),
-      //   allGuest?.reduce((acc, cur) => acc + Number(cur.free_entry), 0),
+      //   allGuest?.reduce((acc, cur) => acc + parseInt(cur.people), 0),
+      //   allGuest?.reduce((acc, cur) => acc + parseInt(cur.free_entry), 0),
       // );
       setPaidGuest(
         allGuest?.reduce(
-          (acc, cur) => acc + (cur.people ? Number(cur.people) : 0),
+          (acc, cur) => acc + (cur.people ? parseInt(cur.people) : 0),
           0,
         ) -
           allGuest?.reduce(
-            (acc, cur) => acc + (cur.entry_fee ? Number(cur.entry_fee) : 0),
+            (acc, cur) => acc + (cur.entry_fee ? parseInt(cur.entry_fee) : 0),
             0,
           ),
       );
@@ -284,7 +284,7 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
                 containerStyle={tw`p-0 m-0  bg-transparent items-center`}
               />
 
-              <View style={tw`  flex-row   items-center gap-2`}>
+              <View style={tw`flex-row  items-center gap-2`}>
                 <Picker
                   useSafeArea
                   value={selectVenue || 'Select venue'}
@@ -295,7 +295,6 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
                         onPress={preps.onPress}
                         style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2  `}>
                         <Text
-                          numberOfLines={1}
                           style={tw`text-white100   font-RobotoMedium text-[10px]`}>
                           {selectVenue
                             ? venueData?.find(i => i.id === selectVenue)?.name
@@ -365,7 +364,7 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
                         onPress={preps.onPress}
                         style={tw`border border-primary800 flex-row items-center justify-between h-7 px-4 rounded-lg gap-2`}>
                         <Text
-                          numberOfLines={1}
+                          parseIntOfLines={1}
                           style={tw`text-white100  font-RobotoMedium text-[10px]`}>
                           {selectEvent
                             ? eventData?.find(i => i.id === selectEvent)
@@ -490,19 +489,18 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
           )}
         </View>
         {/*================= note section ==================  */}
-        <View style={tw`px-4 mb-5`}>
+        <View style={tw`px-4 mb-5 `}>
           <InputTextWL
             label="Note"
             multiline
             verticalAlign="top"
-            // textAlign="center"
             textAlignVertical="top"
             defaultValue={lStorage?.getString('note') as string}
             onChangeText={text => lStorage?.setString('note', text)}
-            numberOfLines={10}
-            containerStyle={tw` h-40 pt-2 rounded-lg border-[1px] border-transparent`}
+            containerStyle={tw`h-40  pt-2 rounded-lg border-[1px] border-transparent`}
             focusSTyle={tw`border-primary`}
             placeholder="Enter your note"
+            numberOfLines={10}
           />
         </View>
       </ScrollView>
