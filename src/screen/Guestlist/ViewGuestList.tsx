@@ -164,49 +164,108 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       const data = await useImportData();
       // console.log(data);
 
-      if (data && Array.isArray(data)) {
-        data.forEach(async (guest: IGuest) => {
-          guest.event = route?.params?.item?.id;
-          guest.venue = route?.params?.item?.venue;
+      if (!data) {
+        showToast({
+          title: 'Warning',
+          content: 'Guest list is empty',
+          onPress: closeToast,
+        });
+        return;
+      } else {
+        showToast({
+          title: 'Do you want to add the guests as new entries?',
+          content: `Note: If you select 'No' and the guests are already added to another event, they will be moved to this event's guest list, replacing their association with the previous event.`,
+          multipleButton: [
+            {
+              buttonText: 'Yes',
+              onPress: () => {
+                if (data && Array.isArray(data)) {
+                  data.forEach(async (guest: IGuest) => {
+                    guest.event = route?.params?.item?.id;
+                    guest.venue = route?.params?.item?.venue;
 
-          if (guest.event_date) {
-            guest.event_date = route?.params?.item?.date;
-          }
+                    if (guest.event_date) {
+                      guest.event_date = route?.params?.item?.date;
+                    }
 
-          // console.log(guest.id);
-          // update options
-          // try {
-          //   const docRef = firestore().collection('Guests').doc(guest.id);
-          //   const docSnapshot = await docRef.get();
+                    try {
+                      delete guest.id;
+                      guest.createdBy = user?.user_id as string;
 
-          //   if (docSnapshot.exists) {
-          //     // Document exists, update it
-          //     await docRef.update(guest);
-          //   } else {
-          //     // Document not found, show a warning
-          //     showToast({
-          //       title: 'Warning',
-          //       content:
-          //         'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
-          //       onPress: closeToast,
-          //     });
-          //   }
-          // } catch (error) {
-          //   console.log('Error updating guest:', error);
-          // }
+                      createFireData({
+                        collectType: 'Guests',
+                        data: guest,
+                      });
+                    } catch (error) {
+                      console.log('Error updating guest:', error);
+                    }
 
-          // add as new create own
-          try {
-            delete guest.id;
-            guest.added_by = user?.user_id as string;
+                    // add as new create own
+                  });
+                }
+                closeToast();
+              },
+              buttonStyle: tw`bg-primary flex-1`,
+            },
+            {
+              buttonText: 'No',
+              onPress: () => {
+                if (data && Array.isArray(data)) {
+                  data.forEach(async (guest: IGuest) => {
+                    guest.event = route?.params?.item?.id;
+                    guest.venue = route?.params?.item?.venue;
 
-            createFireData({
-              collectType: 'Guests',
-              data: guest,
-            });
-          } catch (error) {
-            console.log('Error updating guest:', error);
-          }
+                    if (guest.event_date) {
+                      guest.event_date = route?.params?.item?.date;
+                    }
+
+                    // console.log(guest.id);
+                    // update options
+
+                    if (guest?.createdBy === user?.user_id) {
+                      try {
+                        const docRef = firestore()
+                          .collection('Guests')
+                          .doc(guest.id);
+                        const docSnapshot = await docRef.get();
+
+                        if (docSnapshot.exists) {
+                          // Document exists, update it
+                          await docRef.update(guest);
+                        } else {
+                          // Document not found, show a warning
+                          showToast({
+                            title: 'Warning',
+                            content:
+                              'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
+                            onPress: closeToast,
+                          });
+                        }
+                      } catch (error) {
+                        console.log('Error updating guest:', error);
+                      }
+                    } else {
+                      try {
+                        delete guest.id;
+                        guest.createdBy = user?.user_id as string;
+
+                        createFireData({
+                          collectType: 'Guests',
+                          data: guest,
+                        });
+                      } catch (error) {
+                        console.log('Error updating guest:', error);
+                      }
+                    }
+
+                    // add as new create own
+                  });
+                }
+                closeToast();
+              },
+              buttonStyle: tw`border bg-transparent border-primary flex-1`,
+            },
+          ],
         });
       }
     } catch (err: unknown) {

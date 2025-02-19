@@ -77,6 +77,7 @@ export interface IGuest {
   entry_fee: string;
   free_entry: string;
   added_by: string;
+  createdBy: string;
   event?: string;
   // venue firebase refer on firestore type
   venue?: string;

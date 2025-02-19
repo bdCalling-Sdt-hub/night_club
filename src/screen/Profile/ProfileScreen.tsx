@@ -110,7 +110,9 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
     const unsubscribeEvents = eventsQuery.onSnapshot(snapshot => {
       const events = snapshot.docs
         .map(doc => ({id: doc.id, ...doc.data()}))
-        .filter(event => new Date(event.date) > new Date());
+        .filter(event =>
+          !event.date ? event : new Date(event.date) >= new Date(),
+        );
       setEventData(events);
       setLoading(false);
     });
