@@ -15,6 +15,7 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
 import {SvgXml} from 'react-native-svg';
@@ -45,8 +46,13 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
 
   const [search, setSearch] = React.useState('');
 
-  const {loadAllData, updateFireData, listenToData, loadSingleData} =
-    useFireStore();
+  const {
+    loadAllData,
+    updateFireData,
+    listenToData,
+    loadSingleData,
+    createFireData,
+  } = useFireStore();
   const [TagsData, setTagsData] = React.useState<Array<ITags>>([]);
   const [guestListData, setGuestListData] = React.useState<Array<IGuest>>([]);
 
@@ -72,14 +78,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     setLoading(true);
     loadAllData({
       collectType: 'Tags',
-      filters: [
-        {
-          field: 'super_owner_id',
-          operator: '==',
-          value:
-            user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
-        },
-      ],
+
       setLoad: data => {
         setTagsData(data);
       },
@@ -89,28 +88,35 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   // console.log(route?.params?.item?.id);
 
   React.useEffect(() => {
-    let unsubscribe = () => {}; // Default to a no-op function
-    setLoading(true);
-    listenToData({
-      unsubscribe,
-      collectType: 'Guests',
-      filters: [
-        {
-          field: 'event',
-          operator: '==',
-          value: route?.params?.item?.id,
-        },
-      ],
-      onUpdate: (data: any[]) => {
-        setGuestListData(data);
-        // setLoading(false);
-      },
-    });
+    let unsubscribe: () => void = () => {}; // Default no-op function for cleanup
+
+    if (route?.params?.item?.id) {
+      setLoading(true);
+
+      unsubscribe = firestore()
+        .collection('Guests')
+        .where('event', '==', route.params.item.id)
+        .onSnapshot(
+          snapshot => {
+            const data = snapshot.docs.map(doc => ({
+              id: doc.id,
+              ...doc.data(),
+            }));
+            setGuestListData(data);
+            setLoading(false); // Stop loading when data is received
+          },
+          error => {
+            console.error('Error fetching Guests:', error);
+            setLoading(false); // Stop loading if there's an error
+          },
+        );
+    }
+
     // Cleanup the listener on component unmount
     return () => {
       unsubscribe();
     };
-  }, [isFocused]);
+  }, [isFocused, route?.params?.item?.id]);
 
   React.useEffect(() => {
     setLoading(true);
@@ -151,34 +157,60 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     };
   }, [guestListData]);
 
-  // console.log(addedByData);
+  // console.log(route?.params?.item);
 
   const handleImportData = async () => {
     try {
       const data = await useImportData();
       // console.log(data);
-      data?.forEach((guest: IGuest) => {
-        guest.event = route?.params?.item?.name;
-        guest.venue = route?.params?.item?.venue;
-        guest.event_date = route?.params?.item?.date;
-        updateFireData({
-          id: guest.id,
-          collectType: 'Guests',
-          data: guest,
-        }).then(res => {
-          // console.log(res);
-          if (res?.message == 'Document not found') {
-            return showToast({
-              title: 'Warning',
-              content:
-                'Please upload the lalest version of the guest list. I think you have uploaded the wrong guest list and not to match database.',
-              onPress: closeToast,
+
+      if (data && Array.isArray(data)) {
+        data.forEach(async (guest: IGuest) => {
+          guest.event = route?.params?.item?.id;
+          guest.venue = route?.params?.item?.venue;
+
+          if (guest.event_date) {
+            guest.event_date = route?.params?.item?.date;
+          }
+
+          // console.log(guest.id);
+          // update options
+          // try {
+          //   const docRef = firestore().collection('Guests').doc(guest.id);
+          //   const docSnapshot = await docRef.get();
+
+          //   if (docSnapshot.exists) {
+          //     // Document exists, update it
+          //     await docRef.update(guest);
+          //   } else {
+          //     // Document not found, show a warning
+          //     showToast({
+          //       title: 'Warning',
+          //       content:
+          //         'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
+          //       onPress: closeToast,
+          //     });
+          //   }
+          // } catch (error) {
+          //   console.log('Error updating guest:', error);
+          // }
+
+          // add as new create own
+          try {
+            delete guest.id;
+            guest.added_by = user?.user_id as string;
+
+            createFireData({
+              collectType: 'Guests',
+              data: guest,
             });
+          } catch (error) {
+            console.log('Error updating guest:', error);
           }
         });
-      });
+      }
     } catch (err: unknown) {
-      // see error handling
+      console.log('Error importing data:', err);
     }
   };
 

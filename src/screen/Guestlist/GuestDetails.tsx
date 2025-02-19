@@ -485,13 +485,17 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 <Picker
                   useSafeArea
                   value={values.guest_list}
-                  onChange={handleChange('guest_list')}
+                  onChange={handleChange('guest_list') as any}
                   onBlur={handleBlur('guest_list')}
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}
                       editable={false}
-                      value={values.guest_list}
+                      value={
+                        guestListAvailable?.find(
+                          item => item.id === values.guest_list,
+                        )?.name
+                      }
                       label="Add to guest list (optional)"
                       placeholder="Select guest list"
                       containerStyle={tw`h-12 border-0 rounded-lg`}
@@ -506,7 +510,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                         style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
                         <Text
                           style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {value}
+                          {items.label}
                         </Text>
                       </View>
                     );
@@ -526,12 +530,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   paddingH
                   items={guestListAvailable?.map(item => ({
                     label: item.name,
-                    value: item.name,
+                    value: item.id,
                   }))}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
                 />
+
                 <TouchableOpacity
                   style={tw`self-end`}
                   onPress={() => {
@@ -662,22 +667,25 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   onPress={() => {
                     showToast({
                       title: 'Warning',
-                      content: 'Are you sure you want to delete guest?',
+                      content:
+                        'Are you sure you want to remove guest from this event?',
                       multipleBTNStyle: tw`flex-col gap-3`,
 
                       multipleButton: [
                         {
-                          buttonText: 'Yes, Delete',
+                          buttonText: 'Yes, Remove',
                           buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
                           buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
                           onPress: () => {
-                            deleteFireData({
-                              collectType: 'Guests',
+                            updateFireData({
                               id: route?.params?.guest?.id as string,
-                            }).then(() => {
-                              navigation?.goBack();
+                              collectType: 'Guests',
+                              data: {
+                                event: null,
+                              },
                             });
                             closeToast();
+                            navigation?.goBack();
                           },
                         },
                         {

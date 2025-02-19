@@ -253,11 +253,6 @@ const useFireStore = () => {
       const docRef = firestore().collection(collectType).doc();
       // console.log(data);
       const docData = {
-        id: docRef.id,
-        super_owner_id:
-          user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
-        owner_id:
-          user?.role === 'owner' ? user.user_id : user?.owner_id || null,
         manager_id:
           user?.role === 'manager'
             ? user.user_id
@@ -265,7 +260,12 @@ const useFireStore = () => {
             ? user.manager_id
             : null,
         ...data,
+        id: docRef.id,
         createdBy: user?.user_id,
+        super_owner_id:
+          user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
+        owner_id:
+          user?.role === 'owner' ? user.user_id : user?.owner_id || null,
         ...getServerTimestamps(),
       };
       await docRef.set(docData);
