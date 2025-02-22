@@ -2,23 +2,23 @@ import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import React from 'react';
-import {Checkbox} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import TButton from '../../components/buttons/TButton';
-import Card from '../../components/cards/Card';
-import SearchCard from '../../components/cards/SearchCard';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import NormalModal from '../../components/modals/NormalModal';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import useFireStore from '../../firebase/database/helper';
-import {useExportFile} from '../../hook/useExportFile';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
 import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import {Checkbox} from 'react-native-ui-lib';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {NavigProps} from '../../interfaces/NaviProps';
+import NormalModal from '../../components/modals/NormalModal';
+import React from 'react';
+import SearchCard from '../../components/cards/SearchCard';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import tw from '../../lib/tailwind';
+import {useAuth} from '../../context/AuthProvider';
+import {useExportFile} from '../../hook/useExportFile';
+import useFireStore from '../../firebase/database/helper';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 
 const AllGuestInGuestList = ({
   navigation,
@@ -238,14 +238,12 @@ const AllGuestInGuestList = ({
             //   }
             // }}
             containerStyle={tw` flex-row gap-3 items-center`}
-            component={
+            layoutStyle={tw`gap-2`}
+            OuterComponent={
               <>
-                <Checkbox
-                  borderRadius={2}
-                  size={15}
-                  // iconColor="#000000"
-                  value={selectGuest?.includes(item)}
-                  onValueChange={() => {
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => {
                     if (selectGuest?.length > 0) {
                       if (selectGuest?.includes(item)) {
                         setSelectGuest(selectGuest?.filter(i => i !== item));
@@ -256,9 +254,27 @@ const AllGuestInGuestList = ({
                       setSelectGuest([item]);
                     }
                   }}
-                  style={tw``}
-                  color={PrimaryColor}
-                />
+                  style={tw`px-2 rounded-md bg-secondary py-2 items-center justify-center`}>
+                  <Checkbox
+                    containerStyle={tw`justify-center items-center`}
+                    borderRadius={2}
+                    size={16}
+                    value={selectGuest?.includes(item)}
+                    onValueChange={() => {
+                      if (selectGuest?.length > 0) {
+                        if (selectGuest?.includes(item)) {
+                          setSelectGuest(selectGuest?.filter(i => i !== item));
+                        } else {
+                          setSelectGuest([...selectGuest, item]);
+                        }
+                      } else {
+                        setSelectGuest([item]);
+                      }
+                    }}
+                    style={tw``}
+                    color={PrimaryColor}
+                  />
+                </TouchableOpacity>
               </>
             }>
             <Card.Details

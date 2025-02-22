@@ -74,25 +74,30 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     if (!values.fullName) {
       errors.fullName = 'Name is required';
     }
-    // if (!values.people) {
-    //   errors.people = 'Number of people is required';
-    // }
-    // if (!values.entry_fee) {
-    //   errors.entry_fee = 'Entry fee is required';
-    // }
-    // if (!values.free_entry) {
-    //   errors.free_entry = 'Free entry is required';
-    // }
-    // if (!values.free_entry_time) {
-    //   errors.free_entry_time = 'Free entry time is required';
-    // }
-    // if (!values.free_entry_end_time) {
-    //   errors.free_entry_end_time = 'Free entry end time is required';
-    // }
 
-    // if (!values.tag) {
-    //   errors.tag = 'Tag is required';
-    // }
+    if (values.people) {
+      if (isNaN(parseInt(values.people))) {
+        errors.people = 'People should be a number';
+      }
+      if (parseInt(values.people) < 1) {
+        errors.people = 'People should be greater than 0';
+      }
+    }
+    if (values.free_entry) {
+      if (isNaN(parseInt(values.free_entry))) {
+        errors.free_entry = 'Free entry should be a number';
+      }
+      if (parseInt(values.free_entry) < 0) {
+        errors.free_entry = 'Free entry should be greater than 0';
+      }
+      if (!values.people) {
+        errors.free_entry =
+          'Please enter total people, before count free entry';
+      }
+      if (parseInt(values.people) < parseInt(values.free_entry)) {
+        errors.free_entry = 'Free entry should be less than total people';
+      }
+    }
 
     return errors;
   };
@@ -186,12 +191,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   people: '',
                   entry_fee: '',
                   free_entry: '',
-                  check_in: 0,
                   free_entry_time: '',
                   free_entry_end_time: '',
+                  added_by: '',
                   guest_list: '',
                   tag: '',
                   tag_name: '',
+                  check_in: 0,
                 }
           }
           onSubmit={async values => {
@@ -201,10 +207,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               values.tag_name = tags?.find(item => item.id === values.tag)
                 ?.name as string;
             }
-            await updateFireData({
+
+            updateFireData({
               collectType: 'Guests',
               id: route?.params?.guest?.id as string,
               data: values,
+            }).then(() => {
+              navigation?.goBack();
             });
             setLoading(false);
           }}
@@ -369,20 +378,6 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 }`}
                 containerStyle={tw`bg-green-600`}
               />
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Entry fee"
-                  placeholder="Enter entry fee"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.entry_fee}
-                  onChangeText={handleChange('entry_fee')}
-                  onBlur={handleBlur('entry_fee')}
-                  errorText={errors.entry_fee}
-                  touched={touched.entry_fee}
-                  keyboardType="decimal-pad"
-                />
-              </View>
 
               <View>
                 <InputTextWL
@@ -398,6 +393,21 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   keyboardType="decimal-pad"
                 />
               </View>
+              <View>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
+                  label="Entry fee"
+                  placeholder="Enter entry fee"
+                  containerStyle={tw`border-0 h-12 rounded-lg`}
+                  value={values.entry_fee}
+                  onChangeText={handleChange('entry_fee')}
+                  onBlur={handleBlur('entry_fee')}
+                  errorText={errors.entry_fee}
+                  touched={touched.entry_fee}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+
               <DateTimePicker
                 value={
                   values.free_entry_time
@@ -679,7 +689,6 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   containerStyle={tw`mt-5 bg-primary rounded-lg w-full h-12 `}
                   onPress={async () => {
                     handleSubmit();
-                    navigation?.goBack();
                   }}
                 />
                 <TButton

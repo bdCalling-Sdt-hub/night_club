@@ -75,28 +75,30 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
     if (!values.fullName) {
       errors.fullName = 'Name is required';
     }
-    // if (!values.people) {
-    //   errors.people = 'Number of people is required';
-    // }
-    // if (!values.entry_fee) {
-    //   errors.entry_fee = 'Entry fee is required';
-    // }
-    // if (!values.free_entry) {
-    //   errors.free_entry = 'Free entry is required';
-    // }
-    // if (!values.free_entry_time) {
-    //   errors.free_entry_time = 'Free entry time is required';
-    // }
-    // if (!values.free_entry_end_time) {
-    //   errors.free_entry_end_time = 'Free entry end time is required';
-    // }
-    // if (!values.guest_list) {
-    //   errors.guest_list = 'Guest list is required';
-    // }
 
-    // if (!values.tag) {
-    //   errors.tag = 'Tag is required';
-    // }
+    if (values.people) {
+      if (isNaN(parseInt(values.people))) {
+        errors.people = 'People should be a number';
+      }
+      if (parseInt(values.people) < 1) {
+        errors.people = 'People should be greater than 0';
+      }
+    }
+    if (values.free_entry) {
+      if (isNaN(parseInt(values.free_entry))) {
+        errors.free_entry = 'Free entry should be a number';
+      }
+      if (parseInt(values.free_entry) < 0) {
+        errors.free_entry = 'Free entry should be greater than 0';
+      }
+      if (!values.people) {
+        errors.free_entry =
+          'Please enter total people, before count free entry';
+      }
+      if (parseInt(values.people) < parseInt(values.free_entry)) {
+        errors.free_entry = 'Free entry should be less than total people';
+      }
+    }
 
     return errors;
   };
@@ -202,6 +204,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               values.tag_name = tags?.find(item => item.id === values.tag)
                 ?.name as string;
             }
+
             updateFireData({
               collectType: 'Guests',
               id: route?.params?.guest?.id as string,
@@ -353,6 +356,20 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               <View>
                 <InputTextWL
                   cursorColor={PrimaryColor}
+                  label="Free Entry"
+                  placeholder="Enter free entry"
+                  containerStyle={tw`border-0 h-12 rounded-lg`}
+                  value={values.free_entry}
+                  onChangeText={handleChange('free_entry')}
+                  onBlur={handleBlur('free_entry')}
+                  errorText={errors.free_entry}
+                  touched={touched.free_entry}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+              <View>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Entry fee"
                   placeholder="Enter entry fee"
                   containerStyle={tw`border-0 h-12 rounded-lg`}
@@ -365,20 +382,6 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 />
               </View>
 
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Free Entry"
-                  placeholder="Enter free entry"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.free_entry}
-                  onChangeText={handleChange('free_entry')}
-                  onBlur={handleBlur('free_entry')}
-                  errorText={errors.free_entry}
-                  touched={touched.free_entry}
-                  keyboardType="decimal-pad"
-                />
-              </View>
               <DateTimePicker
                 value={
                   values.free_entry_time
@@ -472,6 +475,99 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   touched={touched.added_by}
                 />
               </View>
+              {/* <View style={tw`bg-base `}>
+                <Picker
+                  useSafeArea
+                  mode={Picker.modes.MULTI}
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Guest List"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
+                  value={values.guest_list}
+                  onChange={(items: any) => {
+                    console.log(items);
+                  }}
+                  onBlur={handleBlur('guest_list')}
+                  renderInput={() => (
+                    <InputTextWL
+                      cursorColor={PrimaryColor}
+                      editable={false}
+                      value={
+                        guestListAvailable?.find(
+                          item => item.id === values.guest_list,
+                        )?.name
+                      }
+                      label="Add to guest list (optional)"
+                      placeholder="Select guest list"
+                      containerStyle={tw`h-12 border-0 rounded-lg`}
+                      svgSecondIcon={IconDownArrayGray}
+                      errorText={errors.guest_list}
+                      touched={touched.guest_list}
+                    />
+                  )}
+                  renderItem={(value, items) => {
+                    console.log(items);
+                    return (
+                      <View
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
+                        <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items.label}
+                          </Text>
+                        </View>
+                        {items?.isSelected && (
+                          <View style={tw`px-4`}>
+                            <SvgXml
+                              xml={IconSmallTickCyan}
+                              height={20}
+                              width={20}
+                            />
+                          </View>
+                        )}
+                      </View>
+                    );
+                  }}
+                  renderCustomDialogHeader={preps => {
+                    return (
+                      <View style={tw`flex-row justify-between`}>
+                        <TouchableOpacity
+                          onPress={preps.onCancel}
+                          style={tw`self-start py-3 px-4`}>
+                          <SvgXml xml={IconCloseGray} height={20} width={20} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          onPress={preps.onDone}
+                          style={tw`self-start py-3 px-4`}>
+                          <Text style={tw`text-primary text-base`}>Done</Text>
+                        </TouchableOpacity>
+                      </View>
+                    );
+                  }}
+                  items={guestListAvailable?.map(item => ({
+                    label: item.name,
+                    value: item.id,
+                  }))}
+                  pickerModalProps={{
+                    overlayBackgroundColor: BaseColor,
+                  }}
+                />
+
+                <TouchableOpacity
+                  style={tw`self-end`}
+                  onPress={() => {
+                    navigation.navigate('AddNewGuestList');
+                  }}>
+                  <Text style={tw`text-primary py-2 text-xs text-right`}>
+                    Add new guest list
+                  </Text>
+                </TouchableOpacity>
+              </View> */}
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea

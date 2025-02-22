@@ -303,23 +303,12 @@ const AllGuest = ({navigation, search}: Props) => {
               navigation?.navigate('GuestEdit', {guest: item});
             }}
             containerStyle={tw` flex-row gap-3 items-center`}
-            component={
+            layoutStyle={tw`gap-2`}
+            OuterComponent={
               <>
-                {/* <Checkbox
-            borderRadius={2}
-            size={15}
-            iconColor="#000000"
-            value={selectGuest?.includes(item)}
-            onValueChange={() => {}}
-            style={tw``}
-            color={'#fff'}
-          /> */}
-                <Checkbox
-                  borderRadius={2}
-                  size={20}
-                  // iconColor="#000000"
-                  value={selectGuest?.includes(item.id)}
-                  onValueChange={() => {
+                <TouchableOpacity
+                  activeOpacity={0.6}
+                  onPress={() => {
                     if (selectGuest?.length > 0) {
                       if (selectGuest?.includes(item.id)) {
                         setSelectGuest(
@@ -332,9 +321,30 @@ const AllGuest = ({navigation, search}: Props) => {
                       setSelectGuest([item?.id]);
                     }
                   }}
-                  style={tw`p-2`}
-                  color={PrimaryColor}
-                />
+                  style={tw`px-2 rounded-md bg-secondary py-2 items-center justify-center`}>
+                  <Checkbox
+                    containerStyle={tw`justify-center items-center`}
+                    borderRadius={2}
+                    size={16}
+                    // iconColor="#000000"
+                    value={selectGuest?.includes(item.id)}
+                    onValueChange={() => {
+                      if (selectGuest?.length > 0) {
+                        if (selectGuest?.includes(item.id)) {
+                          setSelectGuest(
+                            selectGuest?.filter((i: string) => i !== item?.id),
+                          );
+                        } else {
+                          setSelectGuest([...selectGuest, item?.id]);
+                        }
+                      } else {
+                        setSelectGuest([item?.id]);
+                      }
+                    }}
+                    style={tw``}
+                    color={PrimaryColor}
+                  />
+                </TouchableOpacity>
               </>
             }>
             <Card.Details
@@ -392,7 +402,7 @@ const AllGuest = ({navigation, search}: Props) => {
                 style={tw`flex-row gap-3 items-center px-4 mb-4`}>
                 <Checkbox
                   borderRadius={100}
-                  size={20}
+                  size={16}
                   iconColor="#000000"
                   value={selectGuestList === item.id}
                   onValueChange={() => {

@@ -1,4 +1,3 @@
-import React, {Component} from 'react';
 import {
   Assets,
   Avatar,
@@ -15,6 +14,7 @@ import {
   Typography,
   View,
 } from 'react-native-ui-lib';
+import React, {Component} from 'react';
 
 import {ScrollView} from 'react-native';
 
@@ -107,9 +107,9 @@ export default class TestScreen extends Component {
           toggleModal();
         }}
         width="100%"
-        height="45%"
+        // height="45%"
         bottom
-        useSafeArea
+        // useSafeArea
         containerStyle={{backgroundColor: Colors.$backgroundDefault}}
         direction={PanningProvider.Directions.DOWN}
         headerProps={{title: 'Custom modal'}}>
@@ -163,7 +163,7 @@ export default class TestScreen extends Component {
           />
 
           <Picker
-            useSafeArea
+            // useSafeArea
             label="Custom modal"
             placeholder="Pick multiple Languages"
             value={this.state.customModalValues}

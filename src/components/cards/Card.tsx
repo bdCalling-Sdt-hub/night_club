@@ -1,8 +1,8 @@
 import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 
+import {AnimatedImage} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {AnimatedImage} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
 export interface ICardProps {
@@ -10,7 +10,10 @@ export interface ICardProps {
   containerStyle?: any;
   cardStyle?: any;
   component?: React.ReactNode;
+  OuterComponent?: React.ReactNode;
   onPress?: () => void;
+
+  layoutStyle?: any;
 }
 
 const Card = ({
@@ -18,20 +21,25 @@ const Card = ({
   cardStyle,
   component,
   containerStyle,
+  OuterComponent,
+  layoutStyle,
   onPress,
 }: ICardProps) => {
   return (
-    <TouchableOpacity
-      activeOpacity={0.6}
-      disabled={!onPress}
-      onPress={onPress}
-      style={[
-        tw`bg-primary600 p-2 rounded-md flex-row justify-between items-center`,
-        cardStyle,
-      ]}>
-      <View style={[tw``, containerStyle]}>{children}</View>
-      <View>{component}</View>
-    </TouchableOpacity>
+    <View style={[tw`flex-row items-center justify-between`, layoutStyle]}>
+      <TouchableOpacity
+        activeOpacity={0.6}
+        disabled={!onPress}
+        onPress={onPress}
+        style={[
+          tw`bg-primary600 p-2 rounded-md flex-row justify-between items-center flex-1`,
+          cardStyle,
+        ]}>
+        <View style={[tw``, containerStyle]}>{children}</View>
+        {component && <View>{component}</View>}
+      </TouchableOpacity>
+      {OuterComponent && <View>{OuterComponent}</View>}
+    </View>
   );
 };
 

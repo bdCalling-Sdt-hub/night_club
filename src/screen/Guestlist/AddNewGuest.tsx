@@ -350,20 +350,6 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   }}
                 />
               </View>
-              <View>
-                <InputTextWL
-                  cursorColor={PrimaryColor}
-                  label="Entry fee"
-                  placeholder="Enter entry fee"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.entry_fee}
-                  onChangeText={handleChange('entry_fee')}
-                  onBlur={handleBlur('entry_fee')}
-                  errorText={errors.entry_fee}
-                  touched={touched.entry_fee}
-                  keyboardType="decimal-pad"
-                />
-              </View>
 
               <View>
                 <InputTextWL
@@ -379,6 +365,21 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   keyboardType="decimal-pad"
                 />
               </View>
+              <View>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
+                  label="Entry fee"
+                  placeholder="Enter entry fee"
+                  containerStyle={tw`border-0 h-12 rounded-lg`}
+                  value={values.entry_fee}
+                  onChangeText={handleChange('entry_fee')}
+                  onBlur={handleBlur('entry_fee')}
+                  errorText={errors.entry_fee}
+                  touched={touched.entry_fee}
+                  keyboardType="decimal-pad"
+                />
+              </View>
+
               <DateTimePicker
                 value={
                   values.free_entry_time
@@ -579,6 +580,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 <View style={tw`bg-base `}>
                   <Picker
                     useSafeArea
+                    // multiline
                     listProps={{
                       ListEmptyComponent: (
                         <EmptyCard
