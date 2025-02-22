@@ -112,7 +112,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
                       navigation.navigate('EventCreate'); // Navigate to Create Event
                       break;
                     case 'GuestList':
-                      navigation.navigate('AddNewGuestList'); // Navigate to Create Guest List
+                      navigation.navigate('AddNewGuest'); // Navigate to Create Guest List
                       break;
                     default:
                       // console.log('No specific route for the button.');

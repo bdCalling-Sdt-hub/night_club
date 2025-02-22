@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import {IGuest, IGuestsList, ITags} from '../../../firebase/interface';
 import {
-  IconBigPlusCyan,
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
@@ -17,7 +16,6 @@ import {
 
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import IButton from '../../../components/buttons/IButton';
 import IwtButton from '../../../components/buttons/IwtButton';
 import NormalModal from '../../../components/modals/NormalModal';
 import Or from '../../../components/buttons/Or';
@@ -363,7 +361,7 @@ const AllGuest = ({navigation, search}: Props) => {
           </Card>
         )}
       />
-      {selectGuest?.length > 0 ? (
+      {selectGuest?.length > 0 && (
         <TButton
           title="Add To Guest List"
           containerStyle={tw`my-4 w-[90%] self-center h-10 rounded-lg bg-primary`}
@@ -372,12 +370,6 @@ const AllGuest = ({navigation, search}: Props) => {
             setAddToGuests(true);
           }}
           isLoading={false}
-        />
-      ) : (
-        <IButton
-          onPress={() => navigation.navigate('AddNewGuest')}
-          svg={IconBigPlusCyan}
-          containerStyle={tw`absolute bottom-5 bg-opacity-65 right-6 w-14 h-14 rounded-full  bg-base `}
         />
       )}
 
