@@ -1,35 +1,36 @@
-import React, {useEffect} from 'react';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import React, {useEffect} from 'react';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import {Formik} from 'formik';
-import moment from 'moment';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputTextWL from '../../components/inputs/InputTextWL';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {Formik} from 'formik';
 import GLoading from '../../components/loader/GLoading';
-import {useToast} from '../../components/modals/Toaster';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import VideoThumbnail from './components/VideoThumbnail';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import {useIsFocused} from '@react-navigation/native';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
-import VideoThumbnail from './components/VideoThumbnail';
+import {useToast} from '../../components/modals/Toaster';
 
 interface createProps {
   name: string;
@@ -481,6 +482,15 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No manager found"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.manager_id}
                   onChange={handleChange('manager_id')}
                   onBlur={handleBlur('manager_id')}
@@ -537,6 +547,15 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No status found"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.status}
                   onChange={handleChange('status')}
                   onBlur={handleBlur('status')}

@@ -1,21 +1,22 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IconCloseGray, IconDownArrayGray} from '../../icons/icons';
-import {ApiUrl, BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import {Formik} from 'formik';
+import {IMangeUser} from '../../firebase/interface';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {IMangeUser} from '../../firebase/interface';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 const data = [
   {
@@ -223,6 +224,15 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                   <View style={tw`bg-base `}>
                     <Picker
                       useSafeArea
+                      listProps={{
+                        ListEmptyComponent: (
+                          <EmptyCard
+                            title="No manager available"
+                            isLoading={loading}
+                            hight={height * 0.8}
+                          />
+                        ),
+                      }}
                       value={values.manager_id}
                       onChange={handleChange('manager_id')}
                       onBlur={handleBlur('manager_id')}

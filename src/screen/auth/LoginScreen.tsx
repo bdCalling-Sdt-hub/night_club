@@ -1,4 +1,3 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {
   IconEmailGay,
   IconEyeCloseGray,
@@ -6,18 +5,19 @@ import {
   IconLockGray,
 } from '../../icons/icons';
 import {PrimaryColor, lStorage} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {Formik} from 'formik';
-import React from 'react';
+import Background from '../components/Background';
 import {Checkbox} from 'react-native-ui-lib';
-import TButton from '../../components/buttons/TButton';
+import {Formik} from 'formik';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import React from 'react';
+import TButton from '../../components/buttons/TButton';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import {useFireAuth} from '../../firebase/useFireAuth';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 interface ISingInForm {
   email: string;
@@ -188,7 +188,7 @@ const LoginScreen = ({navigation}: NavigProps<any>) => {
                     check && lStorage.setString('email', text);
                   }}
                   onBlur={handleBlur('email')}
-                  placeholder="Enter you email"
+                  placeholder="Enter your email"
                   defaultValue={lStorage.getString('email') || ''}
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
@@ -271,7 +271,7 @@ const LoginScreen = ({navigation}: NavigProps<any>) => {
               navigation.navigate('ForgetPassword');
             }}>
             <Text style={tw`text-primary font-RobotoBold text-right`}>
-              Forget password?
+              Forgot Password?
             </Text>
           </TouchableOpacity>
         </View>
@@ -280,8 +280,12 @@ const LoginScreen = ({navigation}: NavigProps<any>) => {
             <Text style={tw`text-black60 font-NunitoSansLight`}>
               Don’t have an account?{' '}
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-              <Text style={tw`text-primary font-RobotoBold`}>Sign up</Text>
+            <TouchableOpacity
+              style={tw`py-3 px-1 `}
+              onPress={() => navigation.navigate('SignUp')}>
+              <Text style={tw`text-primary font-RobotoBold text-base`}>
+                Sign up
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

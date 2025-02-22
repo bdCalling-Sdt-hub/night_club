@@ -6,35 +6,36 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
 
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import Background from '../components/Background';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import {Formik} from 'formik';
-import moment from 'moment';
+import GLoading from '../../components/loader/GLoading';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import Video from 'react-native-video';
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import GLoading from '../../components/loader/GLoading';
-import {useToast} from '../../components/modals/Toaster';
+import Video from 'react-native-video';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useToast} from '../../components/modals/Toaster';
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
   const {userId, user} = useAuth();
@@ -426,6 +427,15 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No manager available"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.manager_id}
                   onChange={handleChange('manager_id')}
                   onBlur={handleBlur('manager_id')}
@@ -482,6 +492,15 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No status available"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.status}
                   onChange={handleChange('status')}
                   onBlur={handleBlur('status')}

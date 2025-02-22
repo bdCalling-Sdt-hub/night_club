@@ -1,34 +1,35 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import {Formik} from 'formik';
-import moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-native-date-picker';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {Formik} from 'formik';
+import GLoading from '../../components/loader/GLoading';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import GLoading from '../../components/loader/GLoading';
-import {useToast} from '../../components/modals/Toaster';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 import {userAccess} from '../../hook/useAccess';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -233,6 +234,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Tags"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.tag}
                   onChange={handleChange('tag') as any}
                   onBlur={handleBlur('tag')}
@@ -484,6 +494,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Guest List"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={values.guest_list}
                   onChange={handleChange('guest_list') as any}
                   onBlur={handleBlur('guest_list')}
@@ -583,6 +602,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 <View style={tw`bg-base `}>
                   <Picker
                     useSafeArea
+                    listProps={{
+                      ListEmptyComponent: (
+                        <EmptyCard
+                          title="No Extra Fields"
+                          isLoading={loading}
+                          hight={height * 0.8}
+                        />
+                      ),
+                    }}
                     onChange={(value: string) => {
                       setExtraFields({
                         ...extraFields,

@@ -1,12 +1,5 @@
+import {BaseColor, PrimaryColor, height, lStorage} from '../../utils/utils';
 import {DrawerActions, useIsFocused} from '@react-navigation/native';
-import React, {useEffect} from 'react';
-import {
-  RefreshControl,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import {IEvent, IGuest, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -15,23 +8,31 @@ import {
   IconLeftArrayGray,
   IconSmallSettingCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor, lStorage} from '../../utils/utils';
+import React, {useEffect} from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import auth from '@react-native-firebase/auth';
-import firestore from '@react-native-firebase/firestore';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import AniImage from '../../components/animate/AniImage';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import IButton from '../../components/buttons/IButton';
-import IwtButton from '../../components/buttons/IwtButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
+import Background from '../components/Background';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import GLoading from '../../components/loader/GLoading';
+import IButton from '../../components/buttons/IButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import auth from '@react-native-firebase/auth';
+import firestore from '@react-native-firebase/firestore';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import {userAccess} from '../../hook/useAccess';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<any>) => {
   const currentUser = auth().currentUser;
@@ -289,6 +290,15 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
               <View style={tw`flex-row  items-center gap-2`}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Venues available"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={selectVenue || 'Select venue'}
                   onChange={text => setSelectVenue(text as string)}
                   renderInput={(preps: any) => {
@@ -358,6 +368,15 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
                 />
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Events available"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={selectEvent || 'Select event'}
                   onChange={text => setSelectEvent(text as string)}
                   renderInput={(preps: any) => {
@@ -497,8 +516,12 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
             multiline
             verticalAlign="top"
             textAlignVertical="top"
-            defaultValue={lStorage?.getString('note') as string}
-            onChangeText={text => lStorage?.setString('note', text)}
+            defaultValue={
+              lStorage?.getString(user?.user_id as string) as string
+            }
+            onChangeText={text =>
+              lStorage?.setString(user?.user_id as string, text)
+            }
             containerStyle={tw`h-40  pt-2 rounded-lg border-[1px] border-transparent`}
             focusSTyle={tw`border-primary`}
             placeholder="Enter your note"

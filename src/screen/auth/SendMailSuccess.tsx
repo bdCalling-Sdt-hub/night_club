@@ -7,10 +7,10 @@ import {
   View,
 } from 'react-native';
 
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
 import {IconEmailSending} from '../../icons/icons';
 import {NavigProps} from '../../interfaces/NaviProps';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
 import tw from '../../lib/tailwind';
 
 const SendMailSuccess = ({navigation}: NavigProps<any>) => {
@@ -47,7 +47,8 @@ const SendMailSuccess = ({navigation}: NavigProps<any>) => {
               Open gmail
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+          <TouchableOpacity
+            onPress={() => (navigation as any).replace('Login')}>
             <Text
               style={tw`text-sm text-white50  font-RobotoMedium text-center border border-gray-800 px-4 py-2 rounded-md`}>
               Go back and login

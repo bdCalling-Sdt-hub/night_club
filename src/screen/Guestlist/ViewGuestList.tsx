@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {
   FlatList,
   RefreshControl,
@@ -13,27 +13,27 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import React, {useEffect} from 'react';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import moment from 'moment';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
-import Card from '../../components/cards/Card';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import SearchCard from '../../components/cards/SearchCard';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {useToast} from '../../components/modals/Toaster';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFIle';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
@@ -323,6 +323,15 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         <View style={tw`px-4 flex-row items-center gap-2`}>
           <Picker
             useSafeArea
+            listProps={{
+              ListEmptyComponent: (
+                <EmptyCard
+                  title="No any one added yet"
+                  isLoading={loading}
+                  hight={height * 0.8}
+                />
+              ),
+            }}
             value={addedBy}
             onChange={text => setAddedBy(text as string)}
             renderInput={(preps: any) => {
@@ -380,6 +389,15 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           />
           <Picker
             useSafeArea
+            listProps={{
+              ListEmptyComponent: (
+                <EmptyCard
+                  title="No tags added yet"
+                  isLoading={loading}
+                  hight={height * 0.8}
+                />
+              ),
+            }}
             value={tags}
             onChange={text => setTags(text as any)}
             renderInput={(preps: any) => {

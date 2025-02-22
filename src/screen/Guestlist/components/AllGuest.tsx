@@ -1,3 +1,5 @@
+import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
+import {Checkbox, Picker} from 'react-native-ui-lib';
 import {
   FlatList,
   RefreshControl,
@@ -5,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IGuest, IGuestsList, ITags} from '../../../firebase/interface';
 import {
   IconBigPlusCyan,
@@ -13,27 +14,27 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import IButton from '../../../components/buttons/IButton';
-import IwtButton from '../../../components/buttons/IwtButton';
-import Or from '../../../components/buttons/Or';
-import TButton from '../../../components/buttons/TButton';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
+import IButton from '../../../components/buttons/IButton';
+import IwtButton from '../../../components/buttons/IwtButton';
 import NormalModal from '../../../components/modals/NormalModal';
+import Or from '../../../components/buttons/Or';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import tw from '../../../lib/tailwind';
 import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
-import tw from '../../../lib/tailwind';
+import {useIsFocused} from '@react-navigation/native';
 
 interface Props {
   navigation: any;
+  search: string;
 }
-const AllGuest = ({navigation}: Props) => {
+const AllGuest = ({navigation, search}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState<any>([]);
   const [selectGuestList, setSelectGuestList] = React.useState<string>('');
   const [addToGuests, setAddToGuests] = React.useState(false);
@@ -208,6 +209,15 @@ const AllGuest = ({navigation}: Props) => {
               <View style={tw`px-1 flex-row items-center gap-2`}>
                 <Picker
                   useSafeArea
+                  listProps={{
+                    ListEmptyComponent: (
+                      <EmptyCard
+                        title="No Tags"
+                        isLoading={loading}
+                        hight={height * 0.8}
+                      />
+                    ),
+                  }}
                   value={tag}
                   onChange={(text: any) => setTag(text)}
                   renderInput={(preps: any) => {
@@ -265,12 +275,14 @@ const AllGuest = ({navigation}: Props) => {
                   }}
                   fieldType={Picker.fieldTypes.filter}
                   paddingH
-                  items={TagsData?.map(item => {
-                    return {
-                      label: item?.name,
-                      value: item?.id,
-                    };
-                  })}
+                  items={TagsData?.filter(item => item?.id && item?.name).map(
+                    item => {
+                      return {
+                        label: item.name as string,
+                        value: item.id as string,
+                      };
+                    },
+                  )}
                   pickerModalProps={{
                     overlayBackgroundColor: BaseColor,
                   }}
@@ -280,9 +292,11 @@ const AllGuest = ({navigation}: Props) => {
           );
         }}
         contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
-        data={guestListData?.filter(item =>
-          tag === 'Tags' ? item : item.tag === tag,
-        )}
+        data={guestListData
+          ?.filter(item =>
+            item.fullName.toLowerCase().includes(search.toLowerCase()),
+          )
+          ?.filter(item => (tag === 'Tags' ? item : item.tag === tag))}
         renderItem={({item, index}) => (
           <Card
             onPress={() => {

@@ -1,13 +1,13 @@
 import {ActivityIndicator, View} from 'react-native';
 
-import React from 'react';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import OptionSelect from '../../components/cards/OptionSelect';
-import SearchCard from '../../components/cards/SearchCard';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import {PrimaryColor} from '../../utils/utils';
 import Background from '../components/Background';
+import {NavigProps} from '../../interfaces/NaviProps';
+import OptionSelect from '../../components/cards/OptionSelect';
+import {PrimaryColor} from '../../utils/utils';
+import React from 'react';
+import SearchCard from '../../components/cards/SearchCard';
+import tw from '../../lib/tailwind';
 
 // Lazy Load Component
 const AllGuest = React.lazy(() => import('./components/AllGuest'));
@@ -68,7 +68,7 @@ const MyGuestListScreen = ({navigation}: NavigProps<any>) => {
               <ActivityIndicator color={PrimaryColor} size={'large'} />
             </View>
           }>
-          <AllGuest navigation={navigation} />
+          <AllGuest navigation={navigation} search={search} />
         </React.Suspense>
       ) : (
         <React.Suspense
@@ -77,7 +77,7 @@ const MyGuestListScreen = ({navigation}: NavigProps<any>) => {
               <ActivityIndicator color={PrimaryColor} size={'large'} />
             </View>
           }>
-          <SavedGuestList navigation={navigation} />
+          <SavedGuestList navigation={navigation} search={search} />
         </React.Suspense>
       )}
     </Background>

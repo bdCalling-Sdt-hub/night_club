@@ -1,5 +1,4 @@
-import React, {useState} from 'react';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor} from '../../utils/utils';
 import {
   IconCloseGray,
   IconCompanyGray,
@@ -10,22 +9,23 @@ import {
   IconSearchGray,
   IconUserGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor} from '../../utils/utils';
+import React, {useState} from 'react';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import {updateProfile} from '@react-native-firebase/auth';
 import {Formik} from 'formik';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
-import TButton from '../../components/buttons/TButton';
+import {IUser} from '../../firebase/interface';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import {useToast} from '../../components/modals/Toaster';
-import {useAuth} from '../../context/AuthProvider';
-import {IUser} from '../../firebase/interface';
-import {useFireAuth} from '../../firebase/useFireAuth';
 import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
+import {Picker} from 'react-native-ui-lib';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
 import countries from './countries.json';
+import tw from '../../lib/tailwind';
+import {updateProfile} from '@react-native-firebase/auth';
+import {useAuth} from '../../context/AuthProvider';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {useToast} from '../../components/modals/Toaster';
 
 const SignUpScreen = ({navigation}: NavigProps<any>) => {
   const {closeToast, showToast} = useToast();
@@ -199,7 +199,7 @@ const SignUpScreen = ({navigation}: NavigProps<any>) => {
                   value={values.email}
                   onChangeText={handleChange('email')}
                   onBlur={handleBlur('email')}
-                  placeholder="Enter you email"
+                  placeholder="Enter your email"
                   containerStyle={tw`h-12`}
                   svgFirstIcon={IconEmailGay}
                 />
@@ -390,8 +390,12 @@ const SignUpScreen = ({navigation}: NavigProps<any>) => {
             <Text style={tw`text-white400 font-NunitoSansLight`}>
               Already have an account?{' '}
             </Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-              <Text style={tw`text-primary font-NunitoSansLight`}>Login</Text>
+            <TouchableOpacity
+              style={tw`py-3 px-1 `}
+              onPress={() => navigation.navigate('Login')}>
+              <Text style={tw`text-primary font-RobotoBold text-base`}>
+                Login
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

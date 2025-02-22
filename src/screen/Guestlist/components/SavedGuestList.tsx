@@ -1,20 +1,21 @@
 import {FlatList, RefreshControl} from 'react-native';
 import {PrimaryColor, height} from '../../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import React from 'react';
 import Card from '../../../components/cards/Card';
 import EmptyCard from '../../../components/Empty/EmptyCard';
-import {useAuth} from '../../../context/AuthProvider';
 import {IGuestsList} from '../../../firebase/interface';
+import React from 'react';
+import firestore from '@react-native-firebase/firestore';
 import tw from '../../../lib/tailwind';
+import {useAuth} from '../../../context/AuthProvider';
+import {useIsFocused} from '@react-navigation/native';
 
 interface Props {
   navigation: any;
+  search: string;
 }
 
-const SavedGuestList = ({navigation}: Props) => {
+const SavedGuestList = ({navigation, search}: Props) => {
   const [guestListAvailable, setGuestListAvailable] = React.useState(
     [] as Array<IGuestsList>,
   );
@@ -60,7 +61,10 @@ const SavedGuestList = ({navigation}: Props) => {
         />
       }
       contentContainerStyle={tw`px-4 pt-2 pb-14 gap-3`}
-      data={guestListAvailable}
+      data={guestListAvailable?.filter(item =>
+        item.name.toLowerCase().includes(search.toLowerCase()),
+      )}
+      // keyExtractor={(item, index) => item.id}
       ListEmptyComponent={
         <EmptyCard
           isLoading={loading}
