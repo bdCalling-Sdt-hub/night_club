@@ -518,7 +518,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 },
                 {
                   title: item.free_entry_time
-                    ? `Free entry start at ${moment(
+                    ? `Free entry before that ${moment(
                         item.free_entry_time,
                       ).format('hh:mm A')}`
                     : 'Paid',

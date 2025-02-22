@@ -189,7 +189,7 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
           0,
         ) -
           allGuest?.reduce(
-            (acc, cur) => acc + (cur.entry_fee ? parseInt(cur.entry_fee) : 0),
+            (acc, cur) => acc + (cur.free_entry ? parseInt(cur.free_entry) : 0),
             0,
           ),
       );
