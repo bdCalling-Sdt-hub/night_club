@@ -1,8 +1,8 @@
 import {ScrollView, TouchableWithoutFeedback, View} from 'react-native';
 
 import {BlurView} from '@react-native-community/blur';
-import {Modal} from 'react-native-ui-lib';
 import React from 'react';
+import {Modal} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
 interface NormalModalProps {

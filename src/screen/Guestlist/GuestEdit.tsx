@@ -1,35 +1,36 @@
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
+  IconSmallTickCyan,
 } from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
+import {Formik} from 'formik';
+import moment from 'moment';
+import React from 'react';
 import DatePicker from 'react-native-date-picker';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import EmptyCard from '../../components/Empty/EmptyCard';
-import {Formik} from 'formik';
-import GLoading from '../../components/loader/GLoading';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import React from 'react';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import GLoading from '../../components/loader/GLoading';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
-import {useToast} from '../../components/modals/Toaster';
 import {userAccess} from '../../hook/useAccess';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -39,7 +40,7 @@ interface createProps {
   free_entry_time: string;
   // free_entry_end_time: string;
   added_by: string;
-  guest_list: string;
+  guest_list: [string];
   tag: string;
 }
 
@@ -183,7 +184,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
         <Formik
           initialValues={
             route?.params?.guest
-              ? route?.params?.guest
+              ? (route?.params?.guest as any)
               : {
                   fullName: '',
                   people: '',
@@ -192,7 +193,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   free_entry_time: '',
                   free_entry_end_time: '',
                   added_by: '',
-                  guest_list: '',
+                  guest_list: [''],
                   tag: '',
                   tag_name: '',
                   check_in: 0,
@@ -221,6 +222,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
             values,
             errors,
             touched,
+            setFieldValue,
           }) => (
             <View style={tw`gap-4 `}>
               <View>
@@ -475,7 +477,13 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   touched={touched.added_by}
                 />
               </View>
-              {/* <View style={tw`bg-base `}>
+              <View style={tw`bg-base flex-1 `}>
+                <Text
+                  style={[
+                    tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
+                  ]}>
+                  Add to guest list (optional)
+                </Text>
                 <Picker
                   useSafeArea
                   mode={Picker.modes.MULTI}
@@ -488,30 +496,42 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                       />
                     ),
                   }}
+                  multiline
                   value={values.guest_list}
-                  onChange={(items: any) => {
-                    console.log(items);
+                  onChange={items => {
+                    setFieldValue('guest_list', items);
+                  }}
+                  renderPicker={(value, label) => {
+                    console.log(label);
+                    return (
+                      <View
+                        key={value}
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800 `}>
+                        <View
+                          style={tw`flex flex-1 pb-2 flex-row flex-wrap gap-1`}>
+                          {label ? (
+                            label?.split(',')?.map(item => {
+                              return (
+                                <Text
+                                  style={tw`text-white100 bg-secondary p-1  font-RobotoMedium text-xs  rounded-lg`}>
+                                  {item}
+                                </Text>
+                              );
+                            })
+                          ) : (
+                            <Text
+                              style={tw`text-white100 py-3  font-RobotoMedium text-sm px-4`}>
+                              Select guest list
+                            </Text>
+                          )}
+                        </View>
+                        <SvgXml xml={IconDownArrayGray} />
+                      </View>
+                    );
                   }}
                   onBlur={handleBlur('guest_list')}
-                  renderInput={() => (
-                    <InputTextWL
-                      cursorColor={PrimaryColor}
-                      editable={false}
-                      value={
-                        guestListAvailable?.find(
-                          item => item.id === values.guest_list,
-                        )?.name
-                      }
-                      label="Add to guest list (optional)"
-                      placeholder="Select guest list"
-                      containerStyle={tw`h-12 border-0 rounded-lg`}
-                      svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.guest_list}
-                      touched={touched.guest_list}
-                    />
-                  )}
                   renderItem={(value, items) => {
-                    console.log(items);
+                    // console.log(items);
                     return (
                       <View
                         style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
@@ -549,81 +569,6 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                       </View>
                     );
                   }}
-                  items={guestListAvailable?.map(item => ({
-                    label: item.name,
-                    value: item.id,
-                  }))}
-                  pickerModalProps={{
-                    overlayBackgroundColor: BaseColor,
-                  }}
-                />
-
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewGuestList');
-                  }}>
-                  <Text style={tw`text-primary py-2 text-xs text-right`}>
-                    Add new guest list
-                  </Text>
-                </TouchableOpacity>
-              </View> */}
-              <View style={tw`bg-base `}>
-                <Picker
-                  useSafeArea
-                  listProps={{
-                    ListEmptyComponent: (
-                      <EmptyCard
-                        title="No Guest List"
-                        isLoading={loading}
-                        hight={height * 0.8}
-                      />
-                    ),
-                  }}
-                  value={values.guest_list}
-                  onChange={handleChange('guest_list') as any}
-                  onBlur={handleBlur('guest_list')}
-                  renderInput={() => (
-                    <InputTextWL
-                      cursorColor={PrimaryColor}
-                      editable={false}
-                      value={
-                        guestListAvailable?.find(
-                          item => item.id === values.guest_list,
-                        )?.name
-                      }
-                      label="Add to guest list (optional)"
-                      placeholder="Select guest list"
-                      containerStyle={tw`h-12 border-0 rounded-lg`}
-                      svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.guest_list}
-                      touched={touched.guest_list}
-                    />
-                  )}
-                  renderItem={(value, items) => {
-                    return (
-                      <View
-                        style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
-                        <Text
-                          style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {items.label}
-                        </Text>
-                      </View>
-                    );
-                  }}
-                  renderCustomDialogHeader={preps => {
-                    return (
-                      <View>
-                        <TouchableOpacity
-                          onPress={preps.onCancel}
-                          style={tw`self-start py-3 px-4`}>
-                          <SvgXml xml={IconCloseGray} height={20} width={20} />
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  }}
-                  fieldType={Picker.fieldTypes.filter}
-                  paddingH
                   items={guestListAvailable?.map(item => ({
                     label: item.name,
                     value: item.id,

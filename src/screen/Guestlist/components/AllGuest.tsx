@@ -1,32 +1,33 @@
-import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
-import {Checkbox, Picker} from 'react-native-ui-lib';
 import {
   FlatList,
   RefreshControl,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IGuest, IGuestsList, ITags} from '../../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../../icons/icons';
+import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
-import Card from '../../../components/cards/Card';
-import EmptyCard from '../../../components/Empty/EmptyCard';
-import IwtButton from '../../../components/buttons/IwtButton';
-import NormalModal from '../../../components/modals/NormalModal';
-import Or from '../../../components/buttons/Or';
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import IwtButton from '../../../components/buttons/IwtButton';
+import Or from '../../../components/buttons/Or';
 import TButton from '../../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
-import tw from '../../../lib/tailwind';
+import Card from '../../../components/cards/Card';
+import EmptyCard from '../../../components/Empty/EmptyCard';
+import NormalModal from '../../../components/modals/NormalModal';
 import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
+import tw from '../../../lib/tailwind';
 
 interface Props {
   navigation: any;
@@ -34,7 +35,9 @@ interface Props {
 }
 const AllGuest = ({navigation, search}: Props) => {
   const [selectGuest, setSelectGuest] = React.useState<any>([]);
-  const [selectGuestList, setSelectGuestList] = React.useState<string>('');
+  const [selectGuestList, setSelectGuestList] = React.useState<
+    [string] | [] | null
+  >(null);
   const [addToGuests, setAddToGuests] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const {user} = useAuth();
@@ -128,7 +131,8 @@ const AllGuest = ({navigation, search}: Props) => {
     setLoading(true);
     const query = firestore()
       .collection('Guests')
-      .where('createdBy', '==', user?.user_id);
+      .where('createdBy', '==', user?.user_id)
+      .orderBy('updatedAt', 'desc'); // Sort by updatedAt, most recent first
 
     const unsubscribe = query.onSnapshot(
       snapshot => {
@@ -155,16 +159,36 @@ const AllGuest = ({navigation, search}: Props) => {
   }, [isFocused]);
 
   const handleAddGuestOnGuestList = async () => {
-    selectGuest?.forEach((id: string) => {
-      updateFireData({
-        collectType: 'Guests',
-        id: id,
-        data: {
-          guest_list: selectGuestList,
-        },
-      });
+    // Loop through the selected guests
+    selectGuest?.forEach(async (id: string) => {
+      // Get the current guest data to access the existing guest_list
+      const guestRef = firestore().collection('Guests').doc(id);
+      const guestDoc = await guestRef.get();
+
+      if (guestDoc.exists) {
+        const guestData = guestDoc.data();
+        const currentGuestList = guestData?.guest_list || []; // Get the current guest_list (or an empty array if not found)
+
+        // Combine the current guest list with the new selected guests
+        const updatedGuestList = [
+          ...new Set([...currentGuestList, ...selectGuestList]),
+        ]; // Use Set to avoid duplicates
+
+        // Update the guest document with the new guest_list
+        await guestRef.update({
+          guest_list: updatedGuestList,
+        });
+
+        console.log(
+          `Updated guest ${id} with new guest_list:`,
+          updatedGuestList,
+        );
+      } else {
+        console.error('Guest not found:', id);
+      }
     });
 
+    // Reset the state
     setAddToGuests(false);
     setSelectGuest([]);
     setSelectGuestList('');
@@ -374,8 +398,9 @@ const AllGuest = ({navigation, search}: Props) => {
       )}
 
       <NormalModal
-        layerContainerStyle={tw`flex-1`}
-        containerStyle={tw`w-[70%] `}
+        // scrollable
+        layerContainerStyle={tw`flex-1 my-3`}
+        containerStyle={tw`w-[85%] `}
         visible={addToGuests}
         setVisible={setAddToGuests}>
         <View style={tw`flex-row justify-between items-center px-4 mb-4`}>
@@ -383,22 +408,36 @@ const AllGuest = ({navigation, search}: Props) => {
             Selected guestlists
           </Text>
         </View>
-        <View>
+        <ScrollView style={tw`h-[60%]`}>
           {guestListAvailable?.map((item, index) => {
             return (
               <TouchableOpacity
                 key={index}
                 onPress={() => {
-                  setSelectGuestList(item.id);
+                  // Toggle the selected ID in the selectGuestList array
+                  if (selectGuestList?.includes(item.id)) {
+                    setSelectGuestList(
+                      selectGuestList.filter((i: string) => i !== item.id),
+                    ); // Remove if already selected
+                  } else {
+                    setSelectGuestList([...selectGuestList, item.id]); // Add if not selected
+                  }
                 }}
-                style={tw`flex-row gap-3 items-center px-4 mb-4`}>
+                style={tw`flex-row gap-3 items-center px-4 pb-4`}>
                 <Checkbox
                   borderRadius={100}
                   size={16}
                   iconColor="#000000"
-                  value={selectGuestList === item.id}
+                  value={selectGuestList?.includes(item.id)} // Check if the ID is in selectGuestList
                   onValueChange={() => {
-                    setSelectGuestList(item?.id);
+                    // Toggle the selected ID in the selectGuestList array
+                    if (selectGuestList?.includes(item.id)) {
+                      setSelectGuestList(
+                        selectGuestList?.filter((i: string) => i !== item.id),
+                      ); // Remove if already selected
+                    } else {
+                      setSelectGuestList([...selectGuestList, item.id]); // Add if not selected
+                    }
                   }}
                   style={tw``}
                   color={'#fff'}
@@ -409,7 +448,7 @@ const AllGuest = ({navigation, search}: Props) => {
               </TouchableOpacity>
             );
           })}
-        </View>
+        </ScrollView>
         <Or />
         <View style={tw`gap-3 mt-2`}>
           {/* <TButton
