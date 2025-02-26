@@ -1,8 +1,8 @@
 import {ActivityIndicator, Text, TouchableOpacity, View} from 'react-native';
 
-import {AnimatedImage} from 'react-native-ui-lib';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {AnimatedImage} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
 export interface ICardProps {
@@ -150,14 +150,16 @@ Card.Button = ({checkedIn, total, onPress}: CardButtonProps) => {
     <>
       <TouchableOpacity
         activeOpacity={0.6}
-        disabled={checkedIn === total}
+        // disabled={checkedIn === total}
         onPress={onPress}
         style={tw`px-2  ${
-          checkedIn === total ? 'bg-green-900' : 'bg-green-600'
+          // checkedIn === total ? 'bg-green-900' : 'bg-green-600'
+          'bg-green-600'
         } rounded-lg h-10 items-center justify-center`}>
         <Text
           style={tw` ${
-            checkedIn === total ? 'text-white400' : 'text-white50'
+            // checkedIn === total ? 'text-white400' : 'text-white50'
+            'text-white50'
           }  font-RobotoBlack`}>
           Checked in {checkedIn}/{total}
         </Text>

@@ -364,13 +364,13 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               </View>
 
               <TButton
-                disabled={
-                  parseInt(values?.check_in ?? 0) >=
-                  parseInt(values?.people ?? 0)
-                }
                 onPress={() => {
                   handleChange('check_in')(
-                    `${parseInt(values?.check_in || 0) + 1}`,
+                    `${
+                      parseInt(values?.check_in) === parseInt(values?.people)
+                        ? 0
+                        : parseInt(values.check_in) + 1 || 0
+                    }`,
                   );
                   handleSubmit();
                 }}

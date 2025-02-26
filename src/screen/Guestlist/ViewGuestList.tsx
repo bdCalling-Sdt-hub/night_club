@@ -69,7 +69,10 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       id: guest.id,
       collectType: 'Guests',
       data: {
-        check_in: guest?.check_in ? Number(guest.check_in) + 1 : 1,
+        check_in:
+          parseInt(guest?.check_in) === parseInt(guest?.people)
+            ? 0
+            : parseInt(guest.check_in) + 1 || 0,
       },
     });
   };
@@ -519,7 +522,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   title: item.fullName,
                   titleStyle: tw`text-white50 font-RobotoBold text-sm`,
                 },
-                {
+                (item.entry_fee || item.free_entry || item.free_entry_time) && {
                   title: item.free_entry_time
                     ? `Free entry before that ${moment(
                         item.free_entry_time,
