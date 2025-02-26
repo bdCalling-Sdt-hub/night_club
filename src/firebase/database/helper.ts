@@ -259,9 +259,9 @@ const useFireStore = () => {
             : user?.role == 'guard' || user?.role == 'promoters'
             ? user.manager_id
             : null,
+        createdBy: user?.user_id,
         ...data,
         id: docRef.id,
-        createdBy: user?.user_id,
         super_owner_id:
           user?.role === 'super-owner' ? user.user_id : user?.super_owner_id,
         owner_id:

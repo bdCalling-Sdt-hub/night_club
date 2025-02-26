@@ -502,7 +502,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     setFieldValue('guest_list', items);
                   }}
                   renderPicker={(value, label) => {
-                    console.log(label);
+                    // console.log(label);
                     return (
                       <View
                         key={value}
@@ -534,6 +534,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     // console.log(items);
                     return (
                       <View
+                        key={value}
                         style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
                         <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
                           <Text
@@ -561,11 +562,22 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                           style={tw`self-start py-3 px-4`}>
                           <SvgXml xml={IconCloseGray} height={20} width={20} />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={preps.onDone}
-                          style={tw`self-start py-3 px-4`}>
-                          <Text style={tw`text-primary text-base`}>Done</Text>
-                        </TouchableOpacity>
+                        <View style={tw`flex-row`}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setFieldValue('guest_list', []);
+                            }}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>
+                              Clear
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={preps.onDone}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     );
                   }}

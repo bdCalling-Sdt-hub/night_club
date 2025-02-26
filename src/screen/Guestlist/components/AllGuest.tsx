@@ -170,6 +170,8 @@ const AllGuest = ({navigation, search}: Props) => {
         const currentGuestList = guestData?.guest_list || []; // Get the current guest_list (or an empty array if not found)
 
         // Combine the current guest list with the new selected guests
+        console.log(selectGuestList);
+
         const updatedGuestList = [
           ...new Set([...currentGuestList, ...selectGuestList]),
         ]; // Use Set to avoid duplicates
@@ -419,8 +421,10 @@ const AllGuest = ({navigation, search}: Props) => {
                     setSelectGuestList(
                       selectGuestList.filter((i: string) => i !== item.id),
                     ); // Remove if already selected
-                  } else {
+                  } else if (selectGuestList?.length) {
                     setSelectGuestList([...selectGuestList, item.id]); // Add if not selected
+                  } else {
+                    setSelectGuestList([item.id]); // Add if not selected
                   }
                 }}
                 style={tw`flex-row gap-3 items-center px-4 pb-4`}>
@@ -433,10 +437,12 @@ const AllGuest = ({navigation, search}: Props) => {
                     // Toggle the selected ID in the selectGuestList array
                     if (selectGuestList?.includes(item.id)) {
                       setSelectGuestList(
-                        selectGuestList?.filter((i: string) => i !== item.id),
+                        selectGuestList.filter((i: string) => i !== item.id),
                       ); // Remove if already selected
-                    } else {
+                    } else if (selectGuestList?.length) {
                       setSelectGuestList([...selectGuestList, item.id]); // Add if not selected
+                    } else {
+                      setSelectGuestList([item.id]); // Add if not selected
                     }
                   }}
                   style={tw``}

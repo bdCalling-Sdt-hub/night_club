@@ -190,7 +190,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             entry_fee: '',
             free_entry: '',
             free_entry_time: '',
-            guest_list: [''],
+            guest_list: [],
             tag: '',
             tag_name: '',
             check_in: 0,
@@ -496,7 +496,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     setFieldValue('guest_list', items);
                   }}
                   renderPicker={(value, label) => {
-                    console.log(label);
+                    // console.log(label);
                     return (
                       <View
                         key={value}

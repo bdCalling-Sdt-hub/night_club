@@ -1,13 +1,4 @@
-import {BaseColor, PrimaryColor, height, lStorage} from '../../utils/utils';
 import {DrawerActions, useIsFocused} from '@react-navigation/native';
-import {IEvent, IGuest, IVenue} from '../../firebase/interface';
-import {
-  IconCloseGray,
-  IconDownArrayGray,
-  IconFilterGray,
-  IconLeftArrayGray,
-  IconSmallSettingCyan,
-} from '../../icons/icons';
 import React, {useEffect} from 'react';
 import {
   RefreshControl,
@@ -16,23 +7,32 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {IEvent, IGuest, IVenue} from '../../firebase/interface';
+import {
+  IconCloseGray,
+  IconDownArrayGray,
+  IconFilterGray,
+  IconLeftArrayGray,
+  IconSmallSettingCyan,
+} from '../../icons/icons';
+import {BaseColor, PrimaryColor, height, lStorage} from '../../utils/utils';
 
-import AniImage from '../../components/animate/AniImage';
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import GLoading from '../../components/loader/GLoading';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
-import tw from '../../lib/tailwind';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import AniImage from '../../components/animate/AniImage';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
 import {useAuth} from '../../context/AuthProvider';
 import {userAccess} from '../../hook/useAccess';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const ProfileScreen = ({navigation}: NavigProps<any>) => {
   const currentUser = auth().currentUser;
@@ -124,15 +124,14 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
   }, [venueData]);
 
   useEffect(() => {
-    if (!eventData.length) return;
+    // if (!eventData.length) return;
 
     // Step 3: Load Guests based on filtered events
     const eventIds = eventData.map(event => event.id);
 
     let guestsQuery = firestore()
       .collection('Guests')
-      .where('event', '!=', null)
-      .where('event', 'in', eventIds);
+      .where('event', 'in', eventIds?.length ? eventIds : ['']);
 
     const unsubscribeGuests = guestsQuery.onSnapshot(snapshot => {
       const guests = snapshot.docs.map(doc => ({

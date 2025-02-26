@@ -2,23 +2,23 @@ import {FlatList, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, IGuestsList} from '../../firebase/interface';
 import {PrimaryColor, height} from '../../utils/utils';
 
-import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import {Checkbox} from 'react-native-ui-lib';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {NavigProps} from '../../interfaces/NaviProps';
-import NormalModal from '../../components/modals/NormalModal';
-import React from 'react';
-import SearchCard from '../../components/cards/SearchCard';
-import TButton from '../../components/buttons/TButton';
 import firestore from '@react-native-firebase/firestore';
-import tw from '../../lib/tailwind';
-import {useAuth} from '../../context/AuthProvider';
-import {useExportFile} from '../../hook/useExportFile';
-import useFireStore from '../../firebase/database/helper';
 import {useIsFocused} from '@react-navigation/native';
+import React from 'react';
+import {Checkbox} from 'react-native-ui-lib';
+import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import TButton from '../../components/buttons/TButton';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import NormalModal from '../../components/modals/NormalModal';
 import {useToast} from '../../components/modals/Toaster';
+import {useAuth} from '../../context/AuthProvider';
+import useFireStore from '../../firebase/database/helper';
+import {useExportFile} from '../../hook/useExportFile';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const AllGuestInGuestList = ({
   navigation,
@@ -82,8 +82,9 @@ const AllGuestInGuestList = ({
     setLoading(true);
     const query = firestore()
       .collection('Guests')
-      .where('guest_list', '==', route?.params?.item?.id)
-      .where('createdBy', '==', user?.user_id);
+      .where('guest_list', 'array-contains', route?.params?.item?.id)
+      .where('createdBy', '==', user?.user_id)
+      .where('event', '==', null);
 
     const unsubscribe = query.onSnapshot(
       snapshot => {

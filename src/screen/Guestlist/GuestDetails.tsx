@@ -4,7 +4,6 @@ import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
-  IconSmallTickCyan,
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
@@ -186,7 +185,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
         <Formik
           initialValues={
             route?.params?.guest
-              ? route?.params?.guest
+              ? (route?.params?.guest as any)
               : {
                   fullName: '',
                   people: '',
@@ -503,7 +502,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   touched={touched.added_by}
                 />
               </View>
-              <View style={tw`bg-base flex-1 `}>
+              {/* <View style={tw`bg-base flex-1 `}>
                 <Text
                   style={[
                     tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
@@ -528,6 +527,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     setFieldValue('guest_list', items);
                   }}
                   renderPicker={(value, label) => {
+                    // console.log(label);
                     return (
                       <View
                         key={value}
@@ -559,6 +559,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     // console.log(items);
                     return (
                       <View
+                        key={value}
                         style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
                         <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
                           <Text
@@ -586,11 +587,22 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                           style={tw`self-start py-3 px-4`}>
                           <SvgXml xml={IconCloseGray} height={20} width={20} />
                         </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={preps.onDone}
-                          style={tw`self-start py-3 px-4`}>
-                          <Text style={tw`text-primary text-base`}>Done</Text>
-                        </TouchableOpacity>
+                        <View style={tw`flex-row`}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setFieldValue('guest_list', []);
+                            }}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>
+                              Clear
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={preps.onDone}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     );
                   }}
@@ -612,7 +624,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     Add new guest list
                   </Text>
                 </TouchableOpacity>
-              </View>
+              </View> */}
 
               {(extraFields?.email || values?.email) && (
                 <View>
