@@ -7,15 +7,22 @@ import {
   View,
 } from 'react-native';
 
+import {FieldValue} from '@react-native-firebase/firestore';
 import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
-import TButton from '../../components/buttons/TButton';
 import tw from '../../lib/tailwind';
+import {useToast} from '../../components/modals/Toaster';
+import {usersCollection} from '../../firebase/database/collections';
 
-const VerifyEmail = ({navigation}: NavigProps<null>) => {
+const VerifyEmail = ({
+  navigation,
+  route,
+}: NavigProps<{email: string; forget?: boolean}>) => {
+  const {closeToast, showToast} = useToast();
   // Use React state with correct typing for OTP (array of strings)
   const [otp, setOtp] = React.useState<string[]>(['', '', '', '']);
   const inputRefs = React.useRef<(TextInput | null)[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
   // Function to handle text change with correct typing for value and index
 
@@ -31,9 +38,9 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
     if (value && index <= otp.length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
-    if (value && index) {
-      console.log(value);
-    }
+    // if (value && index) {
+    //   // console.log(value);
+    // }
 
     // Move to the previous input if value is deleted
   };
@@ -58,7 +65,68 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
     }
   };
 
-  React.useEffect(() => {}, []);
+  React.useEffect(() => {
+    inputRefs.current[0]?.focus();
+  }, []);
+
+  const handleUserVerification = async () => {
+    // console.log(otp.join(''));wait userRef.where("email", "==", email).get();
+    try {
+      setLoading(true);
+      const userSnapshot = (
+        await usersCollection.where('email', '==', route?.params.email).get()
+      ).docs[0];
+
+      if (userSnapshot) {
+        const user = userSnapshot.data();
+
+        if (user?.verify_code == otp.join('')) {
+          await userSnapshot.ref.update({
+            verify_code: FieldValue.delete(),
+            emailVerified: true,
+          });
+          setOtp(['', '', '', '']);
+          if (route?.params.forget) {
+            setLoading(false);
+            navigation.navigate('ResetPassword', {
+              email: route?.params.email,
+            });
+          } else {
+            setLoading(false);
+            navigation.navigate('VerifySuccess');
+          }
+        } else {
+          showToast({
+            title: 'Wrong',
+            content: 'Your entered OTP is incorrect.\n Please try again.',
+            onPress() {
+              setLoading(false);
+              closeToast();
+            },
+          });
+        }
+      } else {
+        setLoading(false);
+        showToast({
+          title: 'Error',
+          content: 'User not found.',
+          onPress() {
+            closeToast();
+          },
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  React.useEffect(() => {
+    if (otp[3] !== '') {
+      handleUserVerification();
+
+      // (navigation as any)?.replace('VerifySuccess');
+    }
+  }, [otp]);
 
   return (
     <View style={tw`bg-base flex-1`}>
@@ -72,7 +140,7 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
               Verify email
             </Text>
             <Text style={tw`text-sm text-white400 font-RobotoBold`}>
-              We have sent 4 digits code into your email account.
+              Check your email account for the 4 digit code.
             </Text>
           </View>
           <View style={tw`gap-2 pt-8 `}>
@@ -87,13 +155,19 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
                   <TextInput
                     ref={el => (inputRefs.current[index] = el)}
                     value={digit}
-                    onChangeText={value => handleChange(value, index)}
+                    editable={!loading}
+                    onChangeText={value => {
+                      // Validate the input to allow only numbers
+                      if (/^\d*$/.test(value)) {
+                        handleChange(value, index);
+                      }
+                    }}
                     onKeyPress={e => handleKeyPress(e, index)}
-                    keyboardType="number-pad"
+                    keyboardType="numeric"
                     maxLength={1}
                     textAlign="center"
                     focusable
-                    style={tw` text-center font-RobotoBlack text-[34px] m-0 p-0 w-full text-white bg-secondary h-full rounded-lg `}
+                    style={tw`text-center font-RobotoBlack text-[34px] m-0 p-0 w-full text-white bg-secondary h-full rounded-lg`}
                   />
                 </View>
               ))}
@@ -105,20 +179,20 @@ const VerifyEmail = ({navigation}: NavigProps<null>) => {
             Didn’t receive the code?
           </Text>
           <Text
-            onPress={() => navigation?.replace('Login')}
+            onPress={() => (navigation as any)?.replace('Login')}
             style={tw`text-primary font-RobotoBlack`}>
             {' '}
             Send again
           </Text>
         </TouchableOpacity> */}
-        <View style={tw` pt-6`}>
+        {/* <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('CreatePassword')}
+            onPress={() => (navigation as any)?.replace('VerifySuccess')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}
           />
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

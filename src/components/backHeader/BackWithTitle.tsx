@@ -9,6 +9,7 @@ interface BackWithTitleProps {
   title: string;
   titleStyle?: any;
   containerStyle?: any;
+  backOff?: boolean;
 }
 
 const BackWithTitle = ({
@@ -16,19 +17,21 @@ const BackWithTitle = ({
   title,
   containerStyle,
   titleStyle,
+  backOff,
 }: BackWithTitleProps) => {
   return (
     <TouchableOpacity
       activeOpacity={0.5}
       onPress={onPress}
-      style={[tw`flex-row items-center gap-2 p-[4%]`, containerStyle]}>
+      style={[tw`flex-row items-center gap-3 p-[4%]`, containerStyle]}>
       <SvgXml
-        xml={`<svg width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M8 14.5L1 8L8 1.5" stroke="#1D1929" stroke-linecap="square"/>
-        </svg>
+        xml={`<svg width="13" height="20" viewBox="0 0 13 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.3333 20.0834L0.75 10.5L10.3333 0.916687L12.0344 2.61773L4.15208 10.5L12.0344 18.3823L10.3333 20.0834Z" fill="white"/>
+</svg>
+
         `}
       />
-      <Text style={[tw`text-black900 font-RobotoBold text-lg`, titleStyle]}>
+      <Text style={[tw`text-white50 font-RobotoBold text-base`, titleStyle]}>
         {title}
       </Text>
     </TouchableOpacity>

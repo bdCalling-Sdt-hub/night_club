@@ -1,13 +1,46 @@
+import React, {useCallback} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 
-import {IconEmailGay} from '../../icons/icons';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
-import React from 'react';
 import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
+import {useFireAuth} from '../../firebase/useFireAuth';
+import {IconEmailGay} from '../../icons/icons';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 
 const ForgetPassword = ({navigation}: NavigProps<null>) => {
+  const [email, setEmail] = React.useState('');
+  const {closeToast, showToast} = useToast();
+  const [loading, setLoading] = React.useState(false);
+  const {handleResetPassword} = useFireAuth();
+
+  const onSubmit = useCallback(async () => {
+    // console.log(email);
+
+    try {
+      if (email) {
+        handleResetPassword(email).then(res => {
+          setLoading(false);
+          (navigation as any)?.replace('SendMailSuccess');
+        });
+
+        // console.log(data);
+      } else {
+        setLoading(false);
+        showToast({
+          title: 'Warning',
+          content: 'Please enter your email',
+          onPress: closeToast,
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      console.log(error);
+    }
+  }, [email]);
+
   return (
     <View style={tw`bg-base flex-1`}>
       {/* <BackWithHeader navigation={navigation} title="OTP Verification" /> */}
@@ -30,9 +63,11 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
             <View style={tw` gap-3 my-2 justify-center`}>
               <View style={tw` w-full`}>
                 <InputTextWL
+                  cursorColor={PrimaryColor}
                   label="Email"
-                  value={'arif@gmail.com'}
-                  placeholder="Enter new Password"
+                  value={email}
+                  onChangeText={text => setEmail(text)}
+                  placeholder="Enter your email"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
                   svgFirstIcon={IconEmailGay}
@@ -44,8 +79,8 @@ const ForgetPassword = ({navigation}: NavigProps<null>) => {
 
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('Home')}
-            isLoading={false}
+            onPress={onSubmit}
+            isLoading={loading}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}
           />

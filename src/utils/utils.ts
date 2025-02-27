@@ -1,14 +1,23 @@
 // devices screen size
 
-import {Dimensions, PixelRatio, Platform} from 'react-native';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import {
+  Dimensions,
+  PermissionsAndroid,
+  PixelRatio,
+  Platform,
+} from 'react-native';
+
+import {MMKVLoader} from 'react-native-mmkv-storage';
 
 export const PrimaryColor = '#55AACA';
 export const BaseColor = '#071115';
-
+export const lStorage = new MMKVLoader().initialize();
 export const Android = Platform.OS === 'android';
 
 export const Ios = Platform.OS === 'ios';
+
+export const ApiUrl = 'https://us-central1-nightclubapp.cloudfunctions.net/';
+export const WebUrl = 'https://nightclubapp.web.app/';
 
 export const {width, height} = Dimensions.get('screen');
 //  three size like sm md or tablet
@@ -26,44 +35,6 @@ export const isMobile = () => {
   return width < 768;
 };
 
-export const useImagePicker = async ({
-  option,
-  selectionLimit,
-}: {
-  option: 'camera' | 'library';
-  selectionLimit?: number;
-}) => {
-  try {
-    if (option === 'camera') {
-      const result = await launchCamera({
-        mediaType: 'photo',
-        maxWidth: 500,
-        maxHeight: 500,
-        quality: 0.5,
-      });
-
-      if (!result.didCancel) {
-        return result.assets;
-      }
-    }
-    if (option === 'library') {
-      const result = await launchImageLibrary({
-        mediaType: 'photo',
-        maxWidth: 500,
-        maxHeight: 500,
-        quality: 0.5,
-        selectionLimit: selectionLimit || 1, // Set to 0 for unlimited image selection
-      });
-
-      if (!result.didCancel) {
-        return result.assets;
-      }
-    }
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 function getRandomHashColor() {
   let letters = '0123456789ABCDEF';
   let color = '#';
@@ -78,3 +49,26 @@ function getRandomHashColor() {
 // Usage:
 // const price = formatCurrency(1234.56, 'fr-FR', 'EUR');
 // console.log(price); // Output: "1 234,56 €" (French formatting for Euros)
+
+// Call requestPermissions before trying to write to the file
+export const filRequestPermission = async () => {
+  if (Platform.OS === 'android') {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Storage Permission',
+          message: 'This app needs access to your storage to save files.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.warn(err);
+      return false;
+    }
+  }
+  return true; // iOS does not require runtime permission for file writing.
+};

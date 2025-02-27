@@ -29,13 +29,13 @@ const IButton = ({
       disabled={isLoading || disabled}
       activeOpacity={0.5}
       style={[
-        tw`bg-[#003CFF]  items-center  px-3 flex-row justify-center gap-3 rounded-2xl shadow-md w-36 ${
+        tw`bg-[#003CFF]  items-center  px-3 flex-row justify-center gap-3 rounded-2xl   ${
           disabled ? 'opacity-60' : 'opacity-100'
         }`,
         containerStyle,
       ]}>
       {isLoading ? (
-        <ActivityIndicator color={loadingColor ? loadingColor : ''} />
+        <ActivityIndicator color={loadingColor ? loadingColor : 'white'} />
       ) : (
         <>
           {icon ? (

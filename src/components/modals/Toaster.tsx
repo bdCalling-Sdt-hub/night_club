@@ -1,10 +1,3 @@
-import {
-  Dimensions,
-  Pressable,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import React, {
   createContext,
   forwardRef,
@@ -13,7 +6,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {
+  Dimensions,
+  Pressable,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
+import {BlurView} from '@react-native-community/blur';
 import {Modal} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
 
@@ -77,19 +78,27 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
       <Modal
         transparent
         animationType="fade"
-        overlayBackgroundColor="rgba(0, 0, 0, 0.2)" // Semi-transparent background
+        enableModalBlur
+        overlayBackgroundColor="rgba(0, 0, 0, 0.5)" // Semi-transparent background
         visible={visible}
+        useKeyboardAvoidingView
+        statusBarTranslucent
         onDismiss={() => setVisible(false)}
         onBackgroundPress={() => setVisible(false)} // Close modal on background press
       >
+        <BlurView
+          style={tw`absolute top-10 left-0 right-0 bottom-0`}
+          blurType="dark"
+          blurAmount={5}
+        />
         <Pressable
           onPress={() => {
             setVisible(false);
           }}
           style={tw`flex-1 justify-center items-center`}>
-          <View
+          <Pressable
             style={[
-              tw`bg-white w-[70%] p-5 rounded-3xl gap-2`,
+              tw`bg-base bg-opacity-90 border border-white w-[80%] p-5 rounded-xl gap-2`,
               modalContent?.containerStyle,
             ]}>
             {modalContent?.icon && <View>{modalContent?.icon}</View>}
@@ -119,7 +128,7 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
             {modalContent?.title && (
               <Text
                 style={[
-                  tw`text-center text-black400 text-lg`,
+                  tw`text-center text-white50 text-lg`,
                   modalContent.titleStyle,
                 ]}>
                 {modalContent.title}
@@ -128,7 +137,7 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
             {modalContent?.content && (
               <Text
                 style={[
-                  tw`text-center font-normal text-lg `,
+                  tw`text-center text-white50 font-normal text-base `,
                   modalContent.contentStyle,
                 ]}>
                 {modalContent.content}
@@ -137,11 +146,11 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
             {!modalContent?.multipleButton && !modalContent?.btnDisplay && (
               <View
                 style={[
-                  tw`bg-green-600 justify-center items-center p-3 rounded-xl`,
+                  tw`bg-cyan-800  justify-center items-center bg-opacity-75  rounded-lg`,
                   modalContent?.buttonStyle,
                 ]}>
                 <TouchableOpacity
-                  style={tw`w-full justify-center items-center`}
+                  style={tw` w-full h-10 justify-center items-center`}
                   activeOpacity={0.5}
                   onPress={modalContent?.onPress}>
                   <Text
@@ -160,11 +169,11 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
                   <View
                     key={index}
                     style={[
-                      tw` bg-green-600 justify-center items-center p-3 rounded-xl`,
+                      tw` bg-black600 justify-center items-center  rounded-xl`,
                       item?.buttonStyle,
                     ]}>
                     <TouchableOpacity
-                      style={tw`w-full justify-center items-center`}
+                      style={tw`h-10 w-full justify-center  items-center`}
                       activeOpacity={0.5}
                       onPress={item?.onPress}>
                       <Text
@@ -179,8 +188,9 @@ const PopUpModal = forwardRef<PopUpModalRef, PopUpModalProps>(
                 ))}
               </View>
             )}
-          </View>
+          </Pressable>
         </Pressable>
+        {/* </BlurView> */}
       </Modal>
     );
   },
@@ -200,7 +210,7 @@ const ToastContext = createContext<ToastContextType | undefined>(undefined);
  * @throws {Error} if called outside of a ToastProvider
  * @returns {ToastContextType} the toast context
  */
-export const useToast = () => {
+export const useToast = (): ToastContextType => {
   const context = useContext(ToastContext);
   if (!context) {
     throw new Error('useToast must be used within a ToastProvider');

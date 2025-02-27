@@ -1,4 +1,4 @@
-package com.night_club
+package com.nite
 
 import android.app.Application
 import com.facebook.react.PackageList

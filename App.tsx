@@ -5,18 +5,15 @@
  * @format
  */
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
+  useColorScheme,
 } from 'react-native';
-
 import {
   Colors,
   DebugInstructions,
@@ -24,6 +21,9 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+
+import type {PropsWithChildren} from 'react';
+import React from 'react';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -70,6 +70,7 @@ function App(): React.JSX.Element {
       />
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
+        keyboardShouldPersistTaps="always"
         style={backgroundStyle}>
         <Header />
         <View

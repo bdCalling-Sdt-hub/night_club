@@ -1,5 +1,5 @@
-import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 import React, {SetStateAction} from 'react';
+import {Pressable, Text, TouchableOpacity, View} from 'react-native';
 
 import tw from '../../lib/tailwind';
 
@@ -39,7 +39,7 @@ const ActionModal = ({
           <Pressable
             onPress={e => e.stopPropagation()} // Prevent closing modal when clicking inside
             style={[
-              tw`absolute shadow-lg bg-white w-[60%] md:w-[55%] tablet:w-[20%] top-[8%] right-[4%] rounded-3xl px-5 py-4 pt-7 z-20 gap-3`,
+              tw`absolute  bg-white w-[60%] md:w-[55%] tablet:w-[20%] top-[8%] right-[4%] rounded-3xl px-5 py-4 pt-7 z-20 gap-3`,
               containerStyle,
             ]}>
             {actionData?.map((item, index) => {

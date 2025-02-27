@@ -15,8 +15,12 @@ interface InputTextProps
   Component?: React.ReactNode;
   focusSTyle?: any;
   ref?: any;
+  label?: string;
+  labelStyle?: any;
+  required?: boolean;
+  errorText?: string;
+  touched?: boolean;
 }
-
 const InputText = ({
   onPress,
   svgFirstIcon,
@@ -26,6 +30,11 @@ const InputText = ({
   focusSTyle,
   Component,
   ref,
+  label,
+  errorText,
+  required,
+  touched,
+  labelStyle,
   ...inputProps // Spread remaining props to pass to TextField
 }: InputTextProps) => {
   const [focus, setFocus] = React.useState(false);

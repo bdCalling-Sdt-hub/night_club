@@ -1,16 +1,18 @@
-import {IconEyeGray, IconLockGray} from '../../icons/icons';
 import {ScrollView, Text, View} from 'react-native';
+import {IconEyeGray, IconLockGray} from '../../icons/icons';
 
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import TButton from '../../components/buttons/TButton';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
+import {PrimaryColor} from '../../utils/utils';
 
 const CreateNewPassword = ({navigation}: NavigProps<null>) => {
   const [showPass, setShowPass] = React.useState({
     password: false,
     confirmPassword: false,
+    currentPassword: false,
   });
   return (
     <View style={tw`bg-base flex-1`}>
@@ -34,30 +36,54 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
             <View style={tw` gap-3 my-2 justify-center`}>
               <View style={tw` w-full`}>
                 <InputTextWL
-                  label="New Password"
-                  onPress={() =>
-                    setShowPass({...showPass, password: !showPass?.password})
+                  cursorColor={PrimaryColor}
+                  label="Current Password"
+                  onSvgPress={() =>
+                    setShowPass({
+                      ...showPass,
+                      currentPassword: !showPass?.currentPassword,
+                    })
                   }
-                  value={showPass.password}
-                  placeholder="Enter new Password"
+                  // value={showPass.currentPassword}
+                  placeholder="Enter current Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
-                  secureTextEntry={!showPass}
+                  secureTextEntry={!showPass.currentPassword}
                   svgFirstIcon={IconLockGray}
                   svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
                 />
               </View>
               <View style={tw` w-full`}>
                 <InputTextWL
-                  label="Confirm Password"
-                  onPress={() =>
+                  cursorColor={PrimaryColor}
+                  label="New Password"
+                  onSvgPress={() =>
                     setShowPass({...showPass, password: !showPass?.password})
                   }
-                  value={showPass.password}
+                  // value={showPass.password}
+                  placeholder="Enter new Password"
+                  containerStyle={tw`h-12`}
+                  focusSTyle={tw`border-primary`}
+                  secureTextEntry={!showPass.password}
+                  svgFirstIcon={IconLockGray}
+                  svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
+                />
+              </View>
+              <View style={tw` w-full`}>
+                <InputTextWL
+                  cursorColor={PrimaryColor}
+                  label="Confirm Password"
+                  onSvgPress={() =>
+                    setShowPass({
+                      ...showPass,
+                      confirmPassword: !showPass?.confirmPassword,
+                    })
+                  }
+                  // value={showPass.password}
                   placeholder="Enter confirm Password"
                   containerStyle={tw`h-12`}
                   focusSTyle={tw`border-primary`}
-                  secureTextEntry={!showPass}
+                  secureTextEntry={!showPass.confirmPassword}
                   svgFirstIcon={IconLockGray}
                   svgSecondIcon={showPass ? IconEyeGray : IconEyeGray}
                 />
@@ -68,7 +94,7 @@ const CreateNewPassword = ({navigation}: NavigProps<null>) => {
 
         <View style={tw` pt-6`}>
           <TButton
-            onPress={() => navigation?.replace('Home')}
+            onPress={() => (navigation as any)?.replace('Home')}
             isLoading={false}
             title="Submit"
             containerStyle={tw`h-12 w-full bg-primary rounded-lg`}

@@ -1,10 +1,10 @@
 import {Pressable, Text, View} from 'react-native';
 
-import IwtButton from '../buttons/IwtButton';
-import {Modal} from 'react-native-ui-lib';
 import React from 'react';
-import TButton from '../buttons/TButton';
+import {Modal} from 'react-native-ui-lib';
 import tw from '../../lib/tailwind';
+import IwtButton from '../buttons/IwtButton';
+import TButton from '../buttons/TButton';
 
 interface NormalModalProps {
   visible?: boolean;
@@ -71,7 +71,7 @@ const NormalModal = ({
             </View>
             <View style={tw`flex-row justify-between px-2 pb-2`}>
               <TButton
-                containerStyle={tw`w-[45%] h-12 p-0 m-0 bg-white border-gray-100 border   shadow-sm items-center`}
+                containerStyle={tw`w-[45%] h-12 p-0 m-0 bg-white border-gray-100 border    items-center`}
                 titleStyle={tw`text-black600 text-sm font-NunitoSansMedium`}
                 title={'Cancel'}
                 onPress={() => setVisible && setVisible(false)}
@@ -79,7 +79,7 @@ const NormalModal = ({
               {svg ? (
                 <IwtButton
                   containerStyle={[
-                    tw`w-[45%] h-12 p-0 m-0 bg-danger600   shadow-sm items-center`,
+                    tw`w-[45%] h-12 p-0 m-0 bg-danger600    items-center`,
                     buttonStyle,
                   ]}
                   titleStyle={[
@@ -92,7 +92,7 @@ const NormalModal = ({
                 />
               ) : (
                 <TButton
-                  containerStyle={tw`w-[45%] h-12 p-0 m-0 bg-danger600   shadow-sm items-center`}
+                  containerStyle={tw`w-[45%] h-12 p-0 m-0 bg-danger600    items-center`}
                   titleStyle={[
                     tw`text-white text-sm font-NunitoSansMedium`,
                     buttonTextStyle,
