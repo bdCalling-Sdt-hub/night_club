@@ -1,4 +1,4 @@
-import {SafeAreaView} from 'react-native';
+import {LogBox, SafeAreaView} from 'react-native';
 
 import React from 'react';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -9,7 +9,7 @@ import AuthProvider from '../context/AuthProvider';
 import {BaseColor} from '../utils/utils';
 import Routes from './Routes'; // Assuming you have a Routes component
 
-// LogBox.ignoreAllLogs();
+LogBox.ignoreAllLogs();
 
 const App = () => {
   const [isConnected, setIsConnected] = React.useState(true);

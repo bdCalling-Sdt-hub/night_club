@@ -205,6 +205,9 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               values.tag_name = tags?.find(item => item.id === values.tag)
                 ?.name as string;
             }
+            if (route?.params?.item?.id) {
+              values.createdBy = null;
+            }
             createFireData({
               collectType: 'Guests',
               data: values,

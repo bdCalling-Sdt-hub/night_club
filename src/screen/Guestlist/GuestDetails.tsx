@@ -754,22 +754,25 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   onPress={() => {
                     showToast({
                       title: 'Warning',
-                      content:
-                        'Are you sure you want to remove guest from this event?',
+                      content: 'Are you sure you want to delete this guest?',
                       multipleBTNStyle: tw`flex-col gap-3`,
 
                       multipleButton: [
                         {
-                          buttonText: 'Yes, Remove',
+                          buttonText: 'Yes',
                           buttonTextStyle: tw`text-red-500 font-RobotoBold text-base`,
                           buttonStyle: tw`border-red-500 bg-transparent border w-full self-center`,
                           onPress: () => {
-                            updateFireData({
+                            // updateFireData({
+                            //   id: route?.params?.guest?.id as string,
+                            //   collectType: 'Guests',
+                            //   data: {
+                            //     event: null,
+                            //   },
+                            // });
+                            deleteFireData({
                               id: route?.params?.guest?.id as string,
                               collectType: 'Guests',
-                              data: {
-                                event: null,
-                              },
                             });
                             closeToast();
                             navigation?.goBack();

@@ -36,7 +36,7 @@ const AllGuestInGuestList = ({
     React.useState<Array<IGuestsList>>();
   const [guests, setGuests] = React.useState<Array<IGuest>>();
 
-  const {updateFireData} = useFireStore();
+  const {updateFireData, createFireData} = useFireStore();
 
   const isFocused = useIsFocused();
 
@@ -58,7 +58,7 @@ const AllGuestInGuestList = ({
       ) {
         query = query.where(
           'manager_id',
-          '==',
+          'array-contains',
           user?.role === 'manager' ? user?.user_id : user?.manager_id,
         );
       }
@@ -152,14 +152,14 @@ const AllGuestInGuestList = ({
       console.log('Event', selectEvent);
 
       selectGuest?.forEach(item => {
-        updateFireData({
+        item.createdBy = null;
+        item.event = selectEvent?.id;
+        item.venue = selectEvent?.venue;
+        item.event_date = selectEvent?.start_time;
+        createFireData({
           collectType: 'Guests',
-          id: item.id,
-          data: {
-            event: selectEvent?.id,
-            venue: selectEvent?.venue,
-            event_date: selectEvent?.date,
-          },
+          // id: item.id,
+          data: item,
         });
         setAddToGuests(false);
         setSelectGuest([]);
@@ -237,6 +237,9 @@ const AllGuestInGuestList = ({
             //   } else {
             //     setSelectGuest([item]);
             //   }
+            // }}
+            // onPress={() => {
+            //   navigation?.navigate('GuestEdit', {guest: item});
             // }}
             containerStyle={tw` flex-row gap-3 items-center`}
             layoutStyle={tw`gap-2`}
