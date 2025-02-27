@@ -30,7 +30,7 @@ import EmptyCard from '../../components/Empty/EmptyCard';
 import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useImportData} from '../../hook/useImportFIle';
+import {useImportData} from '../../hook/useImportFile';
 import {NavigProps} from '../../interfaces/NaviProps';
 import tw from '../../lib/tailwind';
 import Background from '../components/Background';
