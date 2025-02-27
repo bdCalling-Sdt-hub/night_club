@@ -282,6 +282,7 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
               style={tw`flex-row flex-1 justify-between bg-secondary60  rounded-lg items-center   px-4 py-2`}>
               <IButton
                 // title="Filter"
+                disabled
                 svg={IconFilterGray}
                 containerStyle={tw`p-0 m-0  bg-transparent items-center`}
               />
