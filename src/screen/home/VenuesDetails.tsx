@@ -158,7 +158,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
         </View>
         {/*=================== Accounts parts =============== */}
         <View style={tw`px-4 gap-5 mt-5`}>
-          <View style={tw`flex-row justify-between gap-5 `}>
+          {/* <View style={tw`flex-row justify-between gap-5 `}>
             <Text
               numberOfLines={1}
               style={tw`text-white50 text-base font-RobotoMedium`}>
@@ -171,7 +171,7 @@ const VenuesDetails = ({navigation, route}: NavigProps<{id: string}>) => {
                 ? `${venue?.manager_name?.slice(0, 20)}...`
                 : venue?.manager_name}
             </Text>
-          </View>
+          </View> */}
 
           <View style={tw`flex-row justify-between`}>
             <Text style={tw`text-white50 text-base font-RobotoMedium`}>

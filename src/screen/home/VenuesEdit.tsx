@@ -1,36 +1,37 @@
-import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
+import React, {useEffect} from 'react';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
+  IconSmallTickCyan,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect} from 'react';
+import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
+import {Formik} from 'formik';
+import moment from 'moment';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import EmptyCard from '../../components/Empty/EmptyCard';
-import {Formik} from 'formik';
-import GLoading from '../../components/loader/GLoading';
-import IButton from '../../components/buttons/IButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import VideoThumbnail from './components/VideoThumbnail';
-import firestore from '@react-native-firebase/firestore';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import GLoading from '../../components/loader/GLoading';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import VideoThumbnail from './components/VideoThumbnail';
 
 interface createProps {
   name: string;
@@ -203,9 +204,9 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
             setLoading(true);
 
             if (values.manager_id) {
-              values.manager_name = allManager.find(
-                item => item?.uid === values.manager_id,
-              )?.displayName;
+              // values.manager_name = allManager.find(
+              //   item => item?.uid === values.manager_id,
+              // )?.displayName;
 
               firestore()
                 .collection('Events')
@@ -251,6 +252,7 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
             values,
             errors,
             touched,
+            setFieldValue,
           }) => (
             <View style={tw`gap-4 `}>
               <View style={tw` bg-secondary rounded-lg px-3`}>
@@ -479,60 +481,110 @@ const VenueEdit = ({navigation, route}: NavigProps<{item: IVenue}>) => {
                   touched={touched.residentDj}
                 />
               </View>
-              <View style={tw`bg-base `}>
+              <View style={tw`bg-base flex-1 `}>
+                <Text
+                  style={[
+                    tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
+                  ]}>
+                  Nightclub manager
+                </Text>
                 <Picker
                   useSafeArea
+                  mode={Picker.modes.MULTI}
                   listProps={{
                     ListEmptyComponent: (
                       <EmptyCard
-                        title="No manager found"
+                        title="No manager available"
                         isLoading={loading}
                         hight={height * 0.8}
                       />
                     ),
                   }}
+                  multiline
                   value={values.manager_id}
-                  onChange={handleChange('manager_id')}
-                  onBlur={handleBlur('manager_id')}
-                  renderInput={() => (
-                    <InputTextWL
-                      cursorColor={PrimaryColor}
-                      value={
-                        allManager.find(item => item?.uid === values.manager_id)
-                          ?.displayName
-                      }
-                      editable={false}
-                      label="Nightclub manager"
-                      placeholder="select nightclub manager"
-                      containerStyle={tw`h-12 border-0 rounded-lg`}
-                      svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.manager_id}
-                      touched={touched.manager_id}
-                    />
-                  )}
-                  renderItem={(value, items) => {
+                  onChange={items => {
+                    setFieldValue('manager_id', items);
+                  }}
+                  renderPicker={(value, label) => {
+                    // console.log(label);
                     return (
                       <View
-                        // onPress={() => setValue(value)}
-                        style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
-                        <Text
-                          style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {items?.label}
-                        </Text>
+                        key={value}
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800 `}>
+                        <View
+                          style={tw`flex flex-1 pb-2 flex-row flex-wrap gap-1`}>
+                          {label ? (
+                            label?.split(',')?.map(item => {
+                              return (
+                                <Text
+                                  style={tw`text-white100 bg-secondary p-1  font-RobotoMedium text-xs  rounded-lg`}>
+                                  {item}
+                                </Text>
+                              );
+                            })
+                          ) : (
+                            <Text
+                              style={tw`text-white100 py-3  font-RobotoMedium text-sm px-4`}>
+                              Select manager
+                            </Text>
+                          )}
+                        </View>
+                        <SvgXml xml={IconDownArrayGray} />
+                      </View>
+                    );
+                  }}
+                  onBlur={handleBlur('manager_id')}
+                  renderItem={(value, items) => {
+                    // console.log(items);
+                    return (
+                      <View
+                        key={value as string}
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
+                        <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items.label}
+                          </Text>
+                        </View>
+                        {items?.isSelected && (
+                          <View style={tw`px-4`}>
+                            <SvgXml
+                              xml={IconSmallTickCyan}
+                              height={20}
+                              width={20}
+                            />
+                          </View>
+                        )}
                       </View>
                     );
                   }}
                   renderCustomDialogHeader={preps => {
                     return (
-                      <TouchableOpacity
-                        onPress={preps.onCancel}
-                        style={tw`self-start py-3 px-4`}>
-                        <SvgXml xml={IconCloseGray} height={20} width={20} />
-                      </TouchableOpacity>
+                      <View style={tw`flex-row justify-between`}>
+                        <TouchableOpacity
+                          onPress={preps.onCancel}
+                          style={tw`self-start py-3 px-4`}>
+                          <SvgXml xml={IconCloseGray} height={20} width={20} />
+                        </TouchableOpacity>
+                        <View style={tw`flex-row`}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setFieldValue('guest_list', []);
+                            }}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>
+                              Clear
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={preps.onDone}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     );
                   }}
-                  fieldType={Picker.fieldTypes.filter}
-                  paddingH
                   items={allManager.map(item => {
                     return {
                       label: item?.displayName,

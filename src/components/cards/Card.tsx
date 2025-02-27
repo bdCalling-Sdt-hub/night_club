@@ -150,11 +150,10 @@ Card.Button = ({checkedIn, total, onPress}: CardButtonProps) => {
     <>
       <TouchableOpacity
         activeOpacity={0.6}
-        // disabled={checkedIn === total}
+        disabled={total == 0}
         onPress={onPress}
         style={tw`px-2  ${
-          // checkedIn === total ? 'bg-green-900' : 'bg-green-600'
-          'bg-green-600'
+          total == 0 ? 'bg-green-900' : 'bg-green-600'
         } rounded-lg h-10 items-center justify-center`}>
         <Text
           style={tw` ${

@@ -1,22 +1,22 @@
-import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IconCloseGray, IconDownArrayGray} from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import {Formik} from 'formik';
-import {IMangeUser} from './ManageUsers';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
+import {IMangeUser} from './ManageUsers';
 
 const data = [
   {
@@ -57,40 +57,40 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
   const {closeToast, showToast} = useToast();
 
   const handleOnSubmit = async (values: any) => {
-    setLoading(true);
-    values.company = user?.company;
-    values.super_owner_id =
-      user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
-    values.manager_id = user?.role === 'manager' ? user.user_id : null;
+    try {
+      setLoading(true);
+      values.company = user?.company;
+      values.super_owner_id =
+        user?.role === 'super-owner' ? user.user_id : user?.super_owner_id;
+      values.manager_id = user?.role === 'manager' ? user.user_id : null;
 
-    // console.log(values);
+      // console.log(values);
 
-    const res = await fetch(
-      `${ApiUrl}users?user_id=${route?.params?.item?.uid}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
+      const res = await fetch(
+        `${ApiUrl}users?user_id=${route?.params?.item?.uid}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
         },
-        body: JSON.stringify(values),
-      },
-    );
-    const resData = await res.json();
-    // console.log(resData);
-
-    if (resData?.success) {
+      );
+      const resData = await res.json();
+      // console.log(resData);
       navigation.goBack();
-    } else {
+      setLoading(false);
+    } catch (error) {
       setLoading(false);
       showToast({
-        content: resData?.message || resData?.details,
         title: 'Warning',
+        content: 'Something went wrong',
         onPress: () => {
           closeToast();
-          navigation.goBack();
         },
       });
     }
+
     // navigation.goBack();
   };
 
@@ -119,7 +119,7 @@ const UpdateUser = ({navigation, route}: NavigProps<{item: IMangeUser}>) => {
   }, []);
   return (
     <Background style={tw`flex-1`}>
-      <BackWithTitle title="Add User" onPress={() => navigation.goBack()} />
+      <BackWithTitle title="Update User" onPress={() => navigation.goBack()} />
       <ScrollView
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`gap-5 pb-12 pt-1`}>

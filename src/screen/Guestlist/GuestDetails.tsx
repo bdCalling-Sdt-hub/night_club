@@ -364,6 +364,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               </View>
 
               <TButton
+                disabled={parseInt(values.people) == 0 || !values?.people}
                 onPress={() => {
                   handleChange('check_in')(
                     `${

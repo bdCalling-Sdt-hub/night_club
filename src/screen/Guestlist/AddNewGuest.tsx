@@ -528,6 +528,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     // console.log(items);
                     return (
                       <View
+                        key={value}
                         style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
                         <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
                           <Text

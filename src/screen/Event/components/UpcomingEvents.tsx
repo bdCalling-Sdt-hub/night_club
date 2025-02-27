@@ -40,18 +40,12 @@ const UpcomingEvents = ({navigation, venueId, search}: Props) => {
 
       if (venueId) {
         query = query.where('venue', '==', venueId);
-      } else {
-        if (
-          user?.role === 'guard' ||
-          user?.role === 'promoters' ||
-          user?.role === 'manager'
-        ) {
-          query = query.where(
-            'manager_id',
-            '==',
-            user?.role === 'manager' ? user?.user_id : user?.manager_id,
-          );
-        }
+      }
+
+      if (user?.role === 'manager') {
+        query = query.where('manager_id', 'array-contains', user?.user_id);
+      } else if (user?.role === 'guard' || user?.role === 'promoters') {
+        query = query.where('manager_id', 'array-contains', user?.manager_id);
       }
 
       const snapshot = await query.get();

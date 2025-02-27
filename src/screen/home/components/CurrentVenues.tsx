@@ -38,11 +38,11 @@ const CurrentVenues = ({navigation, search}: CurrentVenueProps) => {
       } else {
         query = query.where('super_owner_id', '==', user?.super_owner_id);
       }
-      console.log(user?.role);
+      // console.log(user?.role);
       if (user?.role === 'manager') {
-        query = query.where('manager_id', '==', user?.user_id);
+        query = query.where('manager_id', 'array-contains', user?.user_id);
       } else if (user?.role === 'guard' || user?.role === 'promoters') {
-        query = query.where('manager_id', '==', user?.manager_id);
+        query = query.where('manager_id', 'array-contains', user?.manager_id);
       }
 
       const snapshot = await query.get();

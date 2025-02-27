@@ -66,9 +66,9 @@ const ProfileScreen = ({navigation}: NavigProps<any>) => {
       }
 
       if (user?.role === 'manager') {
-        query = query.where('manager_id', '==', user?.user_id);
+        query = query.where('manager_id', 'array-contains', user?.user_id);
       } else if (user?.role === 'guard' || user?.role === 'promoters') {
-        query = query.where('manager_id', '==', user?.manager_id);
+        query = query.where('manager_id', 'array-contains', user?.manager_id);
       }
 
       const snapshot = await query.get();

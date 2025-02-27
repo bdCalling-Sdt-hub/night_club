@@ -6,36 +6,37 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IUser, IVenue} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconPlusGray,
+  IconSmallTickCyan,
 } from '../../icons/icons';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import {Formik} from 'formik';
-import GLoading from '../../components/loader/GLoading';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
+import {Picker} from 'react-native-ui-lib';
 import Video from 'react-native-video';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const VenueCreate = ({navigation}: NavigProps<null>) => {
   const {userId, user} = useAuth();
@@ -159,14 +160,14 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             createdBy: user?.user_id || '',
           }}
           onSubmit={(values, {resetForm}) => {
-            if (userId) {
-              values.createdBy = userId;
-            }
-            if (values.manager_id) {
-              values.manager_name = allManager.find(
-                item => item?.uid === values.manager_id,
-              )?.displayName;
-            }
+            // if (userId) {
+            //   values.createdBy = userId;
+            // }
+            // if (values.manager_id) {
+            //   values.manager_name = allManager.find(
+            //     item => item?.uid === values.manager_id,
+            //   )?.displayName;
+            // }
 
             // console.log(values);
 
@@ -186,6 +187,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
             values,
             errors,
             touched,
+            setFieldValue,
           }) => (
             <View style={tw`gap-4 `}>
               <View style={tw` bg-secondary rounded-lg px-3`}>
@@ -424,9 +426,16 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   touched={touched.residentDj}
                 />
               </View>
-              <View style={tw`bg-base `}>
+              <View style={tw`bg-base flex-1 `}>
+                <Text
+                  style={[
+                    tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
+                  ]}>
+                  Nightclub manager
+                </Text>
                 <Picker
                   useSafeArea
+                  mode={Picker.modes.MULTI}
                   listProps={{
                     ListEmptyComponent: (
                       <EmptyCard
@@ -436,48 +445,91 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                       />
                     ),
                   }}
+                  multiline
                   value={values.manager_id}
-                  onChange={handleChange('manager_id')}
-                  onBlur={handleBlur('manager_id')}
-                  renderInput={() => (
-                    <InputTextWL
-                      cursorColor={PrimaryColor}
-                      value={
-                        allManager.find(item => item?.uid === values.manager_id)
-                          ?.displayName
-                      }
-                      editable={false}
-                      label="Nightclub manager"
-                      placeholder="select nightclub manager"
-                      containerStyle={tw`h-12 border-0 rounded-lg`}
-                      svgSecondIcon={IconDownArrayGray}
-                      errorText={errors.manager_id}
-                      touched={touched.manager_id}
-                    />
-                  )}
-                  renderItem={(value, items) => {
+                  onChange={items => {
+                    setFieldValue('manager_id', items);
+                  }}
+                  renderPicker={(value, label) => {
+                    // console.log(label);
                     return (
                       <View
-                        // onPress={() => setValue(value)}
-                        style={tw` mt-1 pb-2 mx-[4%] border-b border-b-gray-800 justify-center`}>
-                        <Text
-                          style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                          {items?.label}
-                        </Text>
+                        key={value}
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800 `}>
+                        <View
+                          style={tw`flex flex-1 pb-2 flex-row flex-wrap gap-1`}>
+                          {label ? (
+                            label?.split(',')?.map(item => {
+                              return (
+                                <Text
+                                  style={tw`text-white100 bg-secondary p-1  font-RobotoMedium text-xs  rounded-lg`}>
+                                  {item}
+                                </Text>
+                              );
+                            })
+                          ) : (
+                            <Text
+                              style={tw`text-white100 py-3  font-RobotoMedium text-sm px-4`}>
+                              Select manager
+                            </Text>
+                          )}
+                        </View>
+                        <SvgXml xml={IconDownArrayGray} />
+                      </View>
+                    );
+                  }}
+                  onBlur={handleBlur('manager_id')}
+                  renderItem={(value, items) => {
+                    // console.log(items);
+                    return (
+                      <View
+                        key={value as string}
+                        style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
+                        <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
+                          <Text
+                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                            {items.label}
+                          </Text>
+                        </View>
+                        {items?.isSelected && (
+                          <View style={tw`px-4`}>
+                            <SvgXml
+                              xml={IconSmallTickCyan}
+                              height={20}
+                              width={20}
+                            />
+                          </View>
+                        )}
                       </View>
                     );
                   }}
                   renderCustomDialogHeader={preps => {
                     return (
-                      <TouchableOpacity
-                        onPress={preps.onCancel}
-                        style={tw`self-start py-3 px-4`}>
-                        <SvgXml xml={IconCloseGray} height={20} width={20} />
-                      </TouchableOpacity>
+                      <View style={tw`flex-row justify-between`}>
+                        <TouchableOpacity
+                          onPress={preps.onCancel}
+                          style={tw`self-start py-3 px-4`}>
+                          <SvgXml xml={IconCloseGray} height={20} width={20} />
+                        </TouchableOpacity>
+                        <View style={tw`flex-row`}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              setFieldValue('guest_list', []);
+                            }}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>
+                              Clear
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={preps.onDone}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
                     );
                   }}
-                  fieldType={Picker.fieldTypes.filter}
-                  paddingH
                   items={allManager.map(item => {
                     return {
                       label: item?.displayName,
@@ -489,6 +541,7 @@ const VenueCreate = ({navigation}: NavigProps<null>) => {
                   }}
                 />
               </View>
+
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea

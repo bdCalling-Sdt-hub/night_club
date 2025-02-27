@@ -534,7 +534,7 @@ const GuestEdit = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                     // console.log(items);
                     return (
                       <View
-                        key={value}
+                        key={value as string}
                         style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
                         <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
                           <Text

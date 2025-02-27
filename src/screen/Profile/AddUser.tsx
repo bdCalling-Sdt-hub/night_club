@@ -1,22 +1,22 @@
-import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IconCloseGray, IconDownArrayGray} from '../../icons/icons';
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ApiUrl, BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import {Formik} from 'formik';
-import {IMangeUser} from '../../firebase/interface';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import {NavigProps} from '../../interfaces/NaviProps';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
 import TButton from '../../components/buttons/TButton';
-import tw from '../../lib/tailwind';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useToast} from '../../components/modals/Toaster';
+import {IMangeUser} from '../../firebase/interface';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const data = [
   {
@@ -98,14 +98,7 @@ const AddUser = ({navigation}: NavigProps<null>) => {
         });
       } else {
         setLoading(false);
-        showToast({
-          content: 'User added successfully',
-          title: 'Success',
-          onPress: () => {
-            closeToast();
-            navigation.goBack();
-          },
-        });
+        navigation.goBack();
       }
     } else {
       setLoading(false);
@@ -335,7 +328,16 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       style={tw``}
                       color={PrimaryColor}
                     />
-                    <Text style={tw`text-white60 font-RobotoBold text-base`}>
+                    <Text
+                      onPress={() => {
+                        handleChange('loginType')('email');
+                        handleChange('password')('');
+                        setOptionSendMail({
+                          sendMail: true,
+                          setPass: false,
+                        });
+                      }}
+                      style={tw`text-white60 font-RobotoBold text-base`}>
                       Send invitation to email
                     </Text>
                   </View>
@@ -356,7 +358,16 @@ const AddUser = ({navigation}: NavigProps<null>) => {
                       style={tw``}
                       color={PrimaryColor}
                     />
-                    <Text style={tw`text-white60 font-RobotoBold text-base`}>
+                    <Text
+                      onPress={() => {
+                        handleChange('loginType')('password');
+
+                        setOptionSendMail({
+                          sendMail: false,
+                          setPass: true,
+                        });
+                      }}
+                      style={tw`text-white60 font-RobotoBold text-base`}>
                       Set password for User
                     </Text>
                   </View>

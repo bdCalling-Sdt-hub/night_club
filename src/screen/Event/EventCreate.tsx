@@ -1,4 +1,4 @@
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
@@ -6,30 +6,30 @@ import {
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
-import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
-import EmptyCard from '../../components/Empty/EmptyCard';
+import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
-import GLoading from '../../components/loader/GLoading';
-import IButton from '../../components/buttons/IButton';
-import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
+import moment from 'moment';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
+import BackWithTitle from '../../components/backHeader/BackWithTitle';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
 import TButton from '../../components/buttons/TButton';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import InputTextWL from '../../components/inputs/InputTextWL';
+import GLoading from '../../components/loader/GLoading';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const EventCreate = ({navigation}: NavigProps<any>) => {
   const {showToast, closeToast} = useToast();
@@ -166,7 +166,7 @@ const EventCreate = ({navigation}: NavigProps<any>) => {
             entry_fee: '',
             resident_dj: '',
 
-            manager_id: user?.role === 'manager' ? user?.user_id : '',
+            manager_id: [] as string[],
           }}
           onSubmit={async values => {
             // console.log(values.venue);
@@ -175,6 +175,15 @@ const EventCreate = ({navigation}: NavigProps<any>) => {
             //   id: values.venue,
             // });
             // values.venue = refer as any;
+
+            if (values?.venue) {
+              const exitVenueIds = allVenues.find(
+                (item: IVenue) => item?.id === values?.venue,
+              )?.manager_id;
+
+              values.manager_id = exitVenueIds as any;
+            }
+
             createFireData({
               collectType: 'Events',
               data: values,
