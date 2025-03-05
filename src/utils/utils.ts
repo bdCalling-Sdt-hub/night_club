@@ -1,11 +1,7 @@
 // devices screen size
 
-import {
-  Dimensions,
-  PermissionsAndroid,
-  PixelRatio,
-  Platform,
-} from 'react-native';
+import {Alert, Dimensions, Linking, PixelRatio, Platform} from 'react-native';
+import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 import {MMKVLoader} from 'react-native-mmkv-storage';
 
@@ -51,24 +47,27 @@ function getRandomHashColor() {
 // console.log(price); // Output: "1 234,56 €" (French formatting for Euros)
 
 // Call requestPermissions before trying to write to the file
+
 export const filRequestPermission = async () => {
-  if (Platform.OS === 'android') {
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+  const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE); // Change for iOS if needed
+
+  if (result === RESULTS.GRANTED) {
+    return true;
+  } else if (result === RESULTS.DENIED) {
+    filRequestPermission(); // 🔄 Keep requesting
+  } else if (result === RESULTS.BLOCKED) {
+    Alert.alert(
+      'Permission Needed',
+      'This feature requires files access. Please enable it in settings.',
+      [
+        {text: 'Go to Settings', onPress: () => Linking.openSettings()},
         {
-          title: 'Storage Permission',
-          message: 'This app needs access to your storage to save files.',
-          buttonNeutral: 'Ask Me Later',
-          buttonNegative: 'Cancel',
-          buttonPositive: 'OK',
+          text: 'Cancel',
+          onPress: () => {
+            return false;
+          },
         },
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      console.warn(err);
-      return false;
-    }
+      ],
+    );
   }
-  return true; // iOS does not require runtime permission for file writing.
 };

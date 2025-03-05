@@ -32,8 +32,7 @@ const AllGuestInGuestList = ({
   const [addToGuests, setAddToGuests] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
 
-  const [guestListAvailable, setGuestListAvailable] =
-    React.useState<Array<IGuestsList>>();
+  const [events, setEvents] = React.useState<Array<IEvent>>();
   const [guests, setGuests] = React.useState<Array<IGuest>>();
 
   const {updateFireData, createFireData} = useFireStore();
@@ -66,11 +65,14 @@ const AllGuestInGuestList = ({
       const snapshot = await query.get();
       const filteredData = snapshot.docs
         .map(doc => ({id: doc.id, ...doc.data()}))
-        .filter((item: IEvent) =>
-          item?.date ? item.date > new Date().toISOString() : item,
+        .filter((item: any) =>
+          item.end_time
+            ? new Date(item.end_time).getTime() + 24 * 60 * 60 * 1000 >
+              new Date().getTime()
+            : item,
         );
 
-      setGuestListAvailable(filteredData);
+      setEvents(filteredData as IEvent[]);
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
@@ -92,7 +94,7 @@ const AllGuestInGuestList = ({
           id: doc.id,
           ...doc.data(),
         }));
-        setGuests(guestListData);
+        setGuests(guestListData as IGuest[]);
         setLoading(false);
       },
       error => {
@@ -326,7 +328,7 @@ const AllGuestInGuestList = ({
           </View>
         </View>
         <View>
-          {guestListAvailable?.map((item, index) => {
+          {events?.map((item, index) => {
             return (
               <TouchableOpacity
                 key={index}

@@ -474,118 +474,124 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   editable={false}
                 />
               </View>
-              <View style={tw`bg-base flex-1 `}>
-                <Text
-                  style={[
-                    tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
-                  ]}>
-                  Add to guest list (optional)
-                </Text>
-                <Picker
-                  useSafeArea
-                  mode={Picker.modes.MULTI}
-                  listProps={{
-                    ListEmptyComponent: (
-                      <EmptyCard
-                        title="No Guest List"
-                        isLoading={loading}
-                        hight={height * 0.8}
-                      />
-                    ),
-                  }}
-                  multiline
-                  value={values.guest_list}
-                  onChange={items => {
-                    setFieldValue('guest_list', items);
-                  }}
-                  renderPicker={(value, label) => {
-                    // console.log(label);
-                    return (
-                      <View
-                        key={value}
-                        style={tw`flex-row justify-between items-center border-b border-b-gray-800 `}>
+              {user?.role !== 'guard' && (
+                <View style={tw`bg-base flex-1 `}>
+                  <Text
+                    style={[
+                      tw`text-white text-sm font-RobotoMedium px-[2%] pb-2`,
+                    ]}>
+                    Add to guest list (optional)
+                  </Text>
+                  <Picker
+                    useSafeArea
+                    mode={Picker.modes.MULTI}
+                    listProps={{
+                      ListEmptyComponent: (
+                        <EmptyCard
+                          title="No Guest List"
+                          isLoading={loading}
+                          hight={height * 0.8}
+                        />
+                      ),
+                    }}
+                    multiline
+                    value={values.guest_list}
+                    onChange={items => {
+                      setFieldValue('guest_list', items);
+                    }}
+                    renderPicker={(value, label) => {
+                      // console.log(label);
+                      return (
                         <View
-                          style={tw`flex flex-1 pb-2 flex-row flex-wrap gap-1`}>
-                          {label ? (
-                            label?.split(',')?.map(item => {
-                              return (
-                                <Text
-                                  style={tw`text-white100 bg-secondary p-1  font-RobotoMedium text-xs  rounded-lg`}>
-                                  {item}
-                                </Text>
-                              );
-                            })
-                          ) : (
+                          key={value}
+                          style={tw`flex-row justify-between items-center border-b border-b-gray-800 `}>
+                          <View
+                            style={tw`flex flex-1 pb-2 flex-row flex-wrap gap-1`}>
+                            {label ? (
+                              label?.split(',')?.map(item => {
+                                return (
+                                  <Text
+                                    style={tw`text-white100 bg-secondary p-1  font-RobotoMedium text-xs  rounded-lg`}>
+                                    {item}
+                                  </Text>
+                                );
+                              })
+                            ) : (
+                              <Text
+                                style={tw`text-white100 py-3  font-RobotoMedium text-sm px-4`}>
+                                Select guest list
+                              </Text>
+                            )}
+                          </View>
+                          <SvgXml xml={IconDownArrayGray} />
+                        </View>
+                      );
+                    }}
+                    onBlur={handleBlur('guest_list')}
+                    renderItem={(value, items) => {
+                      // console.log(items);
+                      return (
+                        <View
+                          key={value}
+                          style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
+                          <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
                             <Text
-                              style={tw`text-white100 py-3  font-RobotoMedium text-sm px-4`}>
-                              Select guest list
+                              style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
+                              {items.label}
                             </Text>
+                          </View>
+                          {items?.isSelected && (
+                            <View style={tw`px-4`}>
+                              <SvgXml
+                                xml={IconSmallTickCyan}
+                                height={20}
+                                width={20}
+                              />
+                            </View>
                           )}
                         </View>
-                        <SvgXml xml={IconDownArrayGray} />
-                      </View>
-                    );
-                  }}
-                  onBlur={handleBlur('guest_list')}
-                  renderItem={(value, items) => {
-                    // console.log(items);
-                    return (
-                      <View
-                        key={value}
-                        style={tw`flex-row justify-between items-center border-b border-b-gray-800`}>
-                        <View style={tw` mt-1 pb-2 mx-[4%]  justify-center`}>
-                          <Text
-                            style={tw`text-white100 py-3  font-RobotoMedium text-lg`}>
-                            {items.label}
-                          </Text>
-                        </View>
-                        {items?.isSelected && (
-                          <View style={tw`px-4`}>
+                      );
+                    }}
+                    renderCustomDialogHeader={preps => {
+                      return (
+                        <View style={tw`flex-row justify-between`}>
+                          <TouchableOpacity
+                            onPress={preps.onCancel}
+                            style={tw`self-start py-3 px-4`}>
                             <SvgXml
-                              xml={IconSmallTickCyan}
+                              xml={IconCloseGray}
                               height={20}
                               width={20}
                             />
-                          </View>
-                        )}
-                      </View>
-                    );
-                  }}
-                  renderCustomDialogHeader={preps => {
-                    return (
-                      <View style={tw`flex-row justify-between`}>
-                        <TouchableOpacity
-                          onPress={preps.onCancel}
-                          style={tw`self-start py-3 px-4`}>
-                          <SvgXml xml={IconCloseGray} height={20} width={20} />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          onPress={preps.onDone}
-                          style={tw`self-start py-3 px-4`}>
-                          <Text style={tw`text-primary text-base`}>Done</Text>
-                        </TouchableOpacity>
-                      </View>
-                    );
-                  }}
-                  items={guestListAvailable?.map(item => ({
-                    label: item.name,
-                    value: item.id,
-                  }))}
-                  pickerModalProps={{
-                    overlayBackgroundColor: BaseColor,
-                  }}
-                />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            onPress={preps.onDone}
+                            style={tw`self-start py-3 px-4`}>
+                            <Text style={tw`text-primary text-base`}>Done</Text>
+                          </TouchableOpacity>
+                        </View>
+                      );
+                    }}
+                    items={guestListAvailable?.map(item => ({
+                      label: item.name,
+                      value: item.id,
+                    }))}
+                    pickerModalProps={{
+                      overlayBackgroundColor: BaseColor,
+                    }}
+                  />
 
-                <TouchableOpacity
-                  style={tw`self-end`}
-                  onPress={() => {
-                    navigation.navigate('AddNewGuestList');
-                  }}>
-                  <Text style={tw`text-primary py-2 text-xs text-right`}>
-                    Add new guest list
-                  </Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity
+                    style={tw`self-end`}
+                    onPress={() => {
+                      navigation.navigate('AddNewGuestList');
+                    }}>
+                    <Text style={tw`text-primary py-2 text-xs text-right`}>
+                      Add new guest list
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              )}
 
               {extraFields?.email && (
                 <View>

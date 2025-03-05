@@ -9,7 +9,7 @@ export const useImportData = async () => {
   try {
     const [pickResult] = await pick(); // File picker
 
-    const fileExtension = pickResult.name.split('.').pop()?.toLowerCase();
+    const fileExtension = pickResult?.name?.split('.').pop()?.toLowerCase();
     if (!fileExtension) throw new Error('Invalid file format.');
 
     // console.log('File Extension:', fileExtension);

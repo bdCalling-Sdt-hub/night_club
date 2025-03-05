@@ -1,3 +1,4 @@
+import {Text, TouchableOpacity, View} from 'react-native';
 import {
   IconCalendarCyan,
   IconCalendarGay,
@@ -8,19 +9,18 @@ import {
   IconUserHomeCyan,
   IconUserHomeGray,
 } from '../icons/icons';
-import {Text, TouchableOpacity, View} from 'react-native';
 
-import Background from '../screen/components/Background';
-import EventScreen from '../screen/Event/EventScreen';
-import Home from '../screen/home/Home';
-import {IconBottomPlusButton} from '../icons/Special.icon';
-import MyGuestListScreen from '../screen/Guestlist/MyGuestListScreen';
-import ProfileScreen from '../screen/Profile/ProfileScreen';
-import {SvgXml} from 'react-native-svg';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import tw from '../lib/tailwind';
+import {SvgXml} from 'react-native-svg';
 import {useAuth} from '../context/AuthProvider';
 import {userAccess} from '../hook/useAccess';
+import {IconBottomPlusButton} from '../icons/Special.icon';
+import tw from '../lib/tailwind';
+import Background from '../screen/components/Background';
+import EventScreen from '../screen/Event/EventScreen';
+import MyGuestListScreen from '../screen/Guestlist/MyGuestListScreen';
+import Home from '../screen/home/Home';
+import ProfileScreen from '../screen/Profile/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 function CustomTabBar({state, descriptors, navigation}: any) {
@@ -166,6 +166,7 @@ function CustomTabBar({state, descriptors, navigation}: any) {
 }
 
 function BottomRoutes() {
+  const {user} = useAuth();
   return (
     <Tab.Navigator
       screenOptions={{headerShown: false}}
@@ -173,7 +174,10 @@ function BottomRoutes() {
       <Tab.Screen name="Venue" component={Home as any} />
       <Tab.Screen name="Event" component={EventScreen as any} />
       <Tab.Screen name="Button" component={Button as any} />
-      <Tab.Screen name="GuestList" component={MyGuestListScreen as any} />
+      {user?.role !== 'guard' && (
+        <Tab.Screen name="GuestList" component={MyGuestListScreen as any} />
+      )}
+
       <Tab.Screen name="Profile" component={ProfileScreen as any} />
     </Tab.Navigator>
   );

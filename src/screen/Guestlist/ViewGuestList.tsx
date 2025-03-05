@@ -294,12 +294,16 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         title="View Guest List"
         containerStyle={tw`justify-between`}
         ComponentBtn={
-          <TButton
-            title="Import"
-            onPress={handleImportData}
-            containerStyle={tw`w-24 p-0 h-6 rounded-lg  bg-transparent self-end justify-end`}
-            titleStyle={tw`text-primary font-RobotoBold text-base`}
-          />
+          <>
+            {user?.role !== 'guard' && (
+              <TButton
+                title="Import"
+                onPress={handleImportData}
+                containerStyle={tw`w-24 p-0 h-6 rounded-lg  bg-transparent self-end justify-end`}
+                titleStyle={tw`text-primary font-RobotoBold text-base`}
+              />
+            )}
+          </>
         }
       />
 
@@ -524,9 +528,9 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 },
                 (item.entry_fee || item.free_entry || item.free_entry_time) && {
                   title: item.free_entry_time
-                    ? `Free entry before that ${moment(
-                        item.free_entry_time,
-                      ).format('hh:mm A')}`
+                    ? `Free entry before ${moment(item.free_entry_time).format(
+                        'hh:mm A',
+                      )}`
                     : 'Paid',
                   titleStyle: tw`text-yellow-400 font-RobotoBold text-xs`,
                 },

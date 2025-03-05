@@ -51,11 +51,14 @@ const UpcomingEvents = ({navigation, venueId, search}: Props) => {
       const snapshot = await query.get();
       const filteredData = snapshot.docs
         .map(doc => ({id: doc.id, ...doc.data()}))
-        .filter((item: IEvent) =>
-          item?.date ? item.date > new Date().toISOString() : item,
+        .filter((item: any) =>
+          item.end_time
+            ? new Date(item.end_time).getTime() + 24 * 60 * 60 * 1000 >
+              new Date().getTime()
+            : item,
         );
 
-      setData(filteredData);
+      setData(filteredData as IEvent[]);
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {

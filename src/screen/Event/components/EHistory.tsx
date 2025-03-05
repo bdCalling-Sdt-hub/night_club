@@ -52,10 +52,13 @@ const EHistory = ({navigation, search, venueId}: Props) => {
       const filteredData = snapshot.docs
         .map(doc => ({id: doc.id, ...doc.data()}))
         .filter(
-          (item: IEvent) => item?.date && item.date < new Date().toISOString(),
+          (item: any) =>
+            item?.end_time &&
+            new Date(item.end_time).getTime() + 24 * 60 * 60 * 1000 <
+              new Date().getTime(),
         );
 
-      setData(filteredData);
+      setData(filteredData as Array<IEvent>);
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
