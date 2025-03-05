@@ -131,7 +131,7 @@ const EventCreate = ({navigation}: NavigProps<any>) => {
           user?.role === 'promoters' ||
           user?.role === 'manager') && {
           field: 'manager_id',
-          operator: '==',
+          operator: 'array-contains',
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ].filter(Boolean) as any,

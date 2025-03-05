@@ -1,4 +1,4 @@
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IMangeUser, IVenue} from '../../firebase/interface';
 import {
   IconCalendarGay,
@@ -6,31 +6,31 @@ import {
   IconDownArrayGray,
   IconPlusGray,
 } from '../../icons/icons';
-import {Image, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect} from 'react';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
+import {Formik} from 'formik';
+import moment from 'moment';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import Background from '../components/Background';
+import IButton from '../../components/buttons/IButton';
+import IwtButton from '../../components/buttons/IwtButton';
+import TButton from '../../components/buttons/TButton';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import EmptyCard from '../../components/Empty/EmptyCard';
-import {Formik} from 'formik';
-import GLoading from '../../components/loader/GLoading';
-import IButton from '../../components/buttons/IButton';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import {SvgXml} from 'react-native-svg';
-import TButton from '../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
-import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
+import GLoading from '../../components/loader/GLoading';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
+import {uploadFileToFirebase} from '../../firebase/uploadFileToFirebase';
 import {useMediaPicker} from '../../hook/useMediaPicker';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {showToast, closeToast} = useToast();
@@ -121,7 +121,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     return errors;
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     setLoading(true);
     getAllUser(data => {
       setManger(data.filter((item: IMangeUser) => item?.role === 'manager'));
@@ -133,12 +133,11 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           user?.role === 'promoters' ||
           user?.role === 'manager') && {
           field: 'manager_id',
-          operator: '==',
+          operator: 'array-contains',
           value: user?.role === 'manager' ? user?.user_id : user?.manager_id,
         },
       ].filter(Boolean) as any,
       setLoad: data => {
-        // console.log(data);
         setAllVenues(data);
         setLoading(false);
       },
