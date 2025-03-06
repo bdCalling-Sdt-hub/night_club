@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {
   FlatList,
   RefreshControl,
@@ -13,27 +13,27 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import React, {useEffect} from 'react';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import moment from 'moment';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
+import Background from '../components/Background';
+import Card from '../../components/cards/Card';
+import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
-import Card from '../../components/cards/Card';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
 import SearchCard from '../../components/cards/SearchCard';
-import EmptyCard from '../../components/Empty/EmptyCard';
-import {useToast} from '../../components/modals/Toaster';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFile';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
@@ -531,7 +531,15 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                     ? `Free entry before ${moment(item.free_entry_time).format(
                         'hh:mm A',
                       )}`
-                    : 'Paid',
+                    : item.entry_fee && !item.free_entry
+                    ? `Paid guest  ${parseInt(item.people)}`
+                    : !item.entry_fee && item.free_entry
+                    ? `Free guest ${parseInt(item.free_entry)}`
+                    : item.free_entry && item.entry_fee
+                    ? `Free guest ${parseInt(item.free_entry)} and paid guest ${
+                        parseInt(item.people) - parseInt(item.free_entry)
+                      }`
+                    : '',
                   titleStyle: tw`text-yellow-400 font-RobotoBold text-xs`,
                 },
                 {

@@ -1,4 +1,4 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IEvent, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
@@ -6,31 +6,31 @@ import {
   IconSmallPlusCyan,
   IconSmallTickCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import {Formik} from 'formik';
-import moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-native-date-picker';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import EmptyCard from '../../components/Empty/EmptyCard';
+import {Formik} from 'formik';
+import GLoading from '../../components/loader/GLoading';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import GLoading from '../../components/loader/GLoading';
-import {useToast} from '../../components/modals/Toaster';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 import {userAccess} from '../../hook/useAccess';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -40,7 +40,7 @@ interface createProps {
   free_entry_time: string;
   // free_entry_end_time: string;
   added_by: string;
-  guest_list: [string];
+  guest_list: string[];
   event: string;
   venue: string;
   tag: string;
@@ -186,7 +186,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         <Formik
           initialValues={{
             fullName: '',
-            people: '',
+            people: '1',
             entry_fee: '',
             free_entry: '',
             free_entry_time: '',
@@ -313,7 +313,7 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
-                Amount of people{' '}
+                Extra guests
                 {errors.people && touched.people && (
                   <Text style={[tw`text-red-500 text-[10px] `]}>
                     {errors.people}
@@ -332,12 +332,14 @@ const AddNewGuest = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 />
                 <InputText
                   placeholder="0"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.people}
+                  containerStyle={tw`border-0 h-12 text-center rounded-lg`}
+                  value={values.people ? `${parseInt(values.people) - 1}` : ''}
                   fieldStyle={tw`text-center`}
                   keyboardType="numeric"
                   cursorColor={PrimaryColor}
-                  onChangeText={handleChange('people')}
+                  onChangeText={text => {
+                    handleChange('people')(text ? `${parseInt(text) + 1}` : '');
+                  }}
                   onBlur={handleBlur('people')}
                   textAlign="center"
                   errorText={errors.people}

@@ -1,35 +1,35 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 import {IGuest, IGuestsList, ITags} from '../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconSmallPlusCyan,
 } from '../../icons/icons';
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
+import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
 
-import firestore from '@react-native-firebase/firestore';
-import {useIsFocused} from '@react-navigation/native';
-import {Formik} from 'formik';
-import moment from 'moment';
-import React from 'react';
-import DatePicker from 'react-native-date-picker';
-import {SvgXml} from 'react-native-svg';
-import {Picker} from 'react-native-ui-lib';
 import BackWithTitle from '../../components/backHeader/BackWithTitle';
-import IwtButton from '../../components/buttons/IwtButton';
-import TButton from '../../components/buttons/TButton';
+import Background from '../components/Background';
+import DatePicker from 'react-native-date-picker';
 import DateTimePicker from '../../components/DateTimePicker/DateTimePicker';
 import EmptyCard from '../../components/Empty/EmptyCard';
+import {Formik} from 'formik';
+import GLoading from '../../components/loader/GLoading';
 import InputText from '../../components/inputs/InputText';
 import InputTextWL from '../../components/inputs/InputTextWL';
-import GLoading from '../../components/loader/GLoading';
-import {useToast} from '../../components/modals/Toaster';
+import IwtButton from '../../components/buttons/IwtButton';
+import {NavigProps} from '../../interfaces/NaviProps';
+import {Picker} from 'react-native-ui-lib';
+import React from 'react';
+import {SvgXml} from 'react-native-svg';
+import TButton from '../../components/buttons/TButton';
+import firestore from '@react-native-firebase/firestore';
+import moment from 'moment';
+import tw from '../../lib/tailwind';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
+import {useIsFocused} from '@react-navigation/native';
+import {useToast} from '../../components/modals/Toaster';
 import {userAccess} from '../../hook/useAccess';
-import {NavigProps} from '../../interfaces/NaviProps';
-import tw from '../../lib/tailwind';
-import Background from '../components/Background';
 
 interface createProps {
   fullName: string;
@@ -77,10 +77,15 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
 
     if (values.people) {
       if (isNaN(parseInt(values.people))) {
-        errors.people = 'People should be a number';
+        errors.people = 'Extra guest should be a number';
       }
       if (parseInt(values.people) < 1) {
-        errors.people = 'People should be greater than 0';
+        errors.people = 'Extra guest should be greater than 0';
+      }
+      if (values.free_entry) {
+        if (parseInt(values.people) < parseInt(values.free_entry)) {
+          errors.free_entry = 'Free entry should be less than extra guest';
+        }
       }
     }
     if (values.free_entry) {
@@ -315,7 +320,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
               </View>
 
               <Text style={[tw`text-white text-sm font-RobotoMedium px-[2%]`]}>
-                Amount of people{' '}
+                Extra guests
                 {errors.people && touched.people && (
                   <Text style={[tw`text-red-500 text-[10px] `]}>
                     {' '}
@@ -327,7 +332,7 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 <TButton
                   disabled={
                     parseInt(values?.check_in ?? 0) >=
-                    parseInt(values?.people ?? 0)
+                    parseInt(values?.people ?? 0) - 1
                   }
                   onPress={() => {
                     if (parseInt(values.people) > 0) {
@@ -339,12 +344,14 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                 />
                 <InputText
                   placeholder="0"
-                  containerStyle={tw`border-0 h-12 rounded-lg`}
-                  value={values.people}
+                  containerStyle={tw`border-0 h-12 text-center rounded-lg`}
+                  value={values.people ? `${parseInt(values.people) - 1}` : ''}
                   fieldStyle={tw`text-center`}
                   keyboardType="numeric"
                   cursorColor={PrimaryColor}
-                  onChangeText={handleChange('people')}
+                  onChangeText={text => {
+                    handleChange('people')(text ? `${parseInt(text) + 1}` : '');
+                  }}
                   onBlur={handleBlur('people')}
                   textAlign="center"
                   errorText={errors.people}
@@ -375,8 +382,8 @@ const GuestDetails = ({navigation, route}: NavigProps<{guest: IGuest}>) => {
                   );
                   handleSubmit();
                 }}
-                title={`Check in ${parseInt(values?.check_in ?? 0)}/${
-                  values?.people ?? 0
+                title={`Check in ${parseInt(values?.check_in || 0)}/${
+                  values?.people || 0
                 }`}
                 containerStyle={tw`bg-green-600`}
               />
