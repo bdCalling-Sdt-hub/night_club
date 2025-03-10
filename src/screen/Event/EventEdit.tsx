@@ -162,7 +162,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         keyboardShouldPersistTaps="always"
         contentContainerStyle={tw`px-4 pb-12`}>
         <Formik
-          initialValues={route?.params?.item}
+          initialValues={route?.params?.item as any}
           onSubmit={async values => {
             // console.log(values.venue);
             // const refer = await createRefer({
@@ -470,13 +470,18 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 }}
                 getCurrentDate={time => {
                   // Combine the selected date with the start time
-                  const combinedStartDateTime = moment(values.date)
-                    .set({
-                      hour: moment(time).hour(),
-                      minute: moment(time).minute(),
-                    })
-                    .toISOString();
-                  handleChange('start_time')(combinedStartDateTime);
+                  if (values?.date) {
+                    const combinedStartDateTime = moment(values.date)
+                      .set({
+                        hour: moment(time).hour(),
+                        minute: moment(time).minute(),
+                      })
+                      .toISOString();
+                    handleChange('start_time')(combinedStartDateTime);
+                  } else {
+                    handleChange('date')(time);
+                    handleChange('start_time')(time);
+                  }
                 }}
               />
 
@@ -498,14 +503,19 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                 }}
                 getCurrentDate={time => {
                   // Combine the selected date with the end time
-                  const combinedEndDateTime = moment(values.date)
-                    .set({
-                      hour: moment(time).hour(),
-                      minute: moment(time).minute(),
-                    })
-                    .toISOString();
-                  handleChange('end_time')(combinedEndDateTime);
-                  handleChange('date')(combinedEndDateTime);
+                  if (values?.date) {
+                    const combinedEndDateTime = moment(values.date)
+                      .set({
+                        hour: moment(time).hour(),
+                        minute: moment(time).minute(),
+                      })
+                      .toISOString();
+                    handleChange('end_time')(combinedEndDateTime);
+                    handleChange('date')(combinedEndDateTime);
+                  } else {
+                    handleChange('date')(time);
+                    handleChange('end_time')(time);
+                  }
                 }}
               />
 

@@ -58,7 +58,7 @@ export const filRequestPermission = async () => {
   } else if (result === RESULTS.BLOCKED) {
     Alert.alert(
       'Permission Needed',
-      'This feature requires files access. Please enable it in settings.',
+      ' This feature requires files access. Please enable it in settings.\n\n 1.Go to Settings \n 2.Click Permissions \n 3.Click files and media \n 4.Fil up the check box allowed access to media only. \n\n To enable permissions',
       [
         {text: 'Go to Settings', onPress: () => Linking.openSettings()},
         {

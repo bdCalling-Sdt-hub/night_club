@@ -1,5 +1,3 @@
-import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
-import {Checkbox, Picker} from 'react-native-ui-lib';
 import {
   FlatList,
   RefreshControl,
@@ -8,31 +6,33 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {Checkbox, Picker} from 'react-native-ui-lib';
 import {IGuest, IGuestsList, ITags} from '../../../firebase/interface';
 import {
   IconCloseGray,
   IconDownArrayGray,
   IconFilterGray,
 } from '../../../icons/icons';
+import {BaseColor, PrimaryColor, height} from '../../../utils/utils';
 
-import Card from '../../../components/cards/Card';
-import EmptyCard from '../../../components/Empty/EmptyCard';
-import IwtButton from '../../../components/buttons/IwtButton';
-import NormalModal from '../../../components/modals/NormalModal';
-import Or from '../../../components/buttons/Or';
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
 import React from 'react';
 import {SvgXml} from 'react-native-svg';
+import IwtButton from '../../../components/buttons/IwtButton';
+import Or from '../../../components/buttons/Or';
 import TButton from '../../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
-import tw from '../../../lib/tailwind';
+import Card from '../../../components/cards/Card';
+import EmptyCard from '../../../components/Empty/EmptyCard';
+import NormalModal from '../../../components/modals/NormalModal';
 import {useAuth} from '../../../context/AuthProvider';
 import useFireStore from '../../../firebase/database/helper';
-import {useIsFocused} from '@react-navigation/native';
+import tw from '../../../lib/tailwind';
 
 interface Props {
   navigation: any;
   search: string;
-  setSelectGuest: React.Dispatch<React.SetStateAction<IGuest[]>>;
+  setSelectGuest: React.Dispatch<React.SetStateAction<IGuest[] | null>>;
   selectGuest: IGuest[];
 }
 const AllGuest = ({navigation, search, setSelectGuest, selectGuest}: Props) => {
@@ -193,7 +193,7 @@ const AllGuest = ({navigation, search, setSelectGuest, selectGuest}: Props) => {
 
     // Reset the state
     setAddToGuests(false);
-    setSelectGuest(null);
+    setSelectGuest([]);
     setSelectGuestList([]);
   };
 
