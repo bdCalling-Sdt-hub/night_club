@@ -8,7 +8,6 @@ import {
 } from '../../icons/icons';
 import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
-import firestore from '@react-native-firebase/firestore';
 import {useIsFocused} from '@react-navigation/native';
 import {Formik} from 'formik';
 import moment from 'moment';
@@ -172,23 +171,13 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             // values.venue = refer as any;
 
             // console.log(values);
-            if (values?.venue !== route?.params?.item?.venue) {
-              firestore()
-                .collection('Guests')
-                .where('venue', '==', route?.params?.item?.venue)
-                .get()
-                .then(snapshot => {
-                  snapshot.forEach(doc => {
-                    updateFireData({
-                      id: doc.id,
-                      collectType: 'Guests',
-                      data: {
-                        venue: values.venue,
-                      },
-                    });
-                  });
-                });
-              // update replace the previous value id in current id
+
+            if (values?.venue) {
+              const exitVenueIds = allVenues.find(
+                (item: IVenue) => item?.id === values?.venue,
+              )?.manager_id;
+
+              values.manager_id = exitVenueIds as any;
             }
 
             updateFireData({
