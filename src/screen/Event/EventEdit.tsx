@@ -152,8 +152,6 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     });
   };
 
-  // console.log(allVenues);
-
   return (
     <Background style={tw`flex-1`}>
       <BackWithTitle title="Edit Event" onPress={() => navigation?.goBack()} />
@@ -243,6 +241,7 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   </Text>
                 )}
               </View>
+
               <View style={tw`bg-base `}>
                 <Picker
                   useSafeArea
@@ -268,6 +267,9 @@ const EventCreate = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                   }}
                   onBlur={handleBlur('venue')}
                   shouldRasterizeIOS
+                  editable={
+                    user?.role === 'owner' || user?.role === 'super-owner'
+                  }
                   renderInput={() => (
                     <InputTextWL
                       cursorColor={PrimaryColor}

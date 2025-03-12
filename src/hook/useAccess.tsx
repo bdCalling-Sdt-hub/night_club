@@ -10,6 +10,8 @@ export const userAccess = ({
   if (GRole === 'super') {
     if (user?.role === 'super-owner') {
       return true;
+    } else {
+      return false;
     }
   }
   // owner can access all except super-owner
@@ -24,6 +26,8 @@ export const userAccess = ({
       user?.role === 'manager'
     ) {
       return true;
+    } else {
+      return false;
     }
   }
 
@@ -38,5 +42,7 @@ export const userAccess = ({
     ) {
       return true;
     }
+  } else {
+    return false;
   }
 };
