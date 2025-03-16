@@ -36,7 +36,7 @@ export const useExportFile = async ({
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
         path =
-          RNFS.ExternalStorageDirectoryPath +
+          RNFS.DocumentDirectoryPath +
           `/Download/guest-list-${new Date().getTime()}.txt`; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
@@ -64,7 +64,7 @@ export const useExportFile = async ({
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
         path =
-          RNFS.ExternalStorageDirectoryPath +
+          RNFS.DownloadDirectoryPath +
           `/Download/guest-list-${new Date().getTime()}.csv`; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
@@ -151,7 +151,7 @@ export const useExportFile = async ({
         let path = '';
         if (Platform.OS === 'android') {
           path =
-            RNFS.ExternalStorageDirectoryPath +
+            RNFS.DownloadDirectoryPath +
             `/Download/guest-list-${new Date().getTime()}.xlsx`; // Android path
         } else {
           path =
