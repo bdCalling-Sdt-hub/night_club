@@ -569,6 +569,9 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             return item.fullName.toLowerCase().includes(search.toLowerCase());
           })}
         keyExtractor={(item, index) => item?.id.toString()}
+        contentContainerStyle={{
+          paddingBottom: 50,
+        }}
         renderItem={({item, index}) => (
           <Card
             onPress={() => navigation.navigate('GuestDetails', {guest: item})}
