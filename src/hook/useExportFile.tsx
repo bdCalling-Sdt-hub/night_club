@@ -5,7 +5,7 @@ import {Alert, Platform} from 'react-native';
 import Papa from 'papaparse';
 import RNFS from 'react-native-fs';
 import {IGuest} from '../firebase/interface';
-import {filRequestPermission} from '../utils/utils';
+import {filRequestPermission} from '../utils/permission';
 
 export const useExportFile = async ({
   data,
@@ -16,12 +16,7 @@ export const useExportFile = async ({
 }) => {
   try {
     const permission = await filRequestPermission();
-    if (!permission) {
-      return Alert.alert(
-        'Permission Denied',
-        'Guest list can not be saved without storage permission.',
-      );
-    }
+    if (!permission) return;
 
     const csv = Papa.unparse(data);
     // Papa.parse(csv, {
@@ -36,7 +31,7 @@ export const useExportFile = async ({
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
         path =
-          RNFS.DocumentDirectoryPath +
+          RNFS.ExternalStorageDirectoryPath +
           `/Download/guest-list-${new Date().getTime()}.txt`; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
@@ -64,7 +59,7 @@ export const useExportFile = async ({
       if (Platform.OS === 'android') {
         // Set path for Android Downloads folder
         path =
-          RNFS.DownloadDirectoryPath +
+          RNFS.ExternalStorageDirectoryPath +
           `/Download/guest-list-${new Date().getTime()}.csv`; // Use '/Download/' directory on Android
       } else {
         // For iOS, save in the Documents directory (no Downloads folder on iOS)
@@ -151,7 +146,7 @@ export const useExportFile = async ({
         let path = '';
         if (Platform.OS === 'android') {
           path =
-            RNFS.DownloadDirectoryPath +
+            RNFS.ExternalStorageDirectoryPath +
             `/Download/guest-list-${new Date().getTime()}.xlsx`; // Android path
         } else {
           path =

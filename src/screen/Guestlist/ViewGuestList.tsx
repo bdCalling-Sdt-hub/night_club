@@ -1,11 +1,5 @@
-import {BaseColor, PrimaryColor, height} from '../../utils/utils';
-import {
-  FlatList,
-  RefreshControl,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect} from 'react';
+import {RefreshControl, Text, TouchableOpacity, View} from 'react-native';
 import {IEvent, IGuest, ITags, IVenue} from '../../firebase/interface';
 import {
   IconBigPlusCyan,
@@ -13,27 +7,28 @@ import {
   IconDownArrayGray,
   IconFilterGray,
 } from '../../icons/icons';
-import React, {useEffect} from 'react';
+import {BaseColor, PrimaryColor, height} from '../../utils/utils';
 
+import firestore from '@react-native-firebase/firestore';
+import {useIsFocused} from '@react-navigation/native';
+import {FlashList} from '@shopify/flash-list';
+import moment from 'moment';
+import {SvgXml} from 'react-native-svg';
+import {Picker} from 'react-native-ui-lib';
 import BackWithComponent from '../../components/backHeader/BackWithCoponent';
-import Background from '../components/Background';
-import Card from '../../components/cards/Card';
-import EmptyCard from '../../components/Empty/EmptyCard';
 import IButton from '../../components/buttons/IButton';
 import IwtButton from '../../components/buttons/IwtButton';
-import {NavigProps} from '../../interfaces/NaviProps';
-import {Picker} from 'react-native-ui-lib';
-import SearchCard from '../../components/cards/SearchCard';
-import {SvgXml} from 'react-native-svg';
 import TButton from '../../components/buttons/TButton';
-import firestore from '@react-native-firebase/firestore';
-import moment from 'moment';
-import tw from '../../lib/tailwind';
+import Card from '../../components/cards/Card';
+import SearchCard from '../../components/cards/SearchCard';
+import EmptyCard from '../../components/Empty/EmptyCard';
+import {useToast} from '../../components/modals/Toaster';
 import {useAuth} from '../../context/AuthProvider';
 import useFireStore from '../../firebase/database/helper';
 import {useImportData} from '../../hook/useImportFile';
-import {useIsFocused} from '@react-navigation/native';
-import {useToast} from '../../components/modals/Toaster';
+import {NavigProps} from '../../interfaces/NaviProps';
+import tw from '../../lib/tailwind';
+import Background from '../components/Background';
 
 const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
   const {closeToast, showToast} = useToast();
@@ -105,7 +100,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
               id: doc.id,
               ...doc.data(),
             }));
-            setGuestListData(data);
+            setGuestListData(data as any);
             setLoading(false); // Stop loading when data is received
           },
           error => {
@@ -128,7 +123,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       collectType: 'Venues',
       setLoad: (data: any) => {
         setVenueData(data);
-        // setLoading(false);
+        setLoading(false);
       },
     });
   }, [isFocused]);
@@ -145,9 +140,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
       0,
     );
 
-    // console.log(totalGuest, totalCheckIn);
-    // console.log(guestListData?.map(guest => guest.people));
-
     const addedByData = Array.from(
       new Set(guestListData?.map(guest => guest.added_by)),
     ).map(addedBy => ({label: addedBy, value: addedBy}));
@@ -155,106 +147,48 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
     setTotalGuest(totalGuest);
     setTotalCheckIn(totalCheckIn);
     setAddedByData(addedByData);
-    return () => {
-      setLoading(false);
-    };
-  }, [guestListData]);
+  }, [guestListData]); // Ensure `guestListData` is updated and prevents infinite loop
 
   // console.log(route?.params?.item);
 
   const handleImportData = async () => {
     try {
       const data = await useImportData();
-      // console.log(data);
 
-      if (!data) {
-        showToast({
-          title: 'Warning',
-          content: 'Guest list is empty',
-          onPress: closeToast,
-        });
-        return;
-      } else {
-        showToast({
-          title: 'Do you want to add the guests as new entries?',
-          content: `Note: If you select 'No' and the guests are already added to another event, they will be moved to this event's guest list, replacing their association with the previous event.`,
-          multipleButton: [
-            {
-              buttonText: 'Yes',
-              onPress: () => {
-                if (data && Array.isArray(data)) {
-                  data.forEach(async (guest: IGuest) => {
-                    guest.event = route?.params?.item?.id;
-                    guest.venue = route?.params?.item?.venue;
+      if (
+        data &&
+        (data?.find(item => item).id || data?.find(item => item).fullName)
+      ) {
+        if (!data) {
+          showToast({
+            title: 'Warning',
+            content: 'Guest list is empty',
+            onPress: closeToast,
+          });
+          return;
+        } else {
+          showToast({
+            title: 'Do you want to add the guests as new entries?',
+            content: `Note: If you select 'No' and the guests are already added to another event, they will be moved to this event's guest list, replacing their association with the previous event.`,
+            multipleButton: [
+              {
+                buttonText: 'Yes',
+                onPress: () => {
+                  if (data && Array.isArray(data)) {
+                    data.forEach(async (guest: IGuest) => {
+                      guest.event = route?.params?.item?.id;
+                      guest.venue = route?.params?.item?.venue;
 
-                    if (guest.event_date) {
-                      guest.event_date = route?.params?.item?.date;
-                    }
-
-                    try {
-                      delete guest.id;
-                      // guest.createdBy = user?.user_id as string;
-                      guest.createdBy = '';
-
-                      // console.log(guest);
-                      createFireData({
-                        collectType: 'Guests',
-                        data: guest,
-                      });
-                    } catch (error) {
-                      console.log('Error updating guest:', error);
-                    }
-
-                    // add as new create own
-                  });
-                }
-                closeToast();
-              },
-              buttonStyle: tw`bg-primary flex-1`,
-            },
-            {
-              buttonText: 'No',
-              onPress: () => {
-                if (data && Array.isArray(data)) {
-                  data.forEach(async (guest: IGuest) => {
-                    guest.event = route?.params?.item?.id;
-                    guest.venue = route?.params?.item?.venue;
-
-                    if (guest.event_date) {
-                      guest.event_date = route?.params?.item?.date;
-                    }
-
-                    // console.log(guest.id);
-                    // update options
-
-                    if (guest?.createdBy === user?.user_id) {
-                      try {
-                        const docRef = firestore()
-                          .collection('Guests')
-                          .doc(guest.id);
-                        const docSnapshot = await docRef.get();
-
-                        if (docSnapshot.exists) {
-                          // Document exists, update it
-                          await docRef.update(guest);
-                        } else {
-                          // Document not found, show a warning
-                          showToast({
-                            title: 'Warning',
-                            content:
-                              'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
-                            onPress: closeToast,
-                          });
-                        }
-                      } catch (error) {
-                        console.log('Error updating guest:', error);
+                      if (guest.event_date) {
+                        guest.event_date = route?.params?.item?.date;
                       }
-                    } else {
+
                       try {
                         delete guest.id;
                         // guest.createdBy = user?.user_id as string;
                         guest.createdBy = '';
 
+                        // console.log(guest);
                         createFireData({
                           collectType: 'Guests',
                           data: guest,
@@ -262,17 +196,143 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
                       } catch (error) {
                         console.log('Error updating guest:', error);
                       }
-                    }
 
-                    // add as new create own
+                      // add as new create own
+                    });
+                  }
+                  closeToast();
+                },
+                buttonStyle: tw`bg-primary flex-1`,
+              },
+              {
+                buttonText: 'No',
+                onPress: () => {
+                  if (data && Array.isArray(data)) {
+                    data.forEach(async (guest: IGuest) => {
+                      guest.event = route?.params?.item?.id;
+                      guest.venue = route?.params?.item?.venue;
+
+                      if (guest.event_date) {
+                        guest.event_date = route?.params?.item?.date;
+                      }
+
+                      // console.log(guest.id);
+                      // update options
+
+                      if (guest?.createdBy === user?.user_id) {
+                        try {
+                          const docRef = firestore()
+                            .collection('Guests')
+                            .doc(guest.id);
+                          const docSnapshot = await docRef.get();
+
+                          if (docSnapshot.exists) {
+                            // Document exists, update it
+                            await docRef.update(guest);
+                          } else {
+                            // Document not found, show a warning
+                            showToast({
+                              title: 'Warning',
+                              content:
+                                'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
+                              onPress: closeToast,
+                            });
+                          }
+                        } catch (error) {
+                          console.log('Error updating guest:', error);
+                        }
+                      } else {
+                        try {
+                          delete guest.id;
+                          // guest.createdBy = user?.user_id as string;
+                          guest.createdBy = '';
+
+                          createFireData({
+                            collectType: 'Guests',
+                            data: guest,
+                          });
+                        } catch (error) {
+                          console.log('Error updating guest:', error);
+                        }
+                      }
+
+                      // add as new create own
+                    });
+                  }
+                  closeToast();
+                },
+                buttonStyle: tw`border bg-transparent border-primary flex-1`,
+              },
+            ],
+          });
+        }
+      } else if (data) {
+        const convertMyFormate = data?.map(item => {
+          return {
+            fullName: item['First name'] + ' ' + item['Last name'],
+            people: item['Total tickets'],
+            free_entry: item['Free tickets'],
+            added_by: item['Added by'],
+          };
+        });
+
+        if (convertMyFormate && Array.isArray(convertMyFormate)) {
+          convertMyFormate.forEach(async (guest: any) => {
+            guest.event = route?.params?.item?.id;
+            guest.venue = route?.params?.item?.venue;
+
+            if (!guest.event_date) {
+              guest.event_date = route?.params?.item?.date;
+            }
+
+            // console.log(guest.id);
+            // update options
+
+            if (guest?.createdBy === user?.user_id) {
+              try {
+                const docRef = firestore().collection('Guests').doc(guest.id);
+                const docSnapshot = await docRef.get();
+
+                if (docSnapshot.exists) {
+                  // Document exists, update it
+                  await docRef.update(guest);
+                } else {
+                  // Document not found, show a warning
+                  showToast({
+                    title: 'Warning',
+                    content:
+                      'Please upload the latest version of the guest list. The uploaded guest list does not match the database.',
+                    onPress: closeToast,
                   });
                 }
-                closeToast();
-              },
-              buttonStyle: tw`border bg-transparent border-primary flex-1`,
-            },
-          ],
+              } catch (error) {
+                console.log('Error updating guest:', error);
+              }
+            } else {
+              try {
+                delete guest.id;
+                // guest.createdBy = user?.user_id as string;
+                guest.createdBy = '';
+
+                createFireData({
+                  collectType: 'Guests',
+                  data: guest,
+                });
+              } catch (error) {
+                console.log('Error updating guest:', error);
+              }
+            }
+
+            // add as new create own
+          });
+        }
+      } else {
+        showToast({
+          title: 'Warning',
+          content: 'No data found to import',
+          onPress: closeToast,
         });
+        return;
       }
     } catch (err: unknown) {
       console.log('Error importing data:', err);
@@ -479,7 +539,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
         </Text>
       </View>
 
-      <FlatList
+      <FlashList
         refreshControl={
           <RefreshControl
             refreshing={false}
@@ -490,6 +550,7 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             }}
           />
         }
+        estimatedItemSize={200}
         ListEmptyComponent={
           <EmptyCard
             isLoading={loading}
@@ -497,7 +558,6 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
             title="No Guests"
           />
         }
-        contentContainerStyle={tw`px-4 pb-14 gap-3`}
         data={guestListData
           ?.filter(item => {
             return tags === 'Tags' ? item : item?.tag === tags;
@@ -508,11 +568,12 @@ const ViewGuestList = ({navigation, route}: NavigProps<{item: IEvent}>) => {
           .filter(item => {
             return item.fullName.toLowerCase().includes(search.toLowerCase());
           })}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(item, index) => item?.id.toString()}
         renderItem={({item, index}) => (
           <Card
             onPress={() => navigation.navigate('GuestDetails', {guest: item})}
-            containerStyle={tw` flex-row gap-3 items-center`}
+            containerStyle={tw`flex-row gap-3 items-center`}
+            layoutStyle={tw`mx-4 my-2 `}
             component={
               <Card.Button
                 onPress={() => handleCheckIn(item)}

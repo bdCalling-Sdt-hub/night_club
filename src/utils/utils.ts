@@ -1,7 +1,6 @@
 // devices screen size
 
-import {Alert, Dimensions, Linking, PixelRatio, Platform} from 'react-native';
-import {PERMISSIONS, RESULTS, request} from 'react-native-permissions';
+import {Dimensions, PixelRatio, Platform} from 'react-native';
 
 import {MMKVLoader} from 'react-native-mmkv-storage';
 
@@ -47,27 +46,3 @@ function getRandomHashColor() {
 // console.log(price); // Output: "1 234,56 €" (French formatting for Euros)
 
 // Call requestPermissions before trying to write to the file
-
-export const filRequestPermission = async () => {
-  const result = await request(PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE); // Change for iOS if needed
-
-  if (result === RESULTS.GRANTED) {
-    return true;
-  } else if (result === RESULTS.DENIED) {
-    filRequestPermission(); // 🔄 Keep requesting
-  } else if (result === RESULTS.BLOCKED) {
-    Alert.alert(
-      'Permission Needed',
-      ' This feature requires files access. Please enable it in settings.\n\n 1.Go to Settings \n 2.Click Permissions \n 3.Click files and media \n 4.Fil up the check box allowed access to media only. \n\n To enable permissions',
-      [
-        {text: 'Go to Settings', onPress: () => Linking.openSettings()},
-        {
-          text: 'Cancel',
-          onPress: () => {
-            return false;
-          },
-        },
-      ],
-    );
-  }
-};

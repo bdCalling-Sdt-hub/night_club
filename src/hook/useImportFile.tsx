@@ -54,9 +54,6 @@ export const useImportData = async () => {
       );
     }
   } catch (err: unknown) {
-    Alert.alert(
-      'Import Failed',
-      'Unable to import the file. Please try again.',
-    );
+    return false;
   }
 };
